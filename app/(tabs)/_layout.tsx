@@ -1,12 +1,11 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { FontAwesome, Ionicons, Feather } from '@expo/vector-icons';
+import React, { useRef, useCallback } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import CreateOptionsSheetContent from '@/screens/create/CreateOptionsSheetContent';
 
-import { HapticTab } from '../../components/HapticTab';
-import { IconSymbol } from '../../components/ui/IconSymbol';
-import TabBarBackground from '../../components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 
 /**
@@ -47,67 +46,115 @@ export default function TabLayout() {
   // Get the primary color for the create button based on the current color scheme
   const primaryColor = Colors[colorScheme].primary;
 
+  // Create ref for the bottom sheet modal
+  const createOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
+  
+  // useCallback for closing the sheet
+  const handleCloseSheet = useCallback(() => {
+    createOptionsBottomSheetRef.current?.dismiss();
+  }, []);
+
+  // useCallback for presenting the sheet
+  const presentCreateOptions = useCallback(() => {
+    createOptionsBottomSheetRef.current?.present();
+  }, []);
+
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].primary,
-        tabBarStyle: {
-          backgroundColor: palette.background,
-          borderTopColor: Colors[colorScheme].border,
-          height: 90,
-          paddingBottom: 15,
-          paddingTop: 15,
-        },
-        tabBarShowLabel: false,
-        headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <MapTabIcon color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="create"
-        options={{
-          title: 'Create',
-          tabBarIcon: ({ color }) => (
-            <View style={styles.plusButtonContainer}>
-              <View 
-                style={[
-                  styles.plusButton,
-                  { backgroundColor: primaryColor }
-                ]}
+    <>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme].primary,
+          tabBarStyle: {
+            backgroundColor: palette.background,
+            borderTopColor: Colors[colorScheme].border,
+            height: 82,
+            paddingBottom: 20,
+            paddingTop: 10,
+          },
+          tabBarShowLabel: false,
+          headerShown: false,
+        }}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="map"
+          options={{
+            title: 'Map',
+            tabBarIcon: ({ color }) => <MapTabIcon color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: 'Create',
+            headerShown: false,
+            tabBarIcon: ({ color }) => <TabBarIcon name="add" color={color} />,
+            tabBarButton: () => (
+              <TouchableOpacity
+                onPress={presentCreateOptions}
+                style={{
+                  width: 56,
+                  height: 56,
+                  backgroundColor: palette.primary,
+                  borderRadius: 28,
+                  position: 'absolute',
+                  top: -15,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 3,
+                  elevation: 5,
+                }}
               >
-                <Ionicons name="add" size={20} color="#fff" />
-              </View>
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Chat',
-          tabBarIcon: ({ color }) => <TabBarIcon name="chatbubble-outline" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="person-outline" color={color} />,
-        }}
-      />
-    </Tabs>
+                <Ionicons name="add" size={28} color="white" />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="chat"
+          options={{
+            title: 'Chat',
+            tabBarIcon: ({ color }) => <TabBarIcon name="chatbubble-outline" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            headerShown: false,
+            tabBarIcon: ({ color }) => <TabBarIcon name="person-outline" color={color} />,
+          }}
+        />
+      </Tabs>
+
+      {/* Bottom sheet for create options - positioned here to render above tabs */}
+      <BottomSheetModal
+        ref={createOptionsBottomSheetRef}
+        index={0}
+        snapPoints={['30%']}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+          />
+        )}
+        enablePanDownToClose={true}
+        handleIndicatorStyle={{ backgroundColor: palette.secondary }}
+        backgroundStyle={{ backgroundColor: palette.card }}
+      >
+        <CreateOptionsSheetContent handleClose={handleCloseSheet} />
+      </BottomSheetModal>
+    </>
   );
 }
 

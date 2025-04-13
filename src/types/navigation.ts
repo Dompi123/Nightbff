@@ -49,15 +49,31 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>; // Auth flow screens
   Main: NavigatorScreenParams<MainTabParamList>;  // Main app tabs
+  '(tabs)': undefined; // Entry point for the main tabs
+
+  // Existing Detail/Modal Screens
   ExplorePlans: undefined;
   PlanDetail: { planId: string };
-  GroupChat: { chatId: string }; // Example: Pass relevant ID
-  HotspotList: undefined;
-  InterestList: undefined;
-  GenericDetail: { itemId: string };
-  Paywall: undefined; // Paywall screen that can be accessed from anywhere
-  PopularGroupDetail: { groupId: string }; // Add the new screen with required parameter
-  // Add other modal or top-level screens here
+  GroupChat: { chatId: string }; // Was Conversation, ensure consistency or update
+  conversation: { chatId: string }; // Explicitly add conversation route if separate
+  Paywall: undefined;
+  PopularGroupDetail: { groupId: string };
+
+  // --- Phase 5a Navigation Targets ---
+  locationDetail: { locationName: string; };
+  exploreGroups: undefined;
+  bffProfileDetail: { userId: string; };
+  // nearbyGroupsList: undefined; // Using exploreGroups route for now
+  createGroup: undefined; // Target for Create Group button
+  planNightOutPlaceholder: undefined;
+  // Add other potential placeholders if needed later e.g. settings
+  settingsPlaceholder: undefined;
+  editProfilePlaceholder: undefined;
+  // --- End Phase 5a Navigation Targets ---
+
+  // Auth Screens (if needing direct navigation)
+  Login: undefined;
+  Signup: undefined;
 };
 
 // Type checking for React Navigation

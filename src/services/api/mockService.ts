@@ -1,4 +1,4 @@
-import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail } from '@/types/data'; // Import types from central file and new types
+import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData } from '@/types/data'; // Import types from central file and new types
 
 // Simulate network delay
 const simulateDelay = (ms: number = 500) => new Promise(res => setTimeout(res, ms));
@@ -210,6 +210,76 @@ const mockExplorePlansData: Plan[] = [
     description: 'Ring in the New Year with style at our annual black-tie event featuring multiple dance floors, open premium bars, gourmet catering, and a spectacular midnight countdown with champagne toast.',
     host: 'Elite Events'
   }
+];
+
+// Added Mock Data for Explore Groups
+const mockExploreGroups: ExploreGroupCardData[] = [
+  {
+    id: 'group_1',
+    title: 'Dubai Crazy Trip',
+    imageUrl: 'https://images.unsplash.com/photo-1532452119098-a3650b3c46d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    startDate: '2024-04-13',
+    endDate: '2024-05-28',
+    location: 'United Arab Emirates',
+    locationFlag: '🇦🇪',
+    attendeeAvatars: [AVATAR_URLS[0], AVATAR_URLS[1], AVATAR_URLS[2]],
+    attendeeCount: 123,
+  },
+  {
+    id: 'group_2',
+    title: 'Barcelona Experiences',
+    imageUrl: 'https://images.unsplash.com/photo-1519214605650-76a613ee3245?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    startDate: '2024-04-09',
+    endDate: '2024-09-10',
+    location: 'Spain',
+    locationFlag: '🇪🇸',
+    attendeeAvatars: [AVATAR_URLS[3], AVATAR_URLS[4], AVATAR_URLS[0]],
+    attendeeCount: 189,
+  },
+  {
+    id: 'group_3',
+    title: 'Solotravelers Party - Rome',
+    imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    startDate: '2024-04-08',
+    endDate: '2024-05-08',
+    location: 'Italy',
+    locationFlag: '🇮🇹',
+    attendeeAvatars: [AVATAR_URLS[1], AVATAR_URLS[2], AVATAR_URLS[4]],
+    attendeeCount: 95,
+  },
+  {
+    id: 'group_4',
+    title: 'NYC Rooftop Season Opener',
+    imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80',
+    startDate: '2024-05-01',
+    endDate: '2024-05-31',
+    location: 'New York',
+    locationFlag: '🇺🇸',
+    attendeeAvatars: [AVATAR_URLS[0], AVATAR_URLS[3]],
+    attendeeCount: 77,
+  },
+  {
+    id: 'group_5',
+    title: 'London Pub Crawl Adventures',
+    imageUrl: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80',
+    startDate: '2024-06-10',
+    endDate: '2024-06-10',
+    location: 'United Kingdom',
+    locationFlag: '🇬🇧',
+    attendeeAvatars: [AVATAR_URLS[1], AVATAR_URLS[4], AVATAR_URLS[2], AVATAR_URLS[0]],
+    attendeeCount: 210,
+  },
+  {
+    id: 'group_6',
+    title: 'Berlin Techno Nights',
+    imageUrl: 'https://images.unsplash.com/photo-1545128485-c400e7702796?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    startDate: '2024-07-01',
+    endDate: '2024-07-31',
+    location: 'Germany',
+    locationFlag: '🇩🇪',
+    attendeeAvatars: [AVATAR_URLS[3], AVATAR_URLS[1]],
+    attendeeCount: 55,
+  },
 ];
 
 // --- Mock User Database ---
@@ -490,6 +560,127 @@ const mockPopularGroupDetails: Record<string, PopularGroupDetail> = {
   },
 };
 
+const mockUserProfile: UserProfile = {
+  id: '1',
+  name: 'Traveler',
+  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80',
+  stats: {
+    groups: 1,
+    plans: 0,
+    venuesVisited: 1
+  }
+};
+
+const mockJoinedGroups: JoinedGroup[] = [
+  {
+    id: '1',
+    name: 'Croatia',
+    imageUrl: 'https://images.unsplash.com/photo-1555990538-17392d5e576a',
+    location: 'Dubrovnik',
+    dateRange: 'Oct 2 - Dec 23',
+    isJoined: true
+  },
+  {
+    id: '2',
+    name: 'Japan',
+    imageUrl: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989',
+    location: 'Tokyo',
+    dateRange: 'Jan 15 - Mar 30',
+    isJoined: true
+  }
+];
+
+const mockUpcomingPlans: UpcomingPlan[] = [];
+
+// MOCK USER DETAIL DATA
+// Ensure this structure matches your UserProfileDetail interface EXACTLY
+const mockUserProfiles: { [key: string]: UserProfileDetail } = {
+  'bff_1': { // Example ID, ensure this matches IDs used on Homescreen
+    id: 'bff_1',
+    name: 'Chris',
+    age: 32,
+    location: 'United States',
+    countryFlag: '🇺🇸',
+    isVerified: true,
+    profileImageUrls: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'],
+    aboutMe: 'I love to travel and wanna meet new friends along the way ✌️ Will be solo traveling for the next 6 months. Down to go anywhere!',
+    badges: ['Pro', 'Verified'],
+    socials: [{ type: 'instagram', isSet: false }, { type: 'tiktok', isSet: false }],
+    interests: ['Adventure', 'Nature', 'Road Trip', 'Hiking', 'Backpacking'],
+    languages: ['English'],
+  },
+  'bff_2': { // Add at least one more mock profile
+     id: 'bff_2',
+     name: 'Alex',
+     age: 28,
+     location: 'Canada',
+     countryFlag: '🇨🇦',
+     isVerified: false,
+     profileImageUrls: ['https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80'], // Used a nearby user avatar
+     aboutMe: 'Exploring the city nightlife. Looking for recommendations!',
+     badges: [],
+     socials: [{ type: 'instagram', isSet: true }, { type: 'tiktok', isSet: false }],
+     interests: ['Live Music', 'Clubs', 'Cocktails'],
+     languages: ['English', 'French'],
+  },
+  'tsune_1': { // Added Tsune mock profile
+    id: 'tsune_1',
+    name: 'Tsune',
+    age: 22,
+    location: 'Japan',
+    countryFlag: '🇯🇵',
+    isVerified: true,
+    profileImageUrls: ['https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'], // Placeholder image
+    aboutMe: 'A Japanese studying in Shanghai. Would love to explore the world and looking for new friends',
+    badges: ['Verified'],
+    socials: [{ type: 'instagram', isSet: true }, { type: 'tiktok', isSet: true }],
+    interests: ['Photography', 'City Exploration', 'Foodie'],
+    languages: ['Japanese', 'English', 'Mandarin'],
+  },
+  'bff_3': {
+    id: 'bff_3',
+    name: 'Samira',
+    age: 25,
+    location: 'United Kingdom',
+    countryFlag: '🇬🇧',
+    isVerified: true,
+    profileImageUrls: ['https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'], // Placeholder image
+    aboutMe: 'Loves techno music and finding hidden gems in the city.',
+    badges: ['Verified', 'Music Lover'],
+    socials: [{ type: 'instagram', isSet: true }, { type: 'tiktok', isSet: true }],
+    interests: ['Techno', 'Travel', 'Photography', 'Hidden Bars'],
+    languages: ['English', 'Spanish'],
+  },
+  'bff_4': {
+    id: 'bff_4',
+    name: 'Kenji',
+    age: 29,
+    location: 'Singapore',
+    countryFlag: '🇸🇬',
+    isVerified: false,
+    profileImageUrls: ['https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'], // Placeholder image
+    aboutMe: 'Digital nomad exploring Southeast Asia. Always up for an adventure or a good coffee.',
+    badges: ['Digital Nomad'],
+    socials: [{ type: 'instagram', isSet: true }, { type: 'tiktok', isSet: false }],
+    interests: ['Travel', 'Coffee', 'Startups', 'Hiking'],
+    languages: ['English', 'Japanese'],
+  },
+  'bff_5': {
+    id: 'bff_5',
+    name: 'Aiko',
+    age: 26,
+    location: 'Japan',
+    countryFlag: '🇯🇵',
+    isVerified: false,
+    profileImageUrls: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'], // Placeholder image
+    aboutMe: 'Just moved here, looking for cool bars and music venues. Love photography!',
+    badges: [],
+    socials: [{ type: 'instagram', isSet: true }, { type: 'tiktok', isSet: false }],
+    interests: ['Bars', 'Rooftops', 'Electronic Music', 'Photography'],
+    languages: ['Japanese', 'English'],
+  },
+};
+
 // --- Mock API Functions ---
 
 export const fetchTrendingPlans = async (): Promise<CardData[]> => {
@@ -602,6 +793,51 @@ export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularG
   }
 
   return groupDetail;
+};
+
+export const fetchUserProfile = async (): Promise<UserProfile> => {
+  await simulateDelay();
+  return mockUserProfile;
+};
+
+export const fetchJoinedGroups = async (): Promise<JoinedGroup[]> => {
+  await simulateDelay();
+  return mockJoinedGroups;
+};
+
+export const fetchUpcomingPlans = async (): Promise<UpcomingPlan[]> => {
+  await simulateDelay();
+  return mockUpcomingPlans;
+};
+
+export const fetchUserProfileDetail = async (userId: string): Promise<UserProfileDetail> => {
+  console.log(`[Mock API] Attempting to fetch profile detail for userId: ${userId}`);
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
+
+  const profile = mockUserProfiles[userId];
+
+  if (profile) {
+    console.log(`[Mock API] Profile found for userId: ${userId}`);
+    return Promise.resolve(profile);
+  } else {
+    console.error(`[Mock API] Profile NOT FOUND for userId: ${userId}`);
+    // It's often better to reject with an Error object
+    return Promise.reject(new Error(`Mock profile not found for user ${userId}`));
+  }
+};
+
+// Added fetch function for Explore Groups
+export const fetchExploreGroups = async (filter?: string): Promise<ExploreGroupCardData[]> => {
+  console.log(`[Mock API] Fetching explore groups with filter: ${filter || 'none'}`);
+  await simulateDelay();
+  // maybeThrowError(0.05); // Simulate occasional errors
+  // Basic filter simulation (can be expanded)
+  if (filter && filter !== 'trending' && filter !== 'new' && filter !== 'nearby') {
+    return mockExploreGroups.filter(group => group.locationFlag === filter || group.location.toLowerCase().includes(filter.toLowerCase()));
+  }
+  // Return slightly shuffled list for 'trending' or 'new' for variety, or full list
+  return [...mockExploreGroups].sort(() => Math.random() - 0.5);
 };
 
 // --- Mock Auth Functions ---

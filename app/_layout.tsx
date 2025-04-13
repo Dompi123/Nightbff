@@ -7,9 +7,14 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { ActivityIndicator, View, Text } from 'react-native';
+import { ActivityIndicator, View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import PaywallScreen from '@/screens/paywall/PaywallScreen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Ionicons } from '@expo/vector-icons';
+import { palette } from '@/theme/colors';
+import { spacing } from '@/theme/spacing';
 
 // Use relative path for useColorScheme to avoid module resolution issues
 import { useColorScheme } from '../src/hooks/useColorScheme';
@@ -55,18 +60,89 @@ function RootNavigation() {
     );
   }
 
-  // For more explicit handling
+  // Authenticated User Stack
   if (isAuthenticated) {
     console.log('[Navigation] User is authenticated - showing app screens');
     return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ 
+          // Default header styling for consistency
+          headerStyle: { backgroundColor: palette.background },
+          headerTintColor: palette.text,
+        }}>
+          {/* Tab Navigator Entry Point */}
           <Stack.Screen
             name="(tabs)"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{ headerShown: false }}
           />
-          <Stack.Screen name="explorePlans" />
-          <Stack.Screen name="planDetail" />
+          
+          {/* Detail/Placeholder Screens */}
+          <Stack.Screen 
+            name="popularGroupDetail/[groupId]"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="conversation/[chatId]" 
+            options={({ navigation, route }: { navigation: any, route: { params?: { title?: string; participantCount?: number } } }) => {
+              const { title, participantCount } = route.params || {};
+              return {
+                headerShown: true,
+                headerTitle: () => (
+                  <View style={{ alignItems: 'flex-start' }}>
+                    <Text style={{ color: palette.text, fontSize: 18, fontWeight: '600' }} numberOfLines={1}>
+                      {title ? title : 'Chat'}
+                    </Text>
+                    {typeof participantCount === 'number' && (
+                      <Text style={{ color: palette.textSecondary, fontSize: 14 }}>
+                        {`${participantCount} members`}
+                      </Text>
+                    )}
+                  </View>
+                ),
+                headerTitleAlign: 'left',
+                headerLeft: () => (
+                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: spacing.md }}>
+                    <Ionicons name="arrow-back" size={28} color={palette.text} />
+                  </TouchableOpacity>
+                ),
+              };
+            }}
+          />
+          <Stack.Screen 
+            name="exploreGroups"
+            options={{
+              headerShown: true,
+              title: '',
+              headerStyle: { backgroundColor: palette.background }, 
+              headerTintColor: palette.text,
+              headerShadowVisible: false, 
+            }} 
+          />
+          <Stack.Screen 
+            name="locationDetail/[locationName]" 
+            options={({ route }: { route: { params?: { locationName?: string } } }) => ({
+              title: route.params?.locationName || 'Location',
+              headerShown: true,
+            })} 
+          />
+          <Stack.Screen 
+            name="bffProfileDetail/[userId]"
+            options={{ 
+              headerShown: false
+            }} 
+          />
+          <Stack.Screen 
+            name="createGroup" 
+            options={{ title: 'Create Group', headerShown: true }}
+          />
+          <Stack.Screen 
+            name="planNightOutPlaceholder" 
+            options={{ title: 'Plan Night Out', headerShown: true }}
+          />
+          
+          {/* Other top-level screens */}
           <Stack.Screen 
             name="paywall" 
             options={{ 
@@ -75,32 +151,40 @@ function RootNavigation() {
               contentStyle: { backgroundColor: '#121212' }
             }} 
           />
-          <Stack.Screen 
-            name="popularGroupDetail" 
-            options={{ 
-              headerShown: false,
-              animation: 'slide_from_right'
-            }} 
-          />
-          <Stack.Screen name="login" redirect />
-          <Stack.Screen name="signup" redirect />
+
+          {/* Redirect authenticated users away from auth screens */}
+          <Stack.Screen name="login" />
+          <Stack.Screen name="signup" />
+          
+          {/* Removed redundant explorePlans/planDetail - assumed handled by file routes */}
+          {/* <Stack.Screen name="explorePlans" /> */}
+          {/* <Stack.Screen name="planDetail" /> */}
+
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
     );
   } else {
+    // Non-Authenticated Stack - CORRECTED
     console.log('[Navigation] User is NOT authenticated - showing auth screens');
     return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="login"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{ gestureEnabled: false }}
           />
-          <Stack.Screen name="signup" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" redirect />
-          <Stack.Screen name="explorePlans" redirect />
-          <Stack.Screen name="planDetail" redirect />
+          <Stack.Screen name="signup" />
+          {/* --- REMOVED authenticated screen definitions from here --- */}
+          {/* <Stack.Screen name="(tabs)" /> */}
+          {/* <Stack.Screen name="exploreGroups" /> */}
+          {/* <Stack.Screen name="locationDetail/[locationName]" /> */}
+          {/* <Stack.Screen name="popularGroupDetail/[groupId]" /> */}
+          {/* <Stack.Screen name="bffProfileDetail/[userId]" /> */}
+          {/* <Stack.Screen name="conversation/[chatId]" /> */}
+          {/* <Stack.Screen name="createGroup" /> */}
+          {/* <Stack.Screen name="planNightOutPlaceholder" /> */}
+          {/* <Stack.Screen name="paywall" /> */}
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
@@ -110,10 +194,14 @@ function RootNavigation() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <RootNavigation />
-      </QueryClientProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <RootNavigation />
+          </QueryClientProvider>
+        </AuthProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

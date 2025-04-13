@@ -1,13 +1,15 @@
 import { Image, StyleSheet, TextInput, TouchableOpacity, View, ScrollView, Text, ImageBackground, FlatList } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTrendingPlans, useHotspots, useInterests, useNightlifeGroups, useBffsYouMayLike, useNearbyGroup } from '@/hooks/api/useHomeScreenData';
 import { AvatarStack } from '@/components/home/AvatarStack';
+import { RootStackParamList } from '@/types/navigation';
+import { NavigationProp } from '@react-navigation/native';
 
 // Filter categories for nightlife
 const FILTER_CATEGORIES = [
@@ -95,7 +97,7 @@ export default function HomeScreen() {
             placeholderTextColor="#777"
           />
         </ThemedView>
-        
+
         {/* Horizontal filter chips */}
         <ScrollView 
           horizontal 
@@ -126,12 +128,9 @@ export default function HomeScreen() {
         {/* Trending Nightlife Plans Section with subtitle */}
         <View style={styles.sectionHeaderContainer}>
           <View>
-            <ThemedText style={styles.sectionTitle}>Trending Nightlife Plans</ThemedText>
+          <ThemedText style={styles.sectionTitle}>Trending Nightlife Plans</ThemedText>
             <ThemedText style={styles.sectionSubtitle}>popular among bffs 📈</ThemedText>
           </View>
-          <TouchableOpacity>
-            <ThemedText style={styles.seeAllText}>View all</ThemedText>
-          </TouchableOpacity>
         </View>
         
         <ScrollView 
@@ -140,7 +139,11 @@ export default function HomeScreen() {
           contentContainerStyle={styles.plansContainer}
         >
           {!plansLoading && trendingPlans?.map((plan) => (
-            <TouchableOpacity key={plan.id} style={styles.planCard}>
+            <TouchableOpacity 
+              key={plan.id} 
+              style={styles.planCard}
+              onPress={() => router.push(`/locationDetail/${plan.location}`)}
+            >
               <ImageBackground
                 source={{ uri: plan.imageUrl }}
                 style={styles.planImage}
@@ -168,7 +171,7 @@ export default function HomeScreen() {
         {/* Popular Groups Section */}
         <View style={styles.sectionHeaderContainer}>
           <ThemedText style={styles.sectionTitle}>Popular Groups</ThemedText>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/exploreGroups')}>
             <ThemedText style={styles.seeAllText}>View all</ThemedText>
           </TouchableOpacity>
         </View>
@@ -182,14 +185,7 @@ export default function HomeScreen() {
             <TouchableOpacity 
               key={group.id} 
               style={styles.groupCard}
-              onPress={() => {
-                // Navigate to group detail screen
-                // @ts-ignore - Ignore typing issues
-                router.push({
-                  pathname: '/popularGroupDetail',
-                  params: { groupId: group.id }
-                });
-              }}
+              onPress={() => router.push(`/popularGroupDetail/${group.id}`)}
             >
               <Image
                 source={{ uri: group.imageUrl }}
@@ -199,7 +195,7 @@ export default function HomeScreen() {
                 <View style={styles.groupLocation}>
                   <Text style={styles.locationFlag}>{group.locationFlag}</Text>
                   <ThemedText style={styles.locationName}>{group.location}</ThemedText>
-                </View>
+                  </View>
                 <ThemedText style={styles.groupDate}>{group.dateRange}</ThemedText>
                 <ThemedText style={styles.groupTitle}>{group.title}</ThemedText>
                 
@@ -221,15 +217,19 @@ export default function HomeScreen() {
         {/* BFFs You May Like Section (replacing Find Experiences) */}
         <View style={styles.sectionHeaderContainer}>
           <ThemedText style={styles.sectionTitle}>BFFs You May Like</ThemedText>
-        </View>
-        
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
+          </View>
+          
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.bffsContainer}
         >
           {!bffsLoading && bffs?.map((bff) => (
-            <TouchableOpacity key={bff.id} style={styles.bffCard}>
+            <TouchableOpacity 
+              key={bff.id} 
+              style={styles.bffCard}
+              onPress={() => router.push(`/bffProfileDetail/${bff.id}`)}
+            >
               <ImageBackground
                 source={{ uri: bff.avatarUrl }}
                 style={styles.bffImage}
@@ -248,9 +248,9 @@ export default function HomeScreen() {
                   </View>
                 </View>
               </ImageBackground>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
 
         {/* Nearby Groups Section (new section) */}
         <View style={styles.sectionHeaderContainer}>
@@ -260,13 +260,16 @@ export default function HomeScreen() {
               <ThemedText style={styles.newTagText}>NEW</ThemedText>
             </View>
           </View>
-          <TouchableOpacity>
-            <ThemedText style={styles.seeAllText}>See more &gt;</ThemedText>
+          <TouchableOpacity onPress={() => router.push('/exploreGroups')}>
+            <ThemedText style={styles.seeAllText}>See more</ThemedText>
           </TouchableOpacity>
         </View>
         
         {!nearbyGroupLoading && nearbyGroup && (
-          <TouchableOpacity style={styles.nearbyGroupCard}>
+          <TouchableOpacity 
+            style={styles.nearbyGroupCard} 
+            onPress={() => router.push(`/popularGroupDetail/${nearbyGroup.id}`)}
+          >
             <Image
               source={{ uri: nearbyGroup.imageUrl }}
               style={styles.nearbyGroupImage}
@@ -294,7 +297,7 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         )}
-
+        
         {/* Add some bottom padding for the ScrollView */}
         <View style={styles.bottomPadding} />
       </ScrollView>

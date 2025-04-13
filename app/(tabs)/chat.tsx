@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
+import { useRouter } from 'expo-router';
 
 // Add interface for chat item data
 interface ChatItem {
@@ -87,6 +88,13 @@ const MOCK_CHATS: ChatItem[] = [
 export default function ChatScreen() {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
+  const router = useRouter();
+
+  // Navigate to conversation when a chat item is tapped
+  const handleChatPress = (chatId: string) => {
+    // Use direct string navigation
+    router.navigate(`conversation/${chatId}` as any);
+  };
 
   // Render a single chat item
   const renderChatItem = ({ item }: { item: ChatItem }) => {
@@ -94,7 +102,10 @@ export default function ChatScreen() {
     const avatarIsValid = item.avatar && item.avatar.startsWith('http');
     
     return (
-    <TouchableOpacity style={styles.chatItem}>
+    <TouchableOpacity 
+      style={styles.chatItem}
+      onPress={() => handleChatPress(item.id)}
+    >
       {avatarIsValid ? (
         <Image 
           source={{ uri: item.avatar }} 
@@ -105,7 +116,7 @@ export default function ChatScreen() {
       ) : (
         <View style={[styles.chatAvatar, styles.placeholderAvatar]}>
           <ThemedText style={styles.placeholderText}>{item.name.charAt(0)}</ThemedText>
-        </View>
+      </View>
       )}
       
       <View style={styles.chatContent}>

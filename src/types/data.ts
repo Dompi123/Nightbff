@@ -119,6 +119,125 @@ export interface PopularGroupDetail {
     };
 }
 
+export interface UserProfile {
+    id: string;
+    name: string;
+    avatarUrl: string;
+    stats: {
+        groups: number;
+        plans: number;
+        venuesVisited: number;
+    };
+}
+
+export interface UpcomingPlan {
+    id: string;
+    title: string;
+    date: string;
+    imageUrl: string;
+    location: string;
+}
+
+export interface JoinedGroup {
+    id: string;
+    name: string;
+    imageUrl: string;
+    location: string;
+    dateRange: string;
+    isJoined: boolean;
+}
+
+export interface ChatParticipant {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    isOnline?: boolean;
+}
+
+export interface ChatConversation {
+    id: string;
+    title: string;
+    participants: ChatParticipant[];
+    lastMessage?: {
+        text: string;
+        timestamp: string;
+        senderId: string;
+    };
+    unreadCount?: number;
+    isGroupChat: boolean;
+    groupImageUrl?: string;
+}
+
+export interface QuotedMessage {
+    id: string;
+    senderName: string;
+    text: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    conversationId: string;
+    text: string;
+    timestamp: string; // ISO string format
+    sender: {
+        id: string;
+        name: string;
+        avatarUrl?: string;
+    };
+    quotedMessage?: QuotedMessage;
+    isRead?: boolean;
+    mediaUrl?: string; // For image/media messages
+}
+
 // You can add other shared data types here as the project grows
 // export interface User { ... }
-// export interface Venue { ... } 
+// export interface Venue { ... }
+
+// Type checking for React Navigation
+// https://reactnavigation.org/docs/typescript/
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
+// --- User Profile Detail --- ADDED for Phase 5
+export interface UserProfileDetail {
+  id: string;
+  name: string;
+  age: number;
+  location: string; // e.g., "🇺🇸 UNITED STATES"
+  countryFlag: string; // Just the emoji
+  isVerified: boolean;
+  profileImageUrls: string[]; // Can have multiple for carousel/swipe
+  aboutMe: string;
+  badges: string[]; // e.g., ["Pro", "Verified"]
+  socials: { type: 'instagram' | 'tiktok'; isSet: boolean; link?: string }[];
+  interests: string[]; // e.g., ["Adventure", "Nature", "Road Trip"]
+  languages: string[]; // e.g., ["English", "Spanish"]
+  // Add other fields as needed based on future requirements
+}
+
+// Feed Post Type (Example - Add if needed for Feed screen)
+export interface FeedPost {
+  id: string;
+  user: { id: string; name: string; avatarUrl: string };
+  timestamp: string; // ISO string
+  text?: string;
+  imageUrl?: string;
+  likes: number;
+  comments: number;
+}
+
+// Added Interface for Explore Group Card Data
+export interface ExploreGroupCardData {
+  id: string;
+  title: string;
+  imageUrl: string;
+  startDate: string; // Or Date object
+  endDate: string; // Or Date object
+  location: string;
+  locationFlag: string;
+  attendeeAvatars: string[];
+  attendeeCount: number;
+} 
