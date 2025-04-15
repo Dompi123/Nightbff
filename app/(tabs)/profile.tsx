@@ -1,25 +1,37 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useUserProfile } from '@/hooks/api/useUserProfile';
 import { useJoinedGroups } from '@/hooks/api/useJoinedGroups';
 import { useUpcomingPlans } from '@/hooks/api/useUpcomingPlans';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { LoadingIndicator } from '@/components/LoadingIndicator';
+import { ErrorView } from '@/components/ErrorView';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 
 export default function ProfileScreen() {
-  const { data: profile, isLoading: isLoadingProfile } = useUserProfile();
+  const router = useRouter();
+  const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile, error: profileError } = useUserProfile();
   const { data: joinedGroups } = useJoinedGroups();
-  const { data: upcomingPlans } = useUpcomingPlans();
+  const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
   const insets = useSafeAreaInsets();
 
   if (isLoadingProfile) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={palette.primary} />
+        <LoadingIndicator />
+      </SafeAreaView>
+    );
+  }
+
+  if (isErrorProfile) {
+    return (
+      <SafeAreaView style={styles.errorContainer}>
+        <ErrorView error={profileError} />
       </SafeAreaView>
     );
   }
@@ -30,14 +42,27 @@ export default function ProfileScreen() {
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Image source={{ uri: profile?.avatarUrl }} style={styles.avatar} />
+            <Image 
+              source={{ uri: profile?.avatarUrl }} 
+              style={styles.avatar} 
+              accessibilityLabel={`${profile?.name}'s profile picture`}
+            />
             <ThemedText style={styles.name}>{profile?.name}</ThemedText>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity 
+              style={styles.iconButton}
+              accessibilityLabel="Notifications"
+              accessibilityRole="button"
+            >
               <Ionicons name="notifications-outline" size={24} color={palette.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity 
+              style={styles.iconButton}
+              onPress={() => router.push('/settings')}
+              accessibilityLabel="View settings"
+              accessibilityRole="button"
+            >
               <Ionicons name="settings-outline" size={24} color={palette.text} />
             </TouchableOpacity>
           </View>
@@ -61,11 +86,20 @@ export default function ProfileScreen() {
 
         {/* Profile Actions */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push('/profile/edit')}
+            accessibilityLabel="Edit user profile"
+            accessibilityRole="button"
+          >
             <Ionicons name="pencil" size={20} color={palette.text} />
             <ThemedText style={styles.actionButtonText}>Edit Profile</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            accessibilityLabel="View user profile"
+            accessibilityRole="button"
+          >
             <Ionicons name="person" size={20} color={palette.text} />
             <ThemedText style={styles.actionButtonText}>View Profile</ThemedText>
           </TouchableOpacity>
@@ -75,28 +109,71 @@ export default function ProfileScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <ThemedText style={styles.sectionTitle}>Upcoming Plans</ThemedText>
-            <TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => router.push('/plans/upcoming')}
+              accessibilityLabel="View all upcoming plans"
+              accessibilityRole="button"
+            >
               <ThemedText style={styles.seeAllButton}>See all</ThemedText>
             </TouchableOpacity>
           </View>
           
-          {upcomingPlans?.length === 0 ? (
+          {isLoadingPlans ? (
+            <View style={styles.plansLoadingContainer}>
+              <LoadingIndicator />
+            </View>
+          ) : isErrorPlans ? (
+            <View style={styles.plansErrorContainer}>
+              <ErrorView error={plansError} />
+            </View>
+          ) : upcomingPlans?.length === 0 ? (
             <View style={styles.emptyStateContainer}>
               <Image 
                 source={require('../../assets/images/default-avatar.png')} 
                 style={styles.emptyStateImage} 
+                accessibilityLabel="No upcoming plans illustration"
               />
               <ThemedText style={styles.emptyStateText}>
                 You don't have any upcoming plans yet
               </ThemedText>
-              <TouchableOpacity style={styles.addButton}>
+              <TouchableOpacity 
+                style={styles.addButton}
+                accessibilityLabel="Add new plan"
+                accessibilityRole="button"
+              >
                 <Ionicons name="add" size={24} color={palette.background} />
                 <ThemedText style={styles.addButtonText}>Add New Plan</ThemedText>
               </TouchableOpacity>
             </View>
           ) : (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {/* Render upcoming plans here */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.plansScroll}>
+              {upcomingPlans?.map(plan => (
+                <TouchableOpacity 
+                  key={plan.id} 
+                  style={styles.planCard}
+                  accessibilityLabel={`Upcoming plan: ${plan.title} at ${plan.location}`}
+                  accessibilityRole="button"
+                >
+                  <Image 
+                    source={{ uri: plan.imageUrl }} 
+                    style={styles.planImage}
+                    accessibilityLabel={`Image for ${plan.title}`}
+                  />
+                  <View style={styles.planInfo}>
+                    <ThemedText style={styles.planTitle}>{plan.title}</ThemedText>
+                    <View style={styles.planDetails}>
+                      <View style={styles.planDetailItem}>
+                        <Ionicons name="time-outline" size={16} color={palette.textSecondary} />
+                        <ThemedText style={styles.planDetailText}>{plan.date}</ThemedText>
+                      </View>
+                      <View style={styles.planDetailItem}>
+                        <Ionicons name="location-outline" size={16} color={palette.textSecondary} />
+                        <ThemedText style={styles.planDetailText}>{plan.location}</ThemedText>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </ScrollView>
           )}
         </View>
@@ -105,15 +182,27 @@ export default function ProfileScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <ThemedText style={styles.sectionTitle}>Groups you Joined</ThemedText>
-            <TouchableOpacity>
+            <TouchableOpacity
+              accessibilityLabel="View all joined groups"
+              accessibilityRole="button"
+            >
               <ThemedText style={styles.seeAllButton}>See all</ThemedText>
             </TouchableOpacity>
           </View>
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.groupsScroll}>
             {joinedGroups?.map(group => (
-              <TouchableOpacity key={group.id} style={styles.groupCard}>
-                <Image source={{ uri: group.imageUrl }} style={styles.groupImage} />
+              <TouchableOpacity 
+                key={group.id} 
+                style={styles.groupCard}
+                accessibilityLabel={`Joined group: ${group.name}`}
+                accessibilityRole="button"
+              >
+                <Image 
+                  source={{ uri: group.imageUrl }} 
+                  style={styles.groupImage}
+                  accessibilityLabel={`Image for ${group.name}`}
+                />
                 <View style={styles.groupInfo}>
                   <View style={styles.joinedBadge}>
                     <Ionicons name="checkmark-circle" size={16} color={palette.primary} />
@@ -141,6 +230,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: palette.background,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: palette.background,
+    padding: spacing.lg,
   },
   scrollView: {
     flex: 1,
@@ -239,6 +335,19 @@ const styles = StyleSheet.create({
     color: palette.primary,
     fontSize: 16,
   },
+  plansLoadingContainer: {
+    backgroundColor: palette.cardBackground,
+    borderRadius: 12,
+    padding: spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plansErrorContainer: {
+    backgroundColor: palette.cardBackground,
+    borderRadius: 12,
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
   emptyStateContainer: {
     backgroundColor: palette.cardBackground,
     borderRadius: 12,
@@ -266,6 +375,42 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: palette.background,
     fontSize: 16,
+    marginLeft: spacing.xs,
+  },
+  plansScroll: {
+    marginTop: spacing.sm,
+  },
+  planCard: {
+    width: 280,
+    height: 180,
+    marginRight: spacing.md,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: palette.cardBackground,
+  },
+  planImage: {
+    width: '100%',
+    height: 120,
+  },
+  planInfo: {
+    padding: spacing.md,
+  },
+  planTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
+  },
+  planDetails: {
+    flexDirection: 'column',
+  },
+  planDetailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.xs,
+  },
+  planDetailText: {
+    fontSize: 14,
+    color: palette.textSecondary,
     marginLeft: spacing.xs,
   },
   groupsScroll: {
@@ -314,5 +459,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: palette.textSecondary,
   },
-}); 
-
+});
