@@ -10,6 +10,8 @@ import { useTrendingPlans, useHotspots, useInterests, useNightlifeGroups, useBff
 import { AvatarStack } from '@/components/home/AvatarStack';
 import { RootStackParamList } from '@/types/navigation';
 import { NavigationProp } from '@react-navigation/native';
+import LoadingIndicator from '@/components/LoadingIndicator';
+import ErrorView from '@/components/ErrorView';
 
 // Filter categories for nightlife
 const FILTER_CATEGORIES = [
@@ -53,13 +55,13 @@ export default function HomeScreen() {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState('all');
   
-  // Fetch data using hooks
-  const { data: trendingPlans, isLoading: plansLoading } = useTrendingPlans();
-  const { data: nightlifeGroups, isLoading: groupsLoading } = useNightlifeGroups();
-  const { data: interests, isLoading: interestsLoading } = useInterests();
+  // Fetch data using hooks with isError and error states
+  const { data: trendingPlans, isLoading: plansLoading, isError: plansError, error: plansErrorData } = useTrendingPlans();
+  const { data: nightlifeGroups, isLoading: groupsLoading, isError: groupsError, error: groupsErrorData } = useNightlifeGroups();
+  const { data: interests, isLoading: interestsLoading, isError: interestsError, error: interestsErrorData } = useInterests();
   // Add new data hooks
-  const { data: bffs, isLoading: bffsLoading } = useBffsYouMayLike();
-  const { data: nearbyGroup, isLoading: nearbyGroupLoading } = useNearbyGroup();
+  const { data: bffs, isLoading: bffsLoading, isError: bffsError, error: bffsErrorData } = useBffsYouMayLike();
+  const { data: nearbyGroup, isLoading: nearbyGroupLoading, isError: nearbyGroupError, error: nearbyGroupErrorData } = useNearbyGroup();
 
   // Filter selection handler
   const handleFilterSelect = useCallback((filterId: string) => {
@@ -133,40 +135,46 @@ export default function HomeScreen() {
           </View>
         </View>
         
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.plansContainer}
-        >
-          {!plansLoading && trendingPlans?.map((plan) => (
-            <TouchableOpacity 
-              key={plan.id} 
-              style={styles.planCard}
-              onPress={() => router.push(`/locationDetail/${plan.location}`)}
-            >
-              <ImageBackground
-                source={{ uri: plan.imageUrl }}
-                style={styles.planImage}
-                imageStyle={styles.planImageStyle}
+        {plansLoading ? (
+          <LoadingIndicator />
+        ) : plansError ? (
+          <ErrorView error={plansErrorData} />
+        ) : (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.plansContainer}
+          >
+            {trendingPlans?.map((plan) => (
+              <TouchableOpacity 
+                key={plan.id} 
+                style={styles.planCard}
+                onPress={() => router.push(`/locationDetail/${plan.location}`)}
               >
-                <View style={styles.planGradient}>
-                  <ThemedText style={styles.planTitle}>{plan.title}</ThemedText>
-                  <View style={styles.planDateContainer}>
-                    <ThemedText style={styles.planDate}>{plan.subtitle}</ThemedText>
+                <ImageBackground
+                  source={{ uri: plan.imageUrl }}
+                  style={styles.planImage}
+                  imageStyle={styles.planImageStyle}
+                >
+                  <View style={styles.planGradient}>
+                    <ThemedText style={styles.planTitle}>{plan.title}</ThemedText>
+                    <View style={styles.planDateContainer}>
+                      <ThemedText style={styles.planDate}>{plan.subtitle}</ThemedText>
+                    </View>
+                    
+                    <View style={styles.planAvatarContainer}>
+                      <AvatarStack 
+                        avatars={plan.userAvatars || []}
+                        count={plan.userCount || plan.count}
+                        size={22}
+                      />
+                    </View>
                   </View>
-                  
-                  <View style={styles.planAvatarContainer}>
-                    <AvatarStack 
-                      avatars={plan.userAvatars || []}
-                      count={plan.userCount || plan.count}
-                      size={22}
-                    />
-                  </View>
-                </View>
-              </ImageBackground>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+                </ImageBackground>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
         {/* Popular Groups Section */}
         <View style={styles.sectionHeaderContainer}>
@@ -176,81 +184,93 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
         
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.groupsContainer}
-        >
-          {!groupsLoading && nightlifeGroups?.map((group) => (
-            <TouchableOpacity 
-              key={group.id} 
-              style={styles.groupCard}
-              onPress={() => router.push(`/popularGroupDetail/${group.id}`)}
-            >
-              <Image
-                source={{ uri: group.imageUrl }}
-                style={styles.groupImage}
-              />
-              <View style={styles.groupContent}>
-                <View style={styles.groupLocation}>
-                  <Text style={styles.locationFlag}>{group.locationFlag}</Text>
-                  <ThemedText style={styles.locationName}>{group.location}</ThemedText>
+        {groupsLoading ? (
+          <LoadingIndicator />
+        ) : groupsError ? (
+          <ErrorView error={groupsErrorData} />
+        ) : (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.groupsContainer}
+          >
+            {nightlifeGroups?.map((group) => (
+              <TouchableOpacity 
+                key={group.id} 
+                style={styles.groupCard}
+                onPress={() => router.push(`/popularGroupDetail/${group.id}`)}
+              >
+                <Image
+                  source={{ uri: group.imageUrl }}
+                  style={styles.groupImage}
+                />
+                <View style={styles.groupContent}>
+                  <View style={styles.groupLocation}>
+                    <Text style={styles.locationFlag}>{group.locationFlag}</Text>
+                    <ThemedText style={styles.locationName}>{group.location}</ThemedText>
+                    </View>
+                  <ThemedText style={styles.groupDate}>{group.dateRange}</ThemedText>
+                  <ThemedText style={styles.groupTitle}>{group.title}</ThemedText>
+                  
+                  <View style={styles.groupAttendees}>
+                    <AvatarStack 
+                      avatars={group.userAvatars}
+                      count={group.attendeeCount}
+                      size={20}
+                    />
+                    <ThemedText style={styles.attendeeText}>
+                      {group.attendeeCount} travelers
+                    </ThemedText>
                   </View>
-                <ThemedText style={styles.groupDate}>{group.dateRange}</ThemedText>
-                <ThemedText style={styles.groupTitle}>{group.title}</ThemedText>
-                
-                <View style={styles.groupAttendees}>
-                  <AvatarStack 
-                    avatars={group.userAvatars}
-                    count={group.attendeeCount}
-                    size={20}
-                  />
-                  <ThemedText style={styles.attendeeText}>
-                    {group.attendeeCount} travelers
-                  </ThemedText>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
         {/* BFFs You May Like Section (replacing Find Experiences) */}
         <View style={styles.sectionHeaderContainer}>
           <ThemedText style={styles.sectionTitle}>BFFs You May Like</ThemedText>
-          </View>
+        </View>
           
+        {bffsLoading ? (
+          <LoadingIndicator />
+        ) : bffsError ? (
+          <ErrorView error={bffsErrorData} />
+        ) : (
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.bffsContainer}
-        >
-          {!bffsLoading && bffs?.map((bff) => (
-            <TouchableOpacity 
-              key={bff.id} 
-              style={styles.bffCard}
-              onPress={() => router.push(`/bffProfileDetail/${bff.id}`)}
-            >
-              <ImageBackground
-                source={{ uri: bff.avatarUrl }}
-                style={styles.bffImage}
-                imageStyle={styles.bffImageStyle}
+            contentContainerStyle={styles.bffsContainer}
+          >
+            {bffs?.map((bff) => (
+              <TouchableOpacity 
+                key={bff.id} 
+                style={styles.bffCard}
+                onPress={() => router.push(`/bffProfileDetail/${bff.id}`)}
               >
-                <View style={styles.bffGradient}>
-                  <View style={styles.bffInfo}>
-                    <View style={styles.bffNameRow}>
-                      <ThemedText style={styles.bffName}>{bff.name}</ThemedText>
-                      <View style={[styles.onlineIndicator, { backgroundColor: bff.isOnline ? '#44d62c' : '#aaa' }]} />
+                <ImageBackground
+                  source={{ uri: bff.avatarUrl }}
+                  style={styles.bffImage}
+                  imageStyle={styles.bffImageStyle}
+                >
+                  <View style={styles.bffGradient}>
+                    <View style={styles.bffInfo}>
+                      <View style={styles.bffNameRow}>
+                        <ThemedText style={styles.bffName}>{bff.name}</ThemedText>
+                        <View style={[styles.onlineIndicator, { backgroundColor: bff.isOnline ? '#44d62c' : '#aaa' }]} />
+                      </View>
+                      <ThemedText style={styles.bffAge}>{bff.age} years old</ThemedText>
+                      {bff.countryFlag && (
+                        <Text style={styles.bffCountryFlag}>{bff.countryFlag}</Text>
+                      )}
                     </View>
-                    <ThemedText style={styles.bffAge}>{bff.age} years old</ThemedText>
-                    {bff.countryFlag && (
-                      <Text style={styles.bffCountryFlag}>{bff.countryFlag}</Text>
-                    )}
                   </View>
-                </View>
-              </ImageBackground>
+                </ImageBackground>
               </TouchableOpacity>
             ))}
           </ScrollView>
+        )}
 
         {/* Nearby Groups Section (new section) */}
         <View style={styles.sectionHeaderContainer}>
@@ -265,10 +285,14 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
         
-        {!nearbyGroupLoading && nearbyGroup && (
+        {nearbyGroupLoading ? (
+          <LoadingIndicator />
+        ) : nearbyGroupError ? (
+          <ErrorView error={nearbyGroupErrorData} />
+        ) : nearbyGroup && (
           <TouchableOpacity 
             style={styles.nearbyGroupCard} 
-            onPress={() => router.push(`/popularGroupDetail/${nearbyGroup.id}`)}
+            onPress={() => router.push(`/group/${nearbyGroup.id}`)}
           >
             <Image
               source={{ uri: nearbyGroup.imageUrl }}
