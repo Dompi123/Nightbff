@@ -42,6 +42,7 @@ export type MainTabParamList = {
   Create: undefined;
   Chat: undefined;
   Map: undefined;
+  Profile: undefined;
 };
 
 // Screens accessible from anywhere, potentially including nested navigators
@@ -82,4 +83,4 @@ declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
   }
-} 
+}
