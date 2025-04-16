@@ -133,8 +133,8 @@ const PopularGroupDetailScreen = () => {
               <ThemedText style={styles.sectionTitle}>Venues</ThemedText>
               <View style={styles.sectionContentContainer}>
                 <TouchableOpacity style={styles.venueCard}>
-                  <Image source={{ uri: group.venue.imageUrl }} style={styles.venueImage} />
-                  <ThemedText style={styles.venueName}>{group.venue.name}</ThemedText>
+                  <Image source={{ uri: group.venue?.imageUrl }} style={styles.venueImage} />
+                  <ThemedText style={styles.venueName}>{group.venue?.name}</ThemedText>
                 </TouchableOpacity>
               </View>
             </View>

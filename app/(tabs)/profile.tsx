@@ -8,7 +8,7 @@ import { useJoinedGroups } from '@/hooks/api/useJoinedGroups';
 import { useUpcomingPlans } from '@/hooks/api/useUpcomingPlans';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { LoadingIndicator } from '@/components/LoadingIndicator';
+import LoadingIndicator from '@/components/LoadingIndicator';
 import { ErrorView } from '@/components/ErrorView';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';

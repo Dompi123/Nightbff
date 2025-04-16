@@ -91,6 +91,16 @@ const mockNightlifeGroups: NightlifeGroup[] = [
     dateRange: 'Apr 26 - Apr 28',
     userAvatars: [AVATAR_URLS[2], AVATAR_URLS[1], AVATAR_URLS[4]],
     attendeeCount: 18
+  },
+  {
+    id: 'nearby_1',
+    title: 'Downtown Explorers (Mock)',
+    location: 'Downtown LA',
+    locationFlag: '🇺🇸',
+    imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80',
+    dateRange: 'Ongoing',
+    userAvatars: [AVATAR_URLS[0], AVATAR_URLS[3]],
+    attendeeCount: 25
   }
 ];
 
@@ -784,15 +794,57 @@ export const fetchNearbyGroup = async (): Promise<NearbyGroup> => {
 };
 
 export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularGroupDetail> => {
+  console.log(`[Mock API] Fetching popular group detail for ID: ${groupId}`);
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
+  maybeThrowError(0.05); // Lower chance of error for detail view
 
-  const groupDetail = mockPopularGroupDetails[groupId];
-  if (!groupDetail) {
+  // Find the group in either mockNightlifeGroups or mockExploreGroups based on ID structure
+  const groupBase = mockNightlifeGroups.find(g => g.id === groupId) || mockExploreGroups.find(g => g.id === groupId);
+
+  if (!groupBase) {
+    console.error(`[Mock API] Error: Group with ID ${groupId} not found in mockNightlifeGroups or mockExploreGroups.`);
     throw new Error(`Group with ID ${groupId} not found`);
   }
 
-  return groupDetail;
+  // Simulate fetching more details
+  const details: PopularGroupDetail = {
+    ...groupBase, // Spread the base info found
+    description: `This is a detailed description for ${groupBase.title}. Join us for exciting events and meet great people! We often explore local hotspots and enjoy the vibrant nightlife.`,
+    // Use attendeeCount as per type definition
+    attendeeCount: groupBase.attendeeCount || 50,
+    // Convert interests to the expected object format
+    interests: groupId === 'nearby_1' 
+      ? [
+          { id: 'int_nearby_1', name: 'Nightlife', icon: '🍹' },
+          { id: 'int_nearby_2', name: 'Social', icon: '👥' },
+          { id: 'int_nearby_3', name: 'Exploring', icon: '🗺️' }
+        ] 
+      : [ // Default example for other groups if they lack specific interests
+          { id: 'int_default_1', name: 'Nightlife', icon: '🎧' },
+          { id: 'int_default_2', name: 'Social', icon: '🍻' },
+        ],
+    organizer: {
+      id: 'user_org_1',
+      name: 'Alex Manager',
+      avatarUrl: AVATAR_URLS[4],
+      title: 'Community Lead' // Add missing title property
+    },
+    // Add a venue object consistent with PopularGroupDetail type
+    venue: {
+      id: `venue_${groupId}`,
+      name: groupBase.location, // Use group location as venue name
+      imageUrl: groupBase.imageUrl // Reuse group image for venue for simplicity
+    },
+    // upcomingEvents: [ // Example upcoming events - Removing as it's not in PopularGroupDetail type?
+    //   { id: 'event_1', name: 'Weekly Mixer', date: 'Next Thursday' },
+    //   { id: 'event_2', name: 'Rooftop Social', date: 'May 15th' }
+    // ],
+    // Add missing heroImageUrl, using group imageUrl as fallback
+    heroImageUrl: (groupBase as any).heroImageUrl || groupBase.imageUrl 
+  };
+
+  console.log(`[Mock API] Found details for group: ${groupId}`, details);
+  return details;
 };
 
 export const fetchUserProfile = async (): Promise<UserProfile> => {
