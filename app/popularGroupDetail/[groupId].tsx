@@ -50,7 +50,12 @@ const PopularGroupDetailScreen = () => {
         <ThemedText style={styles.errorText}>
           {error ? `Error: ${error.message}` : 'Group not found'}
         </ThemedText>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+        >
           <ThemedText style={styles.backButtonText}>Go Back</ThemedText>
         </TouchableOpacity>
       </SafeAreaView>
@@ -101,7 +106,12 @@ const PopularGroupDetailScreen = () => {
             </View>
           </View>
           
-          <TouchableOpacity style={styles.joinButton} onPress={handleJoinChat}>
+          <TouchableOpacity 
+            style={styles.joinButton} 
+            onPress={handleJoinChat}
+            accessibilityLabel="Join Chat"
+            accessibilityRole="button"
+          >
             <ThemedText style={styles.joinButtonText}>Join Chat</ThemedText>
           </TouchableOpacity>
           
@@ -132,7 +142,11 @@ const PopularGroupDetailScreen = () => {
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Venues</ThemedText>
               <View style={styles.sectionContentContainer}>
-                <TouchableOpacity style={styles.venueCard}>
+                <TouchableOpacity 
+                  style={styles.venueCard}
+                  accessibilityLabel={`View venue: ${group.venue?.name}`}
+                  accessibilityRole="button"
+                >
                   <Image source={{ uri: group.venue?.imageUrl }} style={styles.venueImage} />
                   <ThemedText style={styles.venueName}>{group.venue?.name}</ThemedText>
                 </TouchableOpacity>
@@ -142,7 +156,11 @@ const PopularGroupDetailScreen = () => {
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Managed By</ThemedText>
               <View style={styles.sectionContentContainer}>
-                <TouchableOpacity style={styles.organizerSection}>
+                <TouchableOpacity 
+                  style={styles.organizerSection}
+                  accessibilityLabel={`View organizer profile: ${group.organizer.name}, ${group.organizer.title}`}
+                  accessibilityRole="button"
+                >
                   <Image source={{ uri: group.organizer.avatarUrl }} style={styles.organizerAvatar} />
                   <View style={styles.organizerInfo}>
                     <ThemedText style={styles.organizerName}>{group.organizer.name}</ThemedText>
@@ -154,7 +172,11 @@ const PopularGroupDetailScreen = () => {
             </View>
           </View>
           
-          <TouchableOpacity style={styles.reportContainer}>
+          <TouchableOpacity 
+            style={styles.reportContainer}
+            accessibilityLabel="Report Group"
+            accessibilityRole="button"
+          >
             <ThemedText style={styles.reportText}>Report Group</ThemedText>
           </TouchableOpacity>
         </View>
@@ -167,6 +189,8 @@ const PopularGroupDetailScreen = () => {
           {top: insets.top + spacing.sm}
         ]}
         onPress={handleBack}
+        accessibilityLabel="Go back"
+        accessibilityRole="button"
       >
         <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
       </TouchableOpacity>
@@ -174,6 +198,8 @@ const PopularGroupDetailScreen = () => {
       <TouchableOpacity 
         style={[styles.overlayButton, styles.optionsButton, {top: insets.top + spacing.sm}]}
         onPress={handleShare}
+        accessibilityLabel="Share group"
+        accessibilityRole="button"
       >
         <Ionicons name="share-outline" size={20} color="#FFFFFF" />
       </TouchableOpacity>
@@ -395,4 +421,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PopularGroupDetailScreen; 
+export default PopularGroupDetailScreen;

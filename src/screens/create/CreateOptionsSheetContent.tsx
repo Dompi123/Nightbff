@@ -23,6 +23,8 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
           navigation.navigate('createGroup');
           handleClose();
         }}
+        accessibilityLabel="Create Group - Organize or find groups for your night out"
+        accessibilityRole="button"
       >
         <View style={styles.iconContainer}>
           <Ionicons name="people-outline" size={24} color={palette.primary} />
@@ -45,6 +47,8 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
           navigation.navigate('planNightOutPlaceholder');
           handleClose();
         }}
+        accessibilityLabel="Plan Night Out - Create an event and invite your friends"
+        accessibilityRole="button"
       >
         <View style={styles.iconContainer}>
           <Ionicons name="calendar-outline" size={24} color={palette.primary} />
@@ -97,4 +101,4 @@ const styles = StyleSheet.create({
     backgroundColor: palette.border,
     marginVertical: spacing.xs,
   },
-}); 
+});

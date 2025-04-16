@@ -78,7 +78,10 @@ export default function HomeScreen() {
             <Text style={{ fontSize: 22 }}>🎉</Text>
           </View>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity 
+          accessibilityLabel="View profile"
+          accessibilityRole="button"
+        >
           <Image 
             source={{ uri: 'https://i.pravatar.cc/150?img=32' }} 
             style={styles.profileImage} 
@@ -97,6 +100,7 @@ export default function HomeScreen() {
             style={styles.searchInput}
             placeholder="Search cities, venues..."
             placeholderTextColor="#777"
+            accessibilityLabel="Search cities, venues"
           />
         </ThemedView>
 
@@ -114,6 +118,9 @@ export default function HomeScreen() {
                 selectedFilter === category.id && styles.filterChipSelected
               ]}
               onPress={() => handleFilterSelect(category.id)}
+              accessibilityLabel={`Filter by ${category.label}`}
+              accessibilityRole="button"
+              accessibilityState={{ selected: selectedFilter === category.id }}
             >
               <ThemedText 
                 style={[
@@ -150,6 +157,8 @@ export default function HomeScreen() {
                 key={plan.id} 
                 style={styles.planCard}
                 onPress={() => router.push(`/locationDetail/${plan.location}`)}
+                accessibilityLabel={`View ${plan.title} plan`}
+                accessibilityRole="button"
               >
                 <ImageBackground
                   source={{ uri: plan.imageUrl }}
@@ -179,7 +188,11 @@ export default function HomeScreen() {
         {/* Popular Groups Section */}
         <View style={styles.sectionHeaderContainer}>
           <ThemedText style={styles.sectionTitle}>Popular Groups</ThemedText>
-          <TouchableOpacity onPress={() => router.push('/exploreGroups')}>
+          <TouchableOpacity 
+            onPress={() => router.push('/exploreGroups')}
+            accessibilityLabel="View all popular groups"
+            accessibilityRole="button"
+          >
             <ThemedText style={styles.seeAllText}>View all</ThemedText>
           </TouchableOpacity>
         </View>
@@ -199,6 +212,8 @@ export default function HomeScreen() {
                 key={group.id} 
                 style={styles.groupCard}
                 onPress={() => router.push(`/popularGroupDetail/${group.id}`)}
+                accessibilityLabel={`View ${group.title} group in ${group.location}`}
+                accessibilityRole="button"
               >
                 <Image
                   source={{ uri: group.imageUrl }}
@@ -248,6 +263,8 @@ export default function HomeScreen() {
                 key={bff.id} 
                 style={styles.bffCard}
                 onPress={() => router.push(`/bffProfileDetail/${bff.id}`)}
+                accessibilityLabel={`View ${bff.name}'s profile, ${bff.age} years old`}
+                accessibilityRole="button"
               >
                 <ImageBackground
                   source={{ uri: bff.avatarUrl }}
@@ -280,7 +297,11 @@ export default function HomeScreen() {
               <ThemedText style={styles.newTagText}>NEW</ThemedText>
             </View>
           </View>
-          <TouchableOpacity onPress={() => router.push('/exploreGroups')}>
+          <TouchableOpacity 
+            onPress={() => router.push('/exploreGroups')}
+            accessibilityLabel="See more nearby groups"
+            accessibilityRole="button"
+          >
             <ThemedText style={styles.seeAllText}>See more</ThemedText>
           </TouchableOpacity>
         </View>
@@ -293,6 +314,8 @@ export default function HomeScreen() {
           <TouchableOpacity 
             style={styles.nearbyGroupCard} 
             onPress={() => router.push(`/group/${nearbyGroup.id}`)}
+            accessibilityLabel={`View ${nearbyGroup.title} nearby group in ${nearbyGroup.location}`}
+            accessibilityRole="button"
           >
             <Image
               source={{ uri: nearbyGroup.imageUrl }}

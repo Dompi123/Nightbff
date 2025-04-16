@@ -105,6 +105,8 @@ export default function ChatScreen() {
     <TouchableOpacity 
       style={styles.chatItem}
       onPress={() => handleChatPress(item.id)}
+      accessibilityLabel={`Chat with ${item.name}, last message: ${item.lastMessage}, ${item.time} ago${item.unread ? ', unread' : ''}`}
+      accessibilityRole="button"
     >
       {avatarIsValid ? (
         <Image 
@@ -152,7 +154,11 @@ export default function ChatScreen() {
         <View style={styles.appTitleContainer}>
           <ThemedText style={styles.appTitleText}>Chats</ThemedText>
         </View>
-        <TouchableOpacity style={styles.requestsButton}>
+        <TouchableOpacity 
+          style={styles.requestsButton}
+          accessibilityLabel="Chat requests, 0 pending"
+          accessibilityRole="button"
+        >
           <ThemedText style={styles.requestsText}>Requests (0)</ThemedText>
         </TouchableOpacity>
       </View>
@@ -170,6 +176,7 @@ export default function ChatScreen() {
             style={styles.searchInput}
             placeholder="Search"
             placeholderTextColor={colorScheme === 'dark' ? '#9BA1A6' : '#687076'}
+            accessibilityLabel="Search chats"
           />
         </View>
 
@@ -307,4 +314,4 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
-}); 
+});
