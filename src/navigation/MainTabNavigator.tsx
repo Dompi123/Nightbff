@@ -4,13 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '@/types/navigation';
 
 // Import actual screens or placeholders
-import HomeScreen from '@/app/(tabs)/index'; // Existing Home
-import ChatScreen from '@/app/(tabs)/chat'; // Existing Chat
 import { 
   DiscoverMapScreen, 
   CreateScreen, 
-  ProfileScreen 
+  ProfileScreen
 } from '@/screens/placeholders/PlaceholderScreen';
+
+// Create placeholder components for missing screens
+const HomeScreen = () => <DiscoverMapScreen />;
+const ChatScreen = () => <ProfileScreen />;
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -54,4 +56,4 @@ const MainTabNavigator = () => {
   );
 };
 
-export default MainTabNavigator; 
+export default MainTabNavigator;

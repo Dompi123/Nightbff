@@ -197,7 +197,6 @@ export interface ChatMessage {
 // https://reactnavigation.org/docs/typescript/
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
   }
 }
 
@@ -240,4 +239,4 @@ export interface ExploreGroupCardData {
   locationFlag: string;
   attendeeAvatars: string[];
   attendeeCount: number;
-} 
+}
