@@ -1,6 +1,44 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
-import { loginUser, signupUser } from '@/services/api/mockService';
 import { Alert } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+
+// Define a constant key for storing the auth token
+const AUTH_TOKEN_KEY = 'userAuthToken';
+
+// Mock authentication functions (since they don't exist in mockService)
+const loginUser = async (email: string, password: string): Promise<{ token: string; user: User }> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Simulate authentication logic
+  if (email === 'test@example.com' && password === 'password') {
+    return {
+      token: 'mock-jwt-token-' + Math.random().toString(36).substring(2, 15),
+      user: {
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com'
+      }
+    };
+  }
+  
+  throw new Error('Invalid credentials');
+};
+
+const signupUser = async (details: { name: string; email: string; password: string }): Promise<{ token: string; user: User }> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Simulate signup logic
+  return {
+    token: 'mock-jwt-token-' + Math.random().toString(36).substring(2, 15),
+    user: {
+      id: '2',
+      name: details.name,
+      email: details.email
+    }
+  };
+};
 
 // User type consistent with mockService response
 interface User {
@@ -37,6 +75,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // All hooks must be defined at the top level, not inside other hooks
   const clearError = useCallback(() => setError(null), []);
 
+  // Retrieve token from secure storage on app initialization
+  useEffect(() => {
+    const bootstrapAsync = async () => {
+      let token: string | null = null;
+      try {
+        // Retrieve token from SecureStore
+        token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
+        console.log('[AuthContext] Initial bootstrap - retrieved token:', token ? 'Token found' : 'No token found');
+        
+        // If a token exists, we could fetch the user profile here
+        // For this implementation, we'll just set a mock user if token exists
+        if (token) {
+          setUser({
+            id: '1',
+            name: 'Restored User',
+            email: 'restored@example.com'
+          });
+        }
+      } catch (e) {
+        console.error("[AuthContext] Restoring token failed", e);
+      }
+      
+      setUserToken(token);
+      setIsLoading(false);
+    };
+
+    bootstrapAsync();
+  }, []);
+
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
@@ -44,6 +111,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('[AuthContext] Login attempt initiated for', email);
       const response = await loginUser(email, password);
       console.log('[AuthContext] Login successful, token received:', response.token.substring(0, 10) + '...');
+      
+      // Store token in secure storage
+      try {
+        await SecureStore.setItemAsync(AUTH_TOKEN_KEY, response.token);
+        console.log('[AuthContext] Token stored in secure storage');
+      } catch (storageError) {
+        console.error('[AuthContext] Failed to store token:', storageError);
+        // Continue even if storage fails - user will be logged in for this session
+      }
+      
       setUserToken(response.token);
       setUser(response.user);
       console.log('[AuthContext] Authentication state updated - isAuthenticated now TRUE');
@@ -64,6 +141,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('[AuthContext] Signup attempt for', details.email);
       const response = await signupUser(details);
+      
+      // Store token in secure storage
+      try {
+        await SecureStore.setItemAsync(AUTH_TOKEN_KEY, response.token);
+        console.log('[AuthContext] Token stored in secure storage after signup');
+      } catch (storageError) {
+        console.error('[AuthContext] Failed to store token after signup:', storageError);
+        // Continue even if storage fails - user will be logged in for this session
+      }
+      
       setUserToken(response.token);
       setUser(response.user);
       console.log('[AuthContext] Signup successful');
@@ -86,14 +173,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       [
         {
           text: "OK",
-          onPress: () => {
+          onPress: async () => {
             // Clear auth state
             setUserToken(null);
             setUser(null);
             console.log('[AuthContext] Auth state cleared - userToken and user set to null');
             
-            // This would be where you'd clear persistent storage
-            // await SecureStore.deleteItemAsync('userToken');
+            // Delete token from secure storage
+            try {
+              await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
+              console.log('[AuthContext] Token removed from secure storage');
+            } catch (storageError) {
+              console.error('[AuthContext] Failed to remove token from storage:', storageError);
+              // Continue even if deletion fails - user will still be logged out in this session
+            }
 
             // Force an immediate authentication check
             setTimeout(() => {
@@ -107,28 +200,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       ]
     );
-  }, []);
-
-  // Simulate checking stored token on initial load
-  useEffect(() => {
-    const bootstrapAsync = async () => {
-      let token: string | null = null;
-      try {
-        // Replace with actual token retrieval (e.g., from SecureStore)
-        // token = await SecureStore.getItemAsync('userToken');
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate async check
-        
-        // For testing purposes, explicitly set token to null to ensure we start unauthenticated
-        token = null;
-        console.log('[AuthContext] Initial bootstrap - setting token to null');
-      } catch (e) {
-        console.error("Restoring token failed", e);
-      }
-      setUserToken(token);
-      setIsLoading(false);
-    };
-
-    bootstrapAsync();
   }, []);
 
   // Computed value, not a hook
@@ -161,4 +232,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};
