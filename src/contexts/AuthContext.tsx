@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { useRouter } from 'expo-router';
 
 // Define a constant key for storing the auth token
 const AUTH_TOKEN_KEY = 'userAuthToken';
@@ -10,18 +11,20 @@ const loginUser = async (email: string, password: string): Promise<{ token: stri
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // Simulate authentication logic
-  if (email === 'test@example.com' && password === 'password') {
+  // Simulate authentication logic - Allow test@test.com
+  if ((email === 'test@example.com' && password === 'password') || email === 'test@test.com') {
+    console.log(`[Mock API] Login successful for: ${email}`); // Added log
     return {
       token: 'mock-jwt-token-' + Math.random().toString(36).substring(2, 15),
       user: {
-        id: '1',
-        name: 'Test User',
-        email: 'test@example.com'
+        id: email === 'test@test.com' ? 'test-user-id' : '1', // Use specific ID for test user
+        name: email === 'test@test.com' ? 'Test User (Local Mock)' : 'Example User', // Specific name
+        email: email // Return the email used for login
       }
     };
   }
   
+  console.error(`[Mock API] Login failed for: ${email}`); // Added error log
   throw new Error('Invalid credentials');
 };
 
@@ -66,39 +69,40 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // All state hooks declared at the top level
-  const [isLoading, setIsLoading] = useState(true); // Start loading initially
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true); 
   const [userToken, setUserToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // All hooks must be defined at the top level, not inside other hooks
   const clearError = useCallback(() => setError(null), []);
 
-  // Retrieve token from secure storage on app initialization
   useEffect(() => {
     const bootstrapAsync = async () => {
       let token: string | null = null;
       try {
-        // Retrieve token from SecureStore
         token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
         console.log('[AuthContext] Initial bootstrap - retrieved token:', token ? 'Token found' : 'No token found');
         
-        // If a token exists, we could fetch the user profile here
-        // For this implementation, we'll just set a mock user if token exists
         if (token) {
+          // If token exists, assume authenticated (could add validation/user fetch here)
           setUser({
             id: '1',
             name: 'Restored User',
             email: 'restored@example.com'
           });
+          setUserToken(token);
+          setIsAuthenticated(true); // Set explicit state
+        } else {
+          setIsAuthenticated(false); // Explicitly set to false if no token
         }
       } catch (e) {
         console.error("[AuthContext] Restoring token failed", e);
+        setIsAuthenticated(false); // Set to false on error
+      } finally {
+        setIsLoading(false);
       }
-      
-      setUserToken(token);
-      setIsLoading(false);
     };
 
     bootstrapAsync();
@@ -112,22 +116,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await loginUser(email, password);
       console.log('[AuthContext] Login successful, token received:', response.token.substring(0, 10) + '...');
       
-      // Store token in secure storage
       try {
         await SecureStore.setItemAsync(AUTH_TOKEN_KEY, response.token);
         console.log('[AuthContext] Token stored in secure storage');
       } catch (storageError) {
         console.error('[AuthContext] Failed to store token:', storageError);
-        // Continue even if storage fails - user will be logged in for this session
       }
       
       setUserToken(response.token);
       setUser(response.user);
+      setIsAuthenticated(true); // Set explicit state
       console.log('[AuthContext] Authentication state updated - isAuthenticated now TRUE');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
       console.error('[AuthContext] Login failed:', errorMessage);
       setError(errorMessage);
+      setIsAuthenticated(false); // Ensure false on login failure
       console.log('[AuthContext] Error state updated in context');
     } finally {
       setIsLoading(false);
@@ -142,72 +146,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('[AuthContext] Signup attempt for', details.email);
       const response = await signupUser(details);
       
-      // Store token in secure storage
       try {
         await SecureStore.setItemAsync(AUTH_TOKEN_KEY, response.token);
         console.log('[AuthContext] Token stored in secure storage after signup');
       } catch (storageError) {
         console.error('[AuthContext] Failed to store token after signup:', storageError);
-        // Continue even if storage fails - user will be logged in for this session
       }
       
       setUserToken(response.token);
       setUser(response.user);
+      setIsAuthenticated(true); // Set explicit state
       console.log('[AuthContext] Signup successful');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
       console.error('[AuthContext] Signup failed:', errorMessage);
       setError(errorMessage);
+      setIsAuthenticated(false); // Ensure false on signup failure
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const logout = useCallback(() => {
-    console.log('[AuthContext] Logout - Clearing auth state');
+  const logout = useCallback(async () => {
+    console.log('[AuthContext] Logout - Attempting direct state clear and navigation');
     
-    // Show a logout confirmation dialog
-    Alert.alert(
-      "Logging Out", 
-      "You will be redirected to the login screen.",
-      [
-        {
-          text: "OK",
-          onPress: async () => {
-            // Clear auth state
-            setUserToken(null);
-            setUser(null);
-            console.log('[AuthContext] Auth state cleared - userToken and user set to null');
-            
-            // Delete token from secure storage
-            try {
-              await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
-              console.log('[AuthContext] Token removed from secure storage');
-            } catch (storageError) {
-              console.error('[AuthContext] Failed to remove token from storage:', storageError);
-              // Continue even if deletion fails - user will still be logged out in this session
-            }
+    try {
+      await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
+      console.log('[AuthContext] Token removed from secure storage');
+      setUserToken(null);
+      setUser(null);
+      setIsAuthenticated(false); 
+      console.log('[AuthContext] Auth state cleared directly');
+      
+      router.replace('/login');
+      console.log('[AuthContext] Explicit navigation to /login triggered');
 
-            // Force an immediate authentication check
-            setTimeout(() => {
-              console.log('[AuthContext] Verifying auth state after logout:', { 
-                token: null, 
-                user: null,
-                isAuthenticated: false
-              });
-            }, 100);
-          }
-        }
-      ]
-    );
-  }, []);
+    } catch (storageError) {
+      console.error('[AuthContext] Failed to remove token from storage:', storageError);
+      setUserToken(null);
+      setUser(null);
+      setIsAuthenticated(false);
+      console.log('[AuthContext] Auth state cleared despite storage error');
+      router.replace('/login');
+      console.log('[AuthContext] Explicit navigation to /login triggered after storage error');
+    }
+  }, [router]);
 
-  // Computed value, not a hook
-  const isAuthenticated = userToken !== null && user !== null;
-
-  // Create the context value object outside of useMemo or useCallback
   const authContextValue: AuthContextType = {
-    isAuthenticated,
+    isAuthenticated, // Use state variable
     userToken,
     user,
     isLoading,
@@ -225,7 +211,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// Custom hook to use the AuthContext
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

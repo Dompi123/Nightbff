@@ -6,15 +6,17 @@ import { useRouter } from 'expo-router';
 import { useUserProfile } from '@/hooks/api/useUserProfile';
 import { useJoinedGroups } from '@/hooks/api/useJoinedGroups';
 import { useUpcomingPlans } from '@/hooks/api/useUpcomingPlans';
+import { useAuth } from '@/contexts/AuthContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import LoadingIndicator from '@/components/LoadingIndicator';
-import { ErrorView } from '@/components/ErrorView';
+import ErrorView from '@/components/ErrorView';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { logout } = useAuth();
   const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile, error: profileError } = useUserProfile();
   const { data: joinedGroups } = useJoinedGroups();
   const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
@@ -215,6 +217,17 @@ export default function ProfileScreen() {
             ))}
           </ScrollView>
         </View>
+
+        {/* Logout Button Section */}
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={logout}
+          accessibilityLabel="Log out of your account"
+          accessibilityRole="button"
+        >
+          <ThemedText style={styles.logoutButtonText}>Logout</ThemedText>
+        </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -253,44 +266,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: spacing.md,
+    backgroundColor: palette.cardBackground,
   },
   name: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginLeft: spacing.md,
+    fontSize: 22,
+    fontWeight: 'bold',
   },
   headerRight: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: palette.cardBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: spacing.sm,
     marginLeft: spacing.sm,
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.md,
-  },
-  statBox: {
-    flex: 1,
+    justifyContent: 'space-around',
     backgroundColor: palette.cardBackground,
     borderRadius: 12,
-    padding: spacing.md,
-    marginHorizontal: spacing.xs,
+    paddingVertical: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statBox: {
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: palette.primary,
   },
   statLabel: {
     fontSize: 14,
@@ -300,163 +314,193 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.xl,
   },
   actionButton: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: palette.cardBackground,
-    borderRadius: 12,
-    padding: spacing.md,
-    marginHorizontal: spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: palette.cardBackground,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 12,
+    marginHorizontal: spacing.xs,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   actionButtonText: {
     marginLeft: spacing.sm,
-    fontSize: 16,
+    fontWeight: '600',
+    fontSize: 14,
   },
   sectionContainer: {
-    marginTop: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   seeAllButton: {
     color: palette.primary,
-    fontSize: 16,
+    fontWeight: '600',
   },
   plansLoadingContainer: {
-    backgroundColor: palette.cardBackground,
-    borderRadius: 12,
-    padding: spacing.lg,
-    alignItems: 'center',
+    height: 200,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   plansErrorContainer: {
-    backgroundColor: palette.cardBackground,
-    borderRadius: 12,
-    padding: spacing.lg,
+    height: 200,
+    paddingHorizontal: spacing.lg,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   emptyStateContainer: {
-    backgroundColor: palette.cardBackground,
-    borderRadius: 12,
-    padding: spacing.xl,
     alignItems: 'center',
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: palette.cardBackground,
+    marginHorizontal: spacing.lg,
+    borderRadius: 12,
   },
   emptyStateImage: {
     width: 100,
     height: 100,
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
+    opacity: 0.7,
   },
   emptyStateText: {
-    fontSize: 16,
+    textAlign: 'center',
     color: palette.textSecondary,
     marginBottom: spacing.lg,
   },
   addButton: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: palette.primary,
-    borderRadius: 25,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    alignItems: 'center',
+    borderRadius: 8,
   },
   addButtonText: {
     color: palette.background,
-    fontSize: 16,
+    fontWeight: 'bold',
     marginLeft: spacing.xs,
   },
   plansScroll: {
-    marginTop: spacing.sm,
+    paddingLeft: spacing.lg,
   },
   planCard: {
     width: 280,
-    height: 180,
-    marginRight: spacing.md,
-    borderRadius: 12,
-    overflow: 'hidden',
     backgroundColor: palette.cardBackground,
+    borderRadius: 12,
+    marginRight: spacing.md,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   planImage: {
     width: '100%',
-    height: 120,
+    height: 150,
   },
   planInfo: {
     padding: spacing.md,
   },
   planTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     marginBottom: spacing.xs,
   },
   planDetails: {
-    flexDirection: 'column',
+    marginTop: spacing.sm,
   },
   planDetailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
   },
   planDetailText: {
-    fontSize: 14,
-    color: palette.textSecondary,
     marginLeft: spacing.xs,
+    fontSize: 12,
+    color: palette.textSecondary,
   },
   groupsScroll: {
-    marginTop: spacing.sm,
+    paddingLeft: spacing.lg,
   },
   groupCard: {
-    width: 280,
-    height: 180,
-    marginRight: spacing.md,
+    width: 200,
+    backgroundColor: palette.cardBackground,
     borderRadius: 12,
+    marginRight: spacing.md,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   groupImage: {
     width: '100%',
-    height: '100%',
+    height: 100,
   },
   groupInfo: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.md,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: spacing.sm,
   },
   joinedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    marginBottom: spacing.xs,
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
   joinedText: {
-    fontSize: 12,
-    marginLeft: 4,
+    marginLeft: spacing.xs,
+    fontSize: 10,
+    fontWeight: 'bold',
     color: palette.primary,
   },
   groupName: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 2,
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: spacing.lg,
   },
   groupDate: {
-    fontSize: 14,
+    fontSize: 12,
     color: palette.textSecondary,
+    marginTop: spacing.xs,
+  },
+  logoutButton: {
+    backgroundColor: palette.error || '#FF6347',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
