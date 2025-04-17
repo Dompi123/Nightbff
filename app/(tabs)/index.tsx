@@ -211,7 +211,7 @@ export default function HomeScreen() {
               <TouchableOpacity 
                 key={group.id} 
                 style={styles.groupCard}
-                onPress={() => router.push(`/popularGroupDetail/${group.id}`)}
+                onPress={() => router.push(`/group/${group.id}`)}
                 accessibilityLabel={`View ${group.title} group in ${group.location}`}
                 accessibilityRole="button"
               >
@@ -310,39 +310,31 @@ export default function HomeScreen() {
           <LoadingIndicator />
         ) : nearbyGroupError ? (
           <ErrorView error={nearbyGroupErrorData} />
-        ) : nearbyGroup && (
+        ) : nearbyGroup ? (
           <TouchableOpacity 
             style={styles.nearbyGroupCard} 
             onPress={() => router.push(`/group/${nearbyGroup.id}`)}
-            accessibilityLabel={`View ${nearbyGroup.title} nearby group in ${nearbyGroup.location}`}
+            accessibilityLabel={`View nearby group: ${nearbyGroup.title}`}
             accessibilityRole="button"
           >
-            <Image
-              source={{ uri: nearbyGroup.imageUrl }}
+            <ImageBackground 
+              source={{ uri: nearbyGroup.imageUrl }} 
               style={styles.nearbyGroupImage}
-              resizeMode="cover"
-              onError={() => console.log('Failed to load image for nearby group')}
-            />
-            <View style={styles.nearbyGroupContent}>
-              <View style={styles.nearbyGroupHeader}>
-                <Text style={styles.nearbyGroupFlag}>{nearbyGroup.flag}</Text>
-                <ThemedText style={styles.nearbyGroupLocation}>{nearbyGroup.location}</ThemedText>
-                <ThemedText style={styles.nearbyGroupDate}>{nearbyGroup.dateRange}</ThemedText>
+              imageStyle={styles.nearbyGroupImageStyle}
+            >
+              <View style={styles.nearbyGroupContent}>
+                <View style={styles.nearbyGroupHeader}>
+                   <ThemedText style={styles.nearbyGroupTag}>📍 Nearby You</ThemedText>
+                </View>
+                <View style={styles.nearbyGroupFooter}>
+                  <ThemedText style={styles.nearbyGroupTitle}>{nearbyGroup.title}</ThemedText>
+                  <ThemedText style={styles.nearbyGroupDistance}>{nearbyGroup.distance}</ThemedText>
+                </View>
               </View>
-              <ThemedText style={styles.nearbyGroupTitle}>{nearbyGroup.title}</ThemedText>
-              
-              <View style={styles.nearbyGroupMembers}>
-                <AvatarStack 
-                  avatars={nearbyGroup.userAvatars}
-                  count={nearbyGroup.memberCount}
-                  size={20}
-                />
-                <ThemedText style={styles.memberCountText}>
-                  {nearbyGroup.memberCount}+ travelers
-                </ThemedText>
-              </View>
-            </View>
+            </ImageBackground>
           </TouchableOpacity>
+        ) : (
+          <ThemedText style={styles.noNearbyGroupText}>No nearby groups found.</ThemedText>
         )}
         
         {/* Add some bottom padding for the ScrollView */}
@@ -615,19 +607,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  nearbyGroupFlag: {
+  nearbyGroupTag: {
     fontSize: 16,
     marginRight: 6,
   },
-  nearbyGroupLocation: {
-    fontSize: 14,
-    color: '#9BA1A6',
-    fontWeight: '500',
-    marginRight: 12,
-  },
-  nearbyGroupDate: {
-    fontSize: 14,
-    color: '#9BA1A6',
+  nearbyGroupFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   nearbyGroupTitle: {
     fontSize: 18,
@@ -635,14 +622,9 @@ const styles = StyleSheet.create({
     color: '#ECEDEE',
     marginBottom: 8,
   },
-  nearbyGroupMembers: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  memberCountText: {
-    fontSize: 12,
+  nearbyGroupDistance: {
+    fontSize: 14,
     color: '#9BA1A6',
-    marginLeft: 8,
   },
   
   bottomPadding: {
@@ -683,5 +665,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
+  },
+  nearbyGroupImageStyle: {
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  noNearbyGroupText: {
+    fontSize: 14,
+    color: '#9BA1A6',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });

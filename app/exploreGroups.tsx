@@ -57,7 +57,7 @@ export default function ExploreGroupsScreen() {
     // router.push(`/groupDetail/${groupId}`); // Example route
     console.log("Navigate to group:", groupId);
     // Example navigation: Needs route defined in _layout.tsx
-    router.push(`/popularGroupDetail/${groupId}`); 
+    router.push(`/group/${groupId}`); // Corrected route
   };
 
   const handleFilterPress = (filterKey: string) => {

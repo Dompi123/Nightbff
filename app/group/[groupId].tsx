@@ -65,7 +65,13 @@ const PopularGroupDetailScreen = () => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <StatusBar style="light" />
-      
+      {/* Use Stack.Screen to configure the header dynamically */}
+      <Stack.Screen 
+        options={{
+          title: group?.title || 'Group Details',
+          // Add other header options if needed, like headerRight for a share button
+        }}
+      />
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContentContainer}
@@ -81,7 +87,8 @@ const PopularGroupDetailScreen = () => {
         
         <View style={styles.contentWrapper}>
           <View style={styles.headerSection}>
-            <ThemedText style={styles.title}>{group.title}</ThemedText>
+            {/* Title is now in the header, remove from here? Optional */}
+            {/* <ThemedText style={styles.title}>{group.title}</ThemedText> */}
             
             <View style={styles.locationRow}>
               <Text style={styles.flag}>{group.locationFlag}</Text>
@@ -92,7 +99,8 @@ const PopularGroupDetailScreen = () => {
             
             <View style={styles.avatarSection}>
               <View style={styles.avatarStack}>
-                {group.userAvatars.slice(0, 3).map((avatar, index) => (
+                {/* Ensure group.userAvatars exists before mapping */}
+                {group.userAvatars?.slice(0, 3).map((avatar, index) => (
                   <Image 
                     key={`avatar-${index}`}
                     source={{ uri: avatar }} 
@@ -129,7 +137,8 @@ const PopularGroupDetailScreen = () => {
               <ThemedText style={styles.sectionTitle}>Interests</ThemedText>
               <View style={styles.sectionContentContainer}>
                 <View style={styles.interestsContainer}>
-                  {group.interests.map(interest => (
+                  {/* Ensure group.interests exists and has items before mapping */}
+                  {group.interests?.map(interest => (
                     <View key={interest.id} style={styles.interestChip}>
                       <Text style={styles.interestIcon}>{interest.icon}</Text>
                       <ThemedText style={styles.interestName}>{interest.name}</ThemedText>
@@ -142,32 +151,38 @@ const PopularGroupDetailScreen = () => {
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Venues</ThemedText>
               <View style={styles.sectionContentContainer}>
-                <TouchableOpacity 
-                  style={styles.venueCard}
-                  accessibilityLabel={`View venue: ${group.venue?.name}`}
-                  accessibilityRole="button"
-                >
-                  <Image source={{ uri: group.venue?.imageUrl }} style={styles.venueImage} />
-                  <ThemedText style={styles.venueName}>{group.venue?.name}</ThemedText>
-                </TouchableOpacity>
+                {/* Ensure group.venue exists before rendering */}
+                {group.venue && (
+                  <TouchableOpacity 
+                    style={styles.venueCard}
+                    accessibilityLabel={`View venue: ${group.venue?.name}`}
+                    accessibilityRole="button"
+                  >
+                    <Image source={{ uri: group.venue?.imageUrl }} style={styles.venueImage} />
+                    <ThemedText style={styles.venueName}>{group.venue?.name}</ThemedText>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
             
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Managed By</ThemedText>
               <View style={styles.sectionContentContainer}>
-                <TouchableOpacity 
-                  style={styles.organizerSection}
-                  accessibilityLabel={`View organizer profile: ${group.organizer.name}, ${group.organizer.title}`}
-                  accessibilityRole="button"
-                >
-                  <Image source={{ uri: group.organizer.avatarUrl }} style={styles.organizerAvatar} />
-                  <View style={styles.organizerInfo}>
-                    <ThemedText style={styles.organizerName}>{group.organizer.name}</ThemedText>
-                    <ThemedText style={styles.organizerTitle}>{group.organizer.title}</ThemedText>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#a970ff" />
-                </TouchableOpacity>
+                 {/* Ensure group.organizer exists before rendering */}
+                {group.organizer && (
+                  <TouchableOpacity 
+                    style={styles.organizerSection}
+                    accessibilityLabel={`View organizer profile: ${group.organizer.name}, ${group.organizer.title}`}
+                    accessibilityRole="button"
+                  >
+                    <Image source={{ uri: group.organizer.avatarUrl }} style={styles.organizerAvatar} />
+                    <View style={styles.organizerInfo}>
+                      <ThemedText style={styles.organizerName}>{group.organizer.name}</ThemedText>
+                      <ThemedText style={styles.organizerTitle}>{group.organizer.title}</ThemedText>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color="#a970ff" />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>
@@ -182,27 +197,9 @@ const PopularGroupDetailScreen = () => {
         </View>
       </ScrollView>
 
-      <TouchableOpacity 
-        style={[
-          styles.overlayButton,
-          styles.backButton,
-          {top: insets.top + spacing.sm}
-        ]}
-        onPress={handleBack}
-        accessibilityLabel="Go back"
-        accessibilityRole="button"
-      >
-        <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={[styles.overlayButton, styles.optionsButton, {top: insets.top + spacing.sm}]}
-        onPress={handleShare}
-        accessibilityLabel="Share group"
-        accessibilityRole="button"
-      >
-        <Ionicons name="share-outline" size={20} color="#FFFFFF" />
-      </TouchableOpacity>
+      {/* Removed custom overlay buttons (Back and Share) */}
+      {/* Stack navigator header will handle these */}
+
     </SafeAreaView>
   );
 };
@@ -235,7 +232,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    left: spacing.md,
+    // Style might still be used for the error screen back button
+    // Keep this style definition if it's used elsewhere, otherwise remove
+    // Example: If error screen uses it, keep it:
+     padding: spacing.md, // Example padding
+     borderRadius: 8, // Example border radius
+     backgroundColor: palette.primary, // Example background
   },
   backButtonText: {
     color: 'white',
@@ -254,17 +256,17 @@ const styles = StyleSheet.create({
     height: 300,
   },
   overlayButton: {
-    position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10, 
+    // position: 'absolute',
+    // width: 36,
+    // height: 36,
+    // borderRadius: 18,
+    // backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // zIndex: 10, 
   },
   optionsButton: {
-    right: spacing.md,
+    // right: spacing.md,
   },
   contentWrapper: {
   },
@@ -421,4 +423,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PopularGroupDetailScreen;
+export default PopularGroupDetailScreen; 
