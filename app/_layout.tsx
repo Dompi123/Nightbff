@@ -78,10 +78,47 @@ function RootNavigation() {
           
           {/* Detail/Placeholder Screens */}
           <Stack.Screen 
-            name="popularGroupDetail/[groupId]"
-            options={{
-              headerShown: false,
-            }}
+            name="group/[groupId]"
+            options={({ navigation }) => ({ 
+              headerShown: true,        
+              headerTransparent: true,  
+              headerTitle: '',         
+              headerLeft: () => (
+                <TouchableOpacity // Outer button for press, background, shape
+                  onPress={() => navigation.goBack()}
+                  style={styles.headerButton} // Use updated styles.headerButton
+                  accessibilityLabel="Go back"
+                  accessibilityRole="button"
+                >
+                  {/* Inner View specifically for centering the icon */}
+                  <View style={styles.iconContainer}>
+                    {/* Increased icon size */}
+                    <Ionicons name="arrow-back" size={22} color="#FFFFFF" /> 
+                  </View>
+                </TouchableOpacity>
+              ),
+              headerRight: () => (
+                <TouchableOpacity // Outer button for press, background, shape
+                  onPress={() => console.log('Share button placeholder pressed')} 
+                  style={styles.headerButton} // Use updated styles.headerButton
+                  accessibilityLabel="Share group"
+                  accessibilityRole="button"
+                >
+                  {/* Inner View specifically for centering the icon */}
+                  <View style={styles.iconContainer}>
+                    {/* Increased icon size */}
+                    <Ionicons name="share-outline" size={22} color="#FFFFFF" /> 
+                  </View>
+                </TouchableOpacity>
+              ),
+              // Apply margin directly to the header button components if needed
+              headerLeftContainerStyle: {
+                paddingLeft: spacing.md, // Use paddingLeft for positioning
+              },
+              headerRightContainerStyle: {
+                paddingRight: spacing.md, // Use paddingRight for positioning
+              },
+            })}
           />
           <Stack.Screen 
             name="conversation/[chatId]" 
@@ -205,3 +242,18 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  headerButton: {
+    width: 40, // Larger width
+    height: 40, // Larger height
+    borderRadius: 20, // Half of new width/height for perfect circle
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Reverted opacity
+    overflow: 'hidden', // Might help ensure borderRadius applies cleanly
+  },
+  iconContainer: { // Inner view for centering
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
