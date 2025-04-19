@@ -328,7 +328,6 @@ export default function HomeScreen() {
                 </View>
                 <View style={styles.nearbyGroupFooter}>
                   <ThemedText style={styles.nearbyGroupTitle}>{nearbyGroup.title}</ThemedText>
-                  <ThemedText style={styles.nearbyGroupDistance}>{nearbyGroup.distance}</ThemedText>
                 </View>
               </View>
             </ImageBackground>
@@ -621,10 +620,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ECEDEE',
     marginBottom: 8,
-  },
-  nearbyGroupDistance: {
-    fontSize: 14,
-    color: '#9BA1A6',
   },
   
   bottomPadding: {

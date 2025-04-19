@@ -1,4 +1,4 @@
-import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData } from '@/types/data'; // Import types from central file and new types
+import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData, ChatMessage } from '@/types/data'; // Import types from central file and new types
 
 // Simulate network delay
 const simulateDelay = (ms: number = 500) => new Promise(res => setTimeout(res, ms));
@@ -808,18 +808,22 @@ export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularG
 
   // Simulate fetching more details
   const details: PopularGroupDetail = {
-    ...groupBase, // Spread the base info found
-    description: `This is a detailed description for ${groupBase.title}. Join us for exciting events and meet great people! We often explore local hotspots and enjoy the vibrant nightlife.`,
-    // Use attendeeCount as per type definition
+    // Explicitly include all required properties from PopularGroupDetail type
+    id: groupBase.id,
+    title: groupBase.title,
+    location: groupBase.location,
+    locationFlag: groupBase.locationFlag,
+    // Use optional chaining for potentially missing properties
+    dateRange: (groupBase as NightlifeGroup)?.dateRange || 'Default Date Range',
     attendeeCount: groupBase.attendeeCount || 50,
-    // Convert interests to the expected object format
+    description: `This is a detailed description for ${groupBase.title}. Join us for exciting events and meet great people! We often explore local hotspots and enjoy the vibrant nightlife.`,
     interests: groupId === 'nearby_1' 
       ? [
           { id: 'int_nearby_1', name: 'Nightlife', icon: '🍹' },
           { id: 'int_nearby_2', name: 'Social', icon: '👥' },
           { id: 'int_nearby_3', name: 'Exploring', icon: '🗺️' }
         ] 
-      : [ // Default example for other groups if they lack specific interests
+      : [ 
           { id: 'int_default_1', name: 'Nightlife', icon: '🎧' },
           { id: 'int_default_2', name: 'Social', icon: '🍻' },
         ],
@@ -827,20 +831,18 @@ export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularG
       id: 'user_org_1',
       name: 'Alex Manager',
       avatarUrl: AVATAR_URLS[4],
-      title: 'Community Lead' // Add missing title property
+      title: 'Community Lead'
     },
-    // Add a venue object consistent with PopularGroupDetail type
     venue: {
       id: `venue_${groupId}`,
-      name: groupBase.location, // Use group location as venue name
-      imageUrl: groupBase.imageUrl // Reuse group image for venue for simplicity
+      name: groupBase.location, 
+      imageUrl: groupBase.imageUrl // Keep venue image consistent for component
     },
-    // upcomingEvents: [ // Example upcoming events - Removing as it's not in PopularGroupDetail type?
-    //   { id: 'event_1', name: 'Weekly Mixer', date: 'Next Thursday' },
-    //   { id: 'event_2', name: 'Rooftop Social', date: 'May 15th' }
-    // ],
-    // Add missing heroImageUrl, using group imageUrl as fallback
+    // Assign userAvatars based on the actual type of groupBase
+    userAvatars: (groupBase as NightlifeGroup).userAvatars || (groupBase as ExploreGroupCardData).attendeeAvatars || [],
+    // Correctly use heroImageUrl, falling back to base imageUrl
     heroImageUrl: (groupBase as any).heroImageUrl || groupBase.imageUrl 
+    // Removed direct imageUrl property
   };
 
   console.log(`[Mock API] Found details for group: ${groupId}`, details);
@@ -1012,4 +1014,74 @@ export const signupUser = async (details: {
       email: newUser.email
     }
   };
+};
+
+// --- Placeholder Exports for Missing Functions ---
+
+// Placeholder for unimplemented feature - Conversation Details
+export const fetchConversationDetails = async (chatId: string): Promise<any> => {
+  console.warn(`Mock function fetchConversationDetails called with ${chatId}, not implemented.`);
+  await simulateDelay(100); // Simulate delay
+  return null; 
+};
+
+// Placeholder for unimplemented feature - Conversation Messages
+// export const fetchConversationMessages = async (chatId: string): Promise<any[]> => {
+//   console.warn(`Mock function fetchConversationMessages called with ${chatId}, not implemented.`);
+//   await simulateDelay(100);
+//   return []; // Return empty array for messages
+// };
+
+// Updated mock implementation for Conversation Messages
+export const fetchConversationMessages = async (chatId: string): Promise<ChatMessage[]> => {
+  console.log(`DEBUG: mockService: fetchConversationMessages called for chatId: ${chatId}`);
+
+  // Simulate network delay
+  await simulateDelay(600); // Use provided delay
+
+  // Define mock messages matching ChatMessage structure
+  const mockMessages: ChatMessage[] = [
+    {
+      id: 'mockmsg1',
+      conversationId: chatId,
+      sender: { id: 'user2', name: 'Friend', avatarUrl: 'https://i.pravatar.cc/150?img=1' }, // Added avatar
+      text: 'Hey there! From mockService.',
+      timestamp: new Date(Date.now() - 60000 * 5).toISOString(),
+      isRead: true,
+    },
+    {
+      id: 'mockmsg2',
+      conversationId: chatId,
+      sender: { id: 'user_001', name: 'Me', avatarUrl: 'https://i.pravatar.cc/150?img=32' }, // Use current user ID and avatar
+      text: 'Hi! How are you? (From mockService)',
+      timestamp: new Date(Date.now() - 60000 * 4).toISOString(),
+      isRead: true,
+    },
+    {
+      id: 'mockmsg3',
+      conversationId: chatId,
+      sender: { id: 'user2', name: 'Friend', avatarUrl: 'https://i.pravatar.cc/150?img=1' }, // Added avatar
+      text: 'Good, thanks! Weekend plans?',
+      timestamp: new Date(Date.now() - 60000 * 3).toISOString(),
+      isRead: true,
+    },
+  ];
+
+  console.log(`DEBUG: mockService: Returning ${mockMessages.length} messages for chatId: ${chatId}`);
+  return mockMessages; // Return the defined mock messages
+};
+
+// Placeholder for unimplemented feature - Send Message
+export const sendMessage = async (chatId: string, message: { text: string }): Promise<any> => {
+  console.warn(`Mock function sendMessage called for chat ${chatId} with text "${message.text}", not implemented.`);
+  await simulateDelay(50);
+  // Simulate returning the sent message or confirmation
+  return { id: Date.now().toString(), chatId, ...message, timestamp: new Date().toISOString() }; 
+};
+
+// Placeholder for unimplemented feature - Feed Posts
+export const fetchFeedPosts = async (): Promise<any[]> => {
+  console.warn(`Mock function fetchFeedPosts called, not implemented.`);
+  await simulateDelay(200);
+  return []; // Return empty array for posts
 }; 
