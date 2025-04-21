@@ -1,4 +1,5 @@
-import { StyleSheet, View, TextInput, TouchableOpacity, FlatList, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, TextInput, TouchableOpacity, FlatList, Image, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
+import { ChatConversation } from '@/types/data';
+import ChatListItem from '@/components/chat/ChatListItem';
+import LoadingIndicator from '@/components/LoadingIndicator';
+import ErrorView from '@/components/ErrorView';
 
 // Add interface for chat item data
 interface ChatItem {
@@ -85,86 +91,94 @@ const MOCK_CHATS: ChatItem[] = [
   },
 ];
 
-export default function ChatScreen() {
+// --- Mock Data Fallback ---
+const MOCK_CONVERSATIONS: ChatConversation[] = [
+    { 
+        id: 'chat1', 
+        title: 'Alice', 
+        isGroupChat: false,
+        participants: [{ id: 'user2', name: 'Alice', avatarUrl: 'https://i.pravatar.cc/150?img=1' }],
+        lastMessage: { text: 'See you there!', timestamp: '10:05 AM', senderId: 'user2' }, 
+        unreadCount: 0 
+    },
+    { 
+        id: 'chat2', 
+        title: 'Work Group', 
+        isGroupChat: true,
+        groupImageUrl: 'https://i.pravatar.cc/150?img=5', 
+        participants: [],
+        lastMessage: { text: 'Meeting confirmed for 2 PM.', timestamp: '9:45 AM', senderId: 'user3' }, 
+        unreadCount: 3 
+    },
+    { 
+        id: 'chat3', 
+        title: 'Bob', 
+        isGroupChat: false,
+        participants: [{ id: 'user4', name: 'Bob', avatarUrl: 'https://i.pravatar.cc/150?img=7' }],
+        lastMessage: { text: 'Okay, sounds good!', timestamp: 'Yesterday', senderId: 'user4' }, 
+        unreadCount: 1 
+    },
+];
+// --- End Mock Data ---
+
+export default function ChatListScreen() {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const router = useRouter();
 
-  // Navigate to conversation when a chat item is tapped
-  const handleChatPress = (chatId: string) => {
-    // Use direct string navigation
-    router.navigate(`conversation/${chatId}` as any);
-  };
+  // Use local state as fallback since hook wasn't found
+  const [conversations, setConversations] = useState<ChatConversation[]>(MOCK_CONVERSATIONS);
+  const [isLoading, setIsLoading] = useState(false); // Simulate no loading for mock data
+  const [error, setError] = useState<Error | null>(null); // Simulate no error
 
-  // Render a single chat item
-  const renderChatItem = ({ item }: { item: ChatItem }) => {
-    // Verify if the avatar URL is valid, if not use a placeholder color
-    const avatarIsValid = item.avatar && item.avatar.startsWith('http');
-    
+  // Conditional rendering based on state
+  const renderContent = () => {
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
+    if (error) {
+      return <ErrorView error={error as Error} />;
+    }
+
+    if (!conversations || conversations.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No conversations yet.</Text>
+        </View>
+      );
+    }
+
     return (
-    <TouchableOpacity 
-      style={styles.chatItem}
-      onPress={() => handleChatPress(item.id)}
-      accessibilityLabel={`Chat with ${item.name}, last message: ${item.lastMessage}, ${item.time} ago${item.unread ? ', unread' : ''}`}
-      accessibilityRole="button"
-    >
-      {avatarIsValid ? (
-        <Image 
-          source={{ uri: item.avatar }} 
-          style={styles.chatAvatar}
-          defaultSource={{ uri: 'https://via.placeholder.com/56/333333/FFFFFF?text=' + item.name.charAt(0) }}
-          onError={() => console.log(`Failed to load avatar for: ${item.name}`)}
-        />
-      ) : (
-        <View style={[styles.chatAvatar, styles.placeholderAvatar]}>
-          <ThemedText style={styles.placeholderText}>{item.name.charAt(0)}</ThemedText>
-      </View>
-      )}
-      
-      <View style={styles.chatContent}>
-        <View style={styles.chatHeader}>
-          <ThemedText style={styles.chatName}>{item.name}</ThemedText>
-          <ThemedText style={styles.chatTime}>{item.time}</ThemedText>
-        </View>
-        
-        <View style={styles.chatFooter}>
-          <ThemedText 
-            style={[
-              styles.chatMessage, 
-              item.unread ? styles.unreadMessage : null
-            ]}
-            numberOfLines={1}
-          >
-            {item.lastMessage}
-          </ThemedText>
-          
-          {item.unread && (
-            <View style={styles.unreadIndicator} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
+      <FlatList
+        data={conversations}
+        renderItem={({ item }: { item: ChatConversation }) => {
+          return <ChatListItem conversation={item} />;
+        }}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContentContainer}
+        style={styles.list}
+      />
     );
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#151718' }} edges={['top']}>
-      {/* App Header - Using the same approach as home screen */}
-      <View style={styles.appHeader}>
-        <View style={styles.appTitleContainer}>
-          <ThemedText style={styles.appTitleText}>Chats</ThemedText>
-        </View>
-        <TouchableOpacity 
-          style={styles.requestsButton}
-          accessibilityLabel="Chat requests, 0 pending"
-          accessibilityRole="button"
-        >
-          <ThemedText style={styles.requestsText}>Requests (0)</ThemedText>
-        </TouchableOpacity>
-      </View>
-
+      <Stack.Screen options={{ title: 'Chats' }} />
       <View style={styles.container}>
-        {/* Search Bar */}
+        <View style={styles.appHeader}>
+          <View style={styles.appTitleContainer}>
+            <ThemedText style={styles.appTitleText}>Chats</ThemedText>
+          </View>
+          <TouchableOpacity 
+            style={styles.requestsButton}
+            accessibilityLabel="Chat requests, 0 pending"
+            accessibilityRole="button"
+          >
+            <ThemedText style={styles.requestsText}>Requests (0)</ThemedText>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.searchContainer}>
           <Ionicons 
             name="search" 
@@ -180,14 +194,7 @@ export default function ChatScreen() {
           />
         </View>
 
-        {/* Chat List */}
-        <FlatList
-          data={MOCK_CHATS}
-          renderItem={renderChatItem}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.chatListContent}
-        />
+        {renderContent()}
       </View>
     </SafeAreaView>
   );
@@ -313,5 +320,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+  },
+  list: {
+    flex: 1,
+  },
+  listContentContainer: {
+    paddingBottom: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#888',
+    fontSize: 16,
   },
 });
