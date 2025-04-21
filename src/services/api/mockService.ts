@@ -1,4 +1,4 @@
-import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData, ChatMessage } from '@/types/data'; // Import types from central file and new types
+import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData, ChatMessage, ChatConversation } from '@/types/data'; // Import types from central file and new types
 
 // Simulate network delay
 const simulateDelay = (ms: number = 500) => new Promise(res => setTimeout(res, ms));
@@ -1115,4 +1115,47 @@ export const fetchFeedPosts = async (): Promise<any[]> => {
   console.warn(`Mock function fetchFeedPosts called, not implemented.`);
   await simulateDelay(200);
   return []; // Return empty array for posts
+};
+
+// Added mock function for fetching chat list
+export const fetchChatList = async (): Promise<ChatConversation[]> => {
+  console.log(`DEBUG: mockService: fetchChatList called`);
+
+  // Simulate network delay
+  await simulateDelay(400); // Simulate delay
+
+  // Re-define mock data here to be returned by the service
+  const mockConversations: ChatConversation[] = [
+    { 
+        id: 'chat1', 
+        title: 'Alice', 
+        isGroupChat: false,
+        participants: [{ id: 'user2', name: 'Alice', avatarUrl: 'https://i.pravatar.cc/150?img=1' }],
+        lastMessage: { text: 'See you there!', timestamp: '10:05 AM', senderId: 'user2' }, 
+        unreadCount: 0 
+    },
+    { 
+        id: 'chat2', 
+        title: 'Work Group', 
+        isGroupChat: true,
+        groupImageUrl: 'https://i.pravatar.cc/150?img=5', 
+        participants: [], 
+        lastMessage: { text: 'Meeting confirmed for 2 PM.', timestamp: '9:45 AM', senderId: 'user3' }, 
+        unreadCount: 3 
+    },
+    { 
+        id: 'chat3', 
+        title: 'Bob', 
+        isGroupChat: false,
+        participants: [{ id: 'user4', name: 'Bob', avatarUrl: 'https://i.pravatar.cc/150?img=7' }],
+        lastMessage: { text: 'Okay, sounds good!', timestamp: 'Yesterday', senderId: 'user4' }, 
+        unreadCount: 1 
+    },
+  ];
+
+  // Simulate potential error
+  // maybeThrowError(0.1); // Uncomment to test error state
+
+  console.log(`DEBUG: mockService: Returning ${mockConversations.length} conversations`);
+  return mockConversations;
 }; 

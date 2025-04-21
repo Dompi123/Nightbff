@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, FlatList, Image, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -12,126 +12,15 @@ import { ChatConversation } from '@/types/data';
 import ChatListItem from '@/components/chat/ChatListItem';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
-
-// Add interface for chat item data
-interface ChatItem {
-  id: string;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  time: string;
-  unread: boolean;
-}
-
-// Update the MOCK_CHATS with the ChatItem type
-const MOCK_CHATS: ChatItem[] = [
-  {
-    id: 'chat1',
-    name: 'Tokyo experience',
-    avatar: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26',
-    lastMessage: 'Welcome to Tokyo experience',
-    time: '2h',
-    unread: true,
-  },
-  {
-    id: 'chat2',
-    name: 'Rio de Janeiro Carnival',
-    avatar: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325',
-    lastMessage: 'Olá a todos. Sou um estrangeiro que qu...',
-    time: '7h',
-    unread: true,
-  },
-  {
-    id: 'chat3',
-    name: 'Perth 🇦🇺 ✈️',
-    avatar: 'https://images.unsplash.com/photo-1524293581917-878a6d017c71',
-    lastMessage: 'Until Saturday 🙏',
-    time: '14h',
-    unread: true,
-  },
-  {
-    id: 'chat4',
-    name: 'guatemala trip 🇬🇹 👢 ⭐',
-    avatar: 'https://images.unsplash.com/photo-1501526029524-a8ea952b15be',
-    lastMessage: 'Hi, I\'m from Guatemala and I\'ll be backp...',
-    time: '1d',
-    unread: false,
-  },
-  {
-    id: 'chat5',
-    name: 'Weekend in Europe (flexible time)',
-    avatar: '',
-    lastMessage: 'Hello guys, in 17-21 of April I will be in Am...',
-    time: '3d',
-    unread: false,
-  },
-  {
-    id: 'chat6',
-    name: 'lol',
-    avatar: 'https://images.unsplash.com/photo-1518133835878-5a93cc3f89e5',
-    lastMessage: 'Welcome to lol',
-    time: '1w',
-    unread: true,
-  },
-  {
-    id: 'chat7',
-    name: 'Mystery trip',
-    avatar: 'https://images.unsplash.com/photo-1580851935978-f6b4e359da3f',
-    lastMessage: 'Welcome to Mystery trip',
-    time: '2w',
-    unread: false,
-  },
-  {
-    id: 'chat8',
-    name: 'Alex Rodriguez',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
-    lastMessage: 'Hey! Are you coming to the party tonight?',
-    time: '3w',
-    unread: true,
-  },
-];
-
-// --- Mock Data Fallback ---
-const MOCK_CONVERSATIONS: ChatConversation[] = [
-    { 
-        id: 'chat1', 
-        title: 'Alice', 
-        isGroupChat: false,
-        participants: [{ id: 'user2', name: 'Alice', avatarUrl: 'https://i.pravatar.cc/150?img=1' }],
-        lastMessage: { text: 'See you there!', timestamp: '10:05 AM', senderId: 'user2' }, 
-        unreadCount: 0 
-    },
-    { 
-        id: 'chat2', 
-        title: 'Work Group', 
-        isGroupChat: true,
-        groupImageUrl: 'https://i.pravatar.cc/150?img=5', 
-        participants: [],
-        lastMessage: { text: 'Meeting confirmed for 2 PM.', timestamp: '9:45 AM', senderId: 'user3' }, 
-        unreadCount: 3 
-    },
-    { 
-        id: 'chat3', 
-        title: 'Bob', 
-        isGroupChat: false,
-        participants: [{ id: 'user4', name: 'Bob', avatarUrl: 'https://i.pravatar.cc/150?img=7' }],
-        lastMessage: { text: 'Okay, sounds good!', timestamp: 'Yesterday', senderId: 'user4' }, 
-        unreadCount: 1 
-    },
-];
-// --- End Mock Data ---
+import useChatList from '@/hooks/api/useChatList';
 
 export default function ChatListScreen() {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
   const router = useRouter();
 
-  // Use local state as fallback since hook wasn't found
-  const [conversations, setConversations] = useState<ChatConversation[]>(MOCK_CONVERSATIONS);
-  const [isLoading, setIsLoading] = useState(false); // Simulate no loading for mock data
-  const [error, setError] = useState<Error | null>(null); // Simulate no error
+  const { data: conversations, isLoading, isError, error } = useChatList();
 
-  // Conditional rendering based on state
   const renderContent = () => {
     if (isLoading) {
       return <LoadingIndicator />;
@@ -151,7 +40,7 @@ export default function ChatListScreen() {
 
     return (
       <FlatList
-        data={conversations}
+        data={conversations || []}
         renderItem={({ item }: { item: ChatConversation }) => {
           return <ChatListItem conversation={item} />;
         }}
