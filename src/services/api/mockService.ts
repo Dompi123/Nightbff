@@ -1072,11 +1072,42 @@ export const fetchConversationMessages = async (chatId: string): Promise<ChatMes
 };
 
 // Placeholder for unimplemented feature - Send Message
-export const sendMessage = async (chatId: string, message: { text: string }): Promise<any> => {
-  console.warn(`Mock function sendMessage called for chat ${chatId} with text "${message.text}", not implemented.`);
-  await simulateDelay(50);
-  // Simulate returning the sent message or confirmation
-  return { id: Date.now().toString(), chatId, ...message, timestamp: new Date().toISOString() }; 
+// export const sendMessage = async (chatId: string, message: { text: string }): Promise<any> => {
+//   console.warn(`Mock function sendMessage called for chat ${chatId} with text "${message.text}", not implemented.`);
+//   await simulateDelay(50);
+//   // Simulate returning the sent message or confirmation
+//   return { id: Date.now().toString(), chatId, ...message, timestamp: new Date().toISOString() }; 
+// };
+
+// Enhanced mock implementation for Send Message
+export const sendMessage = async (chatId: string, messageText: string): Promise<ChatMessage> => {
+  console.log(`DEBUG: mockService: sendMessage called for chat ${chatId} with text: "${messageText}"`);
+
+  // Simulate network delay
+  await simulateDelay(300);
+
+  // Construct the new ChatMessage object
+  // Ensure this structure matches the definition in @/types/data
+  const newMessage: ChatMessage = {
+    id: `sent_${Date.now()}_${Math.random().toString(36).substring(7)}`, // Unique ID for sent message
+    conversationId: chatId,
+    text: messageText,
+    timestamp: new Date().toISOString(),
+    sender: { 
+        id: 'user_001', // Assuming 'user_001' is the current user ID used in the screen
+        name: 'Me', 
+        avatarUrl: 'https://i.pravatar.cc/150?img=32' // Current user avatar from screen
+    },
+    isRead: true, // Assume sent messages are marked as read by sender immediately
+    // Add other fields required by ChatMessage, ensure defaults are sensible
+    // Example: isEdited: false,
+  };
+
+  // Simulate potential failure
+  // maybeThrowError(0.1); // Uncomment to test error handling
+
+  console.log(`DEBUG: mockService: Returning new message: ${JSON.stringify(newMessage)}`);
+  return newMessage;
 };
 
 // Placeholder for unimplemented feature - Feed Posts

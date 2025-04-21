@@ -17,6 +17,7 @@ import { SafeAreaView as SafeAreaViewRN } from 'react-native-safe-area-context';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { useConversationMessages } from '@/hooks/api/useConversationMessages';
+import useSendMessage from '@/hooks/api/useSendMessage';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
 // Assume mockService exists and has the getMessages function
@@ -167,14 +168,16 @@ export default function BasicConversationScreen() {
   // --- State Hooks ---
   const [inputText, setInputText] = React.useState('');
   const [headerInfo, setHeaderInfo] = useState<ChatHeaderInfo | null>(null);
-  const [isSending, setIsSending] = useState(false);
 
-  // --- Data Fetching Hook ---
+  // --- Data Fetching & Mutation Hooks ---
   const { 
       messages,
       isLoading: messagesLoading,
       error: messagesError,
   } = useConversationMessages(chatId);
+  
+  // Use the send message mutation hook, passing the chatId
+  const { mutate: sendMessageMutate, isPending: isSendingMessage } = useSendMessage({ chatId });
 
   // Assuming user ID 'user_001' is the current user for demo purposes
   const currentUserId = 'user_001';
@@ -188,31 +191,23 @@ export default function BasicConversationScreen() {
                   setHeaderInfo(fetchedHeaderInfo);
               } catch (error) {
                   console.error("Failed to fetch header info:", error);
-                  // Handle header fetch error if needed
               }
           }
       };
       fetchHeader();
   }, [chatId]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const textToSend = inputText.trim();
-    if (!textToSend || isSending || !chatId) return;
+    if (!textToSend || isSendingMessage || !chatId) return;
 
-    setIsSending(true);
     console.log(`Attempting to send message for chat ${chatId}: ${textToSend}`);
+    
+    // Call the mutation function
+    sendMessageMutate({ text: textToSend });
 
-    try {
-      // Call the mock service
-      const sentMessage = await mockSendMessage(chatId, textToSend);
-
-      setInputText('');
-
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsSending(false);
-    }
+    // Clear input immediately for better UX
+    setInputText('');
   };
 
   // --- Custom Header Handlers ---
@@ -243,7 +238,7 @@ export default function BasicConversationScreen() {
           <FlatList
               style={styles.messageListArea}
               data={messages}
-              renderItem={({ item }) => { // Assuming item type is implicitly ChatMessage from hook
+              renderItem={({ item }) => {
                   const isCurrentUser = item.sender?.id === currentUserId; 
                   const messageProps = {
                       id: item.id,
@@ -294,12 +289,12 @@ export default function BasicConversationScreen() {
           <Pressable
             style={({ pressed }) => [
               styles.sendButton,
-              (!inputText.trim() || isSending || pressed) && styles.sendButtonDisabled
+              (!inputText.trim() || isSendingMessage || pressed) && styles.sendButtonDisabled
             ]}
             onPress={handleSend}
-            disabled={!inputText.trim() || isSending}
+            disabled={!inputText.trim() || isSendingMessage}
           >
-            {isSending ? (
+            {isSendingMessage ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
                 <Feather name="send" size={18} color="#FFFFFF" />

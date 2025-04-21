@@ -33,7 +33,7 @@ export const useConversationMessages = (conversationId: string) => {
       const senderId = user?.id || 'user_001';
       // Adjust call to match placeholder signature (pass message object)
       // Note: senderId and quotedMessageId are not used by the current placeholder
-      return sendMessage(conversationId, { text }); 
+      return sendMessage(conversationId, text);
     },
     onSuccess: (newMessage) => {
       // Update the conversation messages in the cache
