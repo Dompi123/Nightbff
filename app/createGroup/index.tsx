@@ -10,8 +10,14 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
+
+// REMOVED screen-specific options
+// export const options = {
+//   title: 'Group Name',
+// };
 
 export default function CreateGroupNameScreen() {
   const [groupName, setGroupName] = useState('');
@@ -34,17 +40,26 @@ export default function CreateGroupNameScreen() {
         keyboardVerticalOffset={80} // Adjust as needed
       >
         <View style={styles.content}>
-          <Text style={styles.infoText}>Enter group name below.</Text>
+          <Text style={styles.title}>Group Name</Text>
+          <Text style={styles.infoText}>Enter group name to get started</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Name"
-            placeholderTextColor={Colors.dark.text} // Use existing text color as placeholder for textMuted
+            placeholderTextColor={Colors.dark.text} // Kept dark text for placeholder
             value={groupName}
             onChangeText={setGroupName}
             maxLength={60}
             autoFocus
           />
-          <Text style={styles.charLimitText}>No more than 60 characters</Text>
+          <View style={styles.charLimitContainer}>
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={16}
+              color={Colors.dark.text} // Using default text color for checkmark
+              style={styles.charLimitIcon}
+            />
+            <Text style={styles.charLimitText}>No more than 60 characters</Text>
+          </View>
         </View>
 
         <View style={styles.footer}>
@@ -78,47 +93,64 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
-    alignItems: 'center',
+    // alignItems: 'center', // Remove center alignment to allow items to align left
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: Colors.dark.text,
+    marginBottom: Spacing.md,
+    // textAlign: 'center', // Removed center alignment
   },
   infoText: {
     fontSize: 16,
-    color: Colors.dark.text, // Update info text color for dark theme
-    marginBottom: Spacing.md,
-    textAlign: 'center',
+    color: Colors.dark.text,
+    marginBottom: Spacing.lg, // Increased margin below subtitle
+    // textAlign: 'center', // Removed center alignment
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.dark.border, // Update border color for dark theme
-    borderRadius: 8,
-    padding: Spacing.md,
+    borderColor: Colors.dark.border,
+    backgroundColor: Colors.dark.card,
+    color: Colors.dark.text,
+    borderRadius: 10, // Slightly increased border radius
+    paddingVertical: Spacing.md, // Adjusted padding
+    paddingHorizontal: Spacing.md,
     fontSize: 18,
     width: '100%',
-    marginBottom: Spacing.sm,
-    backgroundColor: Colors.dark.card, // Update input background for dark theme
-    color: Colors.dark.text, // Update input text color for dark theme
+    marginBottom: Spacing.md, // Increased margin below input
+  },
+  charLimitContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    width: '100%', // Ensure container takes full width for alignSelf
+  },
+  charLimitIcon: {
+    marginRight: Spacing.xs,
   },
   charLimitText: {
     fontSize: 12,
-    color: Colors.dark.text, // Update char limit text color for dark theme
-    alignSelf: 'flex-start',
+    color: Colors.dark.text,
+    // alignSelf: 'flex-start', // Alignment handled by container
   },
   footer: {
     padding: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.dark.border, // Update footer border for dark theme
-    backgroundColor: Colors.dark.background, // Ensure footer matches background
+    borderTopColor: Colors.dark.border,
+    backgroundColor: Colors.dark.background,
   },
   button: {
-    backgroundColor: Colors.dark.primary, // Update button background for dark theme
+    backgroundColor: Colors.dark.primary,
     paddingVertical: Spacing.md,
     borderRadius: 8,
     alignItems: 'center',
   },
   buttonDisabled: {
-    backgroundColor: Colors.dark.secondary, // Update disabled button background for dark theme
+    backgroundColor: Colors.dark.secondary,
   },
   buttonText: {
-    color: Colors.dark.text, // Update button text color for dark theme
+    color: Colors.dark.text,
     fontSize: 16,
     fontWeight: 'bold',
   },

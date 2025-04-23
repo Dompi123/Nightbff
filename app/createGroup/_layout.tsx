@@ -4,8 +4,8 @@ import { Colors } from '@/constants/Colors'; // Assuming path is correct relativ
 export default function CreateGroupLayout() {
   return (
     <Stack
-      screenOptions={{ // General styling for the stack
-        // NO default headerTitle here
+      screenOptions={{
+        // headerTitle: 'Create Group', // REMOVE default title
         headerStyle: {
           backgroundColor: Colors.dark.background, // Apply dark background to header
         },
@@ -13,23 +13,20 @@ export default function CreateGroupLayout() {
         contentStyle: {
           backgroundColor: Colors.dark.background, // Apply dark background to screen content area
         },
-        // headerBackTitleVisible: false, // Removed due to type error
       }}
     >
-      {/* Define screens explicitly with their options */}
       <Stack.Screen
         name="index" // Corresponds to app/createGroup/index.tsx
-        options={{
-          title: 'Group Name', // Set title for the first step
-        }}
+        options={{ title: 'Group Name' }} // Set title for index
       />
       <Stack.Screen
         name="step2-image" // Corresponds to app/createGroup/step2-image.tsx
-        options={{
-          title: 'Group Image', // Set title for the second step
-        }}
+        options={{ title: 'Group Image' }} // Set title for step 2
       />
-      {/* Future steps can be added here */}
+      <Stack.Screen
+        name="step3-about" // Corresponds to app/createGroup/step3-about.tsx
+        options={{ title: 'About Trip' }} // Set title for step 3
+      />
     </Stack>
   );
 } 
