@@ -27,6 +27,22 @@ export default function CreateGroupLayout() {
         name="step3-about" // Corresponds to app/createGroup/step3-about.tsx
         options={{ title: 'About Trip' }} // Set title for step 3
       />
+      <Stack.Screen
+        name="step4-date" // Corresponds to app/createGroup/step4-date.tsx
+        options={{ title: 'Date' }}
+      />
+      <Stack.Screen
+        name="step5-destination" // Corresponds to app/createGroup/step5-destination.tsx
+        options={{ title: 'Destinations' }} // Set title for Step 5
+      />
+      <Stack.Screen
+        name="step6-interests" // Corresponds to app/createGroup/step6-interests.tsx
+        options={{ title: 'Interests' }} // Set title for Step 6
+      />
+      <Stack.Screen
+        name="step7-preferences" // Corresponds to app/createGroup/step7-preferences.tsx
+        options={{ title: 'Preferences' }} // Set title for Step 7
+      />
     </Stack>
   );
 } 

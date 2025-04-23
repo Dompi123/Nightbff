@@ -1,32 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
+import useCreateGroupStore from '@/stores/createGroupStore';
 
 // REMOVED screen-specific options (controlled by _layout.tsx)
 
 export default function Step2ImageScreen() {
   const router = useRouter();
-  const [imageUri, setImageUri] = useState<string | null>(null); // State to hold selected image URI
+  const { groupImageUri, setGroupImageUri } = useCreateGroupStore();
 
   const handleImagePick = () => {
-    // TODO: Implement actual image picking logic using Expo ImagePicker
-    console.log('Image Upload Area Pressed');
-    // Example: Simulate picking an image
-    // setImageUri('https://via.placeholder.com/300');
+    console.log('Image Upload Area Pressed - Setting dummy image');
+    setGroupImageUri('https://picsum.photos/seed/picsum/400/400');
+  };
+
+  const handleClearImage = () => {
+    setGroupImageUri(null);
   };
 
   const handleContinue = () => {
-    // Pass imageUri or relevant data to the next step if needed
     router.push('/createGroup/step3-about');
   };
 
@@ -39,17 +41,35 @@ export default function Step2ImageScreen() {
           </Text>
 
           <TouchableOpacity
-            style={styles.imagePlaceholderTouchable}
+            style={styles.imageContainerTouchable}
             onPress={handleImagePick}
+            disabled={!!groupImageUri}
           >
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+            {groupImageUri ? (
+              <View style={styles.imageWrapper}>
+                <Image
+                  source={{ uri: groupImageUri }}
+                  style={styles.selectedImage}
+                  contentFit="cover"
+                  transition={300}
+                />
+                <TouchableOpacity
+                  style={styles.clearButton}
+                  onPress={handleClearImage}
+                >
+                  <Ionicons
+                    name="close-circle"
+                    size={24}
+                    color={Colors.dark.text}
+                  />
+                </TouchableOpacity>
+              </View>
             ) : (
               <View style={styles.imagePlaceholderContainer}>
                 <Ionicons
                   name="image-outline"
                   size={60}
-                  color={Colors.dark.icon} // Use theme icon color
+                  color={Colors.dark.icon}
                   style={styles.placeholderIcon}
                 />
                 <Text style={styles.placeholderText}>Tap to upload</Text>
@@ -81,18 +101,23 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
-    alignItems: 'center', // Center content like placeholder
+    alignItems: 'center',
   },
   infoText: {
     fontSize: 16,
     color: Colors.dark.text,
-    marginBottom: Spacing.xl, // More margin below info text
+    marginBottom: Spacing.xl,
     textAlign: 'center',
   },
-  imagePlaceholderTouchable: {
-    width: '80%', // Make touchable area reasonably large
+  imageContainerTouchable: {
+    width: '80%',
     aspectRatio: 1,
     marginBottom: Spacing.xl,
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  imageWrapper: {
+    flex: 1,
   },
   imagePlaceholderContainer: {
     flex: 1,
@@ -104,12 +129,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imagePreview: {
+  selectedImage: {
     flex: 1,
     width: '100%',
     height: '100%',
-    borderRadius: 15,
-    resizeMode: 'cover',
   },
   placeholderIcon: {
     marginBottom: Spacing.md,
@@ -117,6 +140,14 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 14,
     color: Colors.dark.text,
+  },
+  clearButton: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    padding: 2,
   },
   footer: {
     padding: Spacing.lg,
@@ -130,7 +161,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  // Added disabled state style for consistency, though not used yet
   buttonDisabled: {
     backgroundColor: Colors.dark.secondary,
   },

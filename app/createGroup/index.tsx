@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
+import useCreateGroupStore from '@/stores/createGroupStore';
 
 // REMOVED screen-specific options
 // export const options = {
@@ -20,8 +21,9 @@ import { Spacing } from '../../constants/Spacing';
 // };
 
 export default function CreateGroupNameScreen() {
-  const [groupName, setGroupName] = useState('');
+  const { groupName, setGroupName } = useCreateGroupStore();
   const router = useRouter();
+  const MAX_LENGTH = 60; // Define max length
 
   const handleContinue = () => {
     if (groupName.trim().length > 0) {
@@ -32,12 +34,14 @@ export default function CreateGroupNameScreen() {
     }
   };
 
+  const isNameValid = groupName.trim().length > 0 && groupName.trim().length <= MAX_LENGTH;
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: Colors.dark.background }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
-        keyboardVerticalOffset={80} // Adjust as needed
+        keyboardVerticalOffset={140}
       >
         <View style={styles.content}>
           <Text style={styles.title}>Group Name</Text>
@@ -48,17 +52,20 @@ export default function CreateGroupNameScreen() {
             placeholderTextColor={Colors.dark.text} // Kept dark text for placeholder
             value={groupName}
             onChangeText={setGroupName}
-            maxLength={60}
-            autoFocus
+            maxLength={MAX_LENGTH}
           />
           <View style={styles.charLimitContainer}>
-            <Ionicons
-              name="checkmark-circle-outline"
-              size={16}
-              color={Colors.dark.text} // Using default text color for checkmark
-              style={styles.charLimitIcon}
-            />
-            <Text style={styles.charLimitText}>No more than 60 characters</Text>
+            {isNameValid ? (
+              <Ionicons
+                name="checkmark-circle"
+                size={16}
+                color={'#2ECC71'}
+                style={styles.charLimitIcon}
+              />
+            ) : (
+              <View style={{ width: 16 + (Spacing.xs || 4) }} />
+            )}
+            <Text style={styles.charLimitText}>No more than {MAX_LENGTH} characters</Text>
           </View>
         </View>
 
