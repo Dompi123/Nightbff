@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
 import useCreateGroupStore from '@/stores/createGroupStore';
@@ -19,9 +21,29 @@ export default function Step2ImageScreen() {
   const router = useRouter();
   const { groupImageUri, setGroupImageUri } = useCreateGroupStore();
 
-  const handleImagePick = () => {
-    console.log('Image Upload Area Pressed - Setting dummy image');
-    setGroupImageUri('https://picsum.photos/seed/picsum/400/400');
+  const handlePickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedUri = result.assets[0].uri;
+        setGroupImageUri(selectedUri);
+      }
+    } catch (error) {
+       console.error("ImagePicker Error: ", error);
+       Alert.alert('Error', 'Could not pick image. Please try again.');
+    }
   };
 
   const handleClearImage = () => {
@@ -42,7 +64,7 @@ export default function Step2ImageScreen() {
 
           <TouchableOpacity
             style={styles.imageContainerTouchable}
-            onPress={handleImagePick}
+            onPress={handlePickImage}
             disabled={!!groupImageUri}
           >
             {groupImageUri ? (

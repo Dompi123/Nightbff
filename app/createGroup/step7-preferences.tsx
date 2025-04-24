@@ -9,6 +9,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
 import useCreateGroupStore from '@/stores/createGroupStore';
 import { useAuth } from '@/contexts/AuthContext';
+import useCreateGroup from '@/hooks/api/useCreateGroup';
 
 export default function Step7PreferencesScreen() {
   const router = useRouter();
@@ -27,25 +29,14 @@ export default function Step7PreferencesScreen() {
     setVisibility,
   } = useCreateGroupStore();
 
+  const { mutate: createGroupMutation, isPending: isCreatingGroup } = useCreateGroup();
+
   const isProUser = false;
 
   const handleCreatePlan = () => {
-    const currentState = useCreateGroupStore.getState();
-    console.log('Create Plan Pressed - Final State Snapshot:', {
-      groupName: currentState.groupName,
-      groupImageUri: currentState.groupImageUri,
-      aboutTrip: currentState.aboutTrip,
-      arrivalDate: currentState.arrivalDate,
-      departingDate: currentState.departingDate,
-      destinations: currentState.destinations,
-      interests: currentState.interests,
-      link: currentState.link,
-      visibility: currentState.visibility,
-    });
-    // TODO: Implement actual plan creation logic
-    // TODO: Navigate somewhere after creation (e.g., back to tabs or to the new plan)
-    // Example: Go back to the root of the tabs navigator
-    // router.push('/(tabs)/chat'); // Adjust target as needed
+    const { resetState, ...groupSubmissionData } = useCreateGroupStore.getState();
+    console.log("Submitting data:", groupSubmissionData);
+    createGroupMutation(groupSubmissionData);
   };
 
   return (
@@ -115,10 +106,15 @@ export default function Step7PreferencesScreen() {
 
         <View style={styles.footer}>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, isCreatingGroup && styles.buttonDisabled]}
             onPress={handleCreatePlan}
+            disabled={isCreatingGroup}
           >
-            <Text style={styles.buttonText}>Create Plan</Text>
+            {isCreatingGroup ? (
+              <ActivityIndicator size="small" color={Colors.dark.text} />
+            ) : (
+              <Text style={styles.buttonText}>Create Plan</Text>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -217,6 +213,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.dark.secondary,
   },
   buttonText: {
     color: Colors.dark.text,

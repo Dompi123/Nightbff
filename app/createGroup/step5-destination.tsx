@@ -11,16 +11,14 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
-import useCreateGroupStore from '@/stores/createGroupStore';
+import useCreateGroupStore, { Destination } from '@/stores/createGroupStore';
 
 export default function Step5DestinationScreen() {
   const router = useRouter();
   const { destinations, addDestination, removeDestination } = useCreateGroupStore();
 
   const handleAddDestination = () => {
-    const newId = `sample_${Date.now()}`;
-    addDestination({ id: newId, name: 'Sample Place', country: 'Testland', flag: '🇹🇱' });
-    console.log('Added sample destination via store');
+    router.push('/createGroup/add-destination-modal');
   };
 
   const handleContinue = () => {

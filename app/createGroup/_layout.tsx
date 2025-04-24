@@ -43,6 +43,14 @@ export default function CreateGroupLayout() {
         name="step7-preferences" // Corresponds to app/createGroup/step7-preferences.tsx
         options={{ title: 'Preferences' }} // Set title for Step 7
       />
+      {/* Add Modal Screen */}
+      <Stack.Screen
+        name="add-destination-modal" // Matches filename
+        options={{
+          presentation: 'modal', // Present as modal
+          headerShown: false, // Use custom header inside modal
+        }}
+      />
     </Stack>
   );
 } 

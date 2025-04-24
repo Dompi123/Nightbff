@@ -1158,4 +1158,22 @@ export const fetchChatList = async (): Promise<ChatConversation[]> => {
 
   console.log(`DEBUG: mockService: Returning ${mockConversations.length} conversations`);
   return mockConversations;
+};
+
+// Add the new createGroup function here
+
+export const createGroup = async (groupData: any): Promise<{ success: boolean, groupId?: string }> => {
+  console.log('DEBUG: mockService: createGroup called with data:', groupData);
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Simulate success/failure randomly or based on input (e.g., fail if name is "fail")
+  const shouldSucceed = Math.random() > 0.1; // 90% success chance
+  if (shouldSucceed || groupData?.groupName?.toLowerCase() !== 'fail') { // Make 'fail' name trigger failure
+    const newGroupId = `mock_group_${Date.now()}`;
+    console.log(`DEBUG: mockService: Simulating successful group creation (ID: ${newGroupId})`);
+    return { success: true, groupId: newGroupId };
+  } else {
+    console.error('DEBUG: mockService: Simulating group creation failure');
+    throw new Error('Mock API Error: Failed to create group.');
+  }
 }; 

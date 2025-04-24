@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
-// Define Destination type/interface
-interface Destination {
+// Define Destination type/interface - Export it!
+export interface Destination {
   id: string; // Unique ID
   name: string;
   country: string;
   flag: string; // Emoji
 }
 
-interface CreateGroupState {
+export interface CreateGroupState {
   groupName: string;
   groupImageUri: string | null;
   aboutTrip: string;

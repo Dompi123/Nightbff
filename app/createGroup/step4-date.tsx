@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
 import useCreateGroupStore from '@/stores/createGroupStore';
@@ -29,27 +32,58 @@ export default function Step4DateScreen() {
     setDepartingDate,
   } = useCreateGroupStore();
 
+  // Local state for picker visibility and target
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickingDateFor, setPickingDateFor] = useState<'arrival' | 'departing' | null>(null);
+
+  // Handler for date selection from picker
+  const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    const currentDate = selectedDate;
+    // On iOS, the picker stays open until dismissed programmatically after selection
+    // On Android, it dismisses automatically. Hide logic needs to adapt.
+    // Let's hide it immediately on Android after interaction, but keep it for iOS until done/cancel.
+    if (Platform.OS !== 'ios') {
+        setShowPicker(false);
+    }
+
+
+    if (event.type === 'set' && currentDate) { // 'set' means a date was selected
+      if (pickingDateFor === 'arrival') {
+        setArrivalDate(currentDate);
+        // Clear departing date if it's before new arrival date
+        if (departingDate && currentDate > departingDate) {
+           setDepartingDate(null);
+        }
+      } else if (pickingDateFor === 'departing') {
+        // Ensure departing date is not before arrival date
+        if (arrivalDate && currentDate < arrivalDate) {
+           Alert.alert("Invalid Date", "Departing date cannot be before arrival date.");
+        } else {
+           setDepartingDate(currentDate);
+        }
+      }
+    }
+    // Reset picker target regardless of 'set' or 'dismissed' event type
+    // For iOS, only hide if the event type wasn't 'set' (i.e., was dismissed/cancelled)
+    // Actually, let's simplify: hide on iOS only *after* setting state for a selected date.
+    // If cancelled (event.type == 'dismissed'), iOS will handle hiding.
+    // We need to hide it *after* state update completes in the 'set' case.
+    // The original logic `setShowPicker(Platform.OS === 'ios');` might be confusing.
+    // Let's try always hiding it after handling, unless it's iOS and event wasn't 'set'.
+    if (Platform.OS === 'ios' && event.type !== 'set') {
+      // Don't hide if iOS user cancelled - it hides itself.
+    } else {
+      setShowPicker(false); // Hide picker on Android always after interaction, or iOS after 'set'
+    }
+    setPickingDateFor(null); // Reset which date was being picked
+  };
+
   const handleContinue = () => {
-    // TODO: Add actual validation (e.g., departing >= arrival)
     if (arrivalDate && departingDate) {
       router.push('/createGroup/step5-destination');
     } else {
-      alert('Please select arrival and departing dates.');
+      Alert.alert('Missing Dates', 'Please select arrival and departing dates.');
     }
-  };
-
-  const handlePressArrival = () => {
-    console.log('Arrival Date pressed');
-    // Set dummy date for testing
-    setArrivalDate(new Date());
-    // TODO: Open Arrival Date picker
-  };
-
-  const handlePressDeparting = () => {
-    console.log('Departing Date pressed');
-    // Set dummy date (+7 days) for testing
-    setDepartingDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
-    // TODO: Open Departing Date picker
   };
 
   return (
@@ -62,7 +96,7 @@ export default function Step4DateScreen() {
           {/* Arrival Date Input */}
           <TouchableOpacity
             style={styles.dateInputTouchable}
-            onPress={handlePressArrival}
+            onPress={() => { setPickingDateFor('arrival'); setShowPicker(true); }}
           >
             <View style={styles.dateInputContainer}>
               <Ionicons
@@ -81,7 +115,13 @@ export default function Step4DateScreen() {
           {/* Departing Date Input */}
           <TouchableOpacity
             style={styles.dateInputTouchable}
-            onPress={handlePressDeparting}
+            onPress={() => {
+                if (!arrivalDate) {
+                    Alert.alert("Select Arrival First", "Please select the arrival date before the departing date.");
+                    return;
+                }
+                setPickingDateFor('departing'); setShowPicker(true);
+            }}
           >
             <View style={styles.dateInputContainer}>
               <Ionicons
@@ -96,6 +136,27 @@ export default function Step4DateScreen() {
               </Text>
             </View>
           </TouchableOpacity>
+
+          {/* Conditionally render the DateTimePicker */}
+          {showPicker && (
+            <DateTimePicker
+              testID="dateTimePicker" // for testing purposes
+              value={
+                pickingDateFor === 'arrival'
+                  ? arrivalDate || new Date() // Default to today if no arrival date yet
+                  : departingDate || arrivalDate || new Date() // Default to arrival or today if no departing date
+              }
+              mode="date"
+              display="spinner"
+              onChange={handleDateChange}
+              minimumDate={
+                 // Can't pick arrival before today
+                 // Can't pick departing before arrival date
+                 pickingDateFor === 'departing' ? (arrivalDate || new Date()) : new Date()
+              }
+              // You might want to set maximumDate={...} as well
+            />
+          )}
         </View>
 
         <View style={styles.footer}>
