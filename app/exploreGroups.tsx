@@ -69,8 +69,8 @@ export default function ExploreGroupsScreen() {
     // Use edges to avoid safe area inset at the top, header handles it
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       
-      {/* Screen Title (Below Header) */}
-      <ThemedText style={styles.screenTitle}>Explore Groups</ThemedText>
+      {/* ADDED back the title element here */}
+      <Text style={styles.screenTitle}>Explore Groups</Text> 
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>

@@ -149,12 +149,10 @@ function RootNavigation() {
           />
           <Stack.Screen 
             name="exploreGroups"
-            options={{
-              headerShown: true,
+            options={{ 
               title: '',
-              headerStyle: { backgroundColor: palette.background }, 
-              headerTintColor: palette.text,
-              headerShadowVisible: false, 
+              headerShown: true, 
+              headerBackTitleVisible: false,
             }} 
           />
           <Stack.Screen 
