@@ -20,6 +20,7 @@ import { useConversationMessages } from '@/hooks/api/useConversationMessages';
 import useSendMessage from '@/hooks/api/useSendMessage';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
+import MessageItem from '@/components/chat/MessageItem';
 // Assume mockService exists and has the getMessages function
 // We'll use local mock data for now.
 // import * as mockService from '../../services/mockService';
@@ -78,43 +79,6 @@ const mockSendMessage = async (chatId: string, messageText: string): Promise<Mes
 };
 
 // const MOCK_MESSAGES: Message[] = [ ... ]; // Remove MOCK_MESSAGES array if no longer needed
-
-// MessageItem Component
-const MessageItem: React.FC<{ message: Message; isCurrentUser: boolean }> = React.memo(({ message, isCurrentUser }) => {
-  // Basic styling, adjust colors/fonts based on actual theme later
-  const bubbleStyle = isCurrentUser ? styles.sentBubble : styles.receivedBubble;
-  const textStyle = isCurrentUser ? styles.sentText : styles.receivedText;
-  const containerStyle = isCurrentUser ? styles.sentContainer : styles.receivedContainer;
-
-  if (isCurrentUser) {
-    // Layout for sent messages (right-aligned)
-    return (
-      <View style={containerStyle}>
-        <View style={bubbleStyle}>
-          <Text style={textStyle}>{message.text}</Text>
-          {/* Optionally add timestamp for sent messages too */}
-          {/* <Text style={styles.timestamp}>{message.timestamp}</Text> */}
-        </View>
-      </View>
-    );
-  }
-
-  // Layout for received messages
-  return (
-    <View style={containerStyle}>
-      <Image source={{ uri: message.avatarUrl }} style={styles.avatar} />
-      <View style={styles.messageContent}>
-        <View style={styles.senderInfo}>
-          <Text style={styles.senderName}>{message.senderName}</Text>
-          <Text style={styles.timestamp}>{message.timestamp}</Text>
-        </View>
-        <View style={bubbleStyle}>
-          <Text style={textStyle}>{message.text}</Text>
-        </View>
-      </View>
-    </View>
-  );
-});
 
 // --- Custom Header Component ---
 interface ChatCustomHeaderProps {
@@ -198,72 +162,43 @@ export default function BasicConversationScreen() {
   }, [chatId]);
 
   const handleSend = () => {
-    const textToSend = inputText.trim();
-    if (!textToSend || isSendingMessage || !chatId) return;
-
-    console.log(`Attempting to send message for chat ${chatId}: ${textToSend}`);
-    
-    // Call the mutation function
-    sendMessageMutate({ text: textToSend });
-
-    // Clear input immediately for better UX
+    if (inputText.trim().length === 0) return;
+    sendMessageMutate({ text: inputText.trim() });
     setInputText('');
   };
 
   // --- Custom Header Handlers ---
   const handleBackPress = () => {
-      router.back();
+    router.back();
   };
   const handleOptionsPress = () => {
-    console.log('Opening chat options for:', chatId);
-    if (chatId) {
-        router.push(`/chat/options/${chatId}` as any);
-    } else {
-        console.warn("Cannot open options, chatId is missing.");
-    }
+    // Navigate to chat options screen (replace with actual route)
+    router.push(`/conversation/options/${chatId}`); 
+    console.log('Options pressed');
   };
   // --- End Custom Header Handlers ---
 
-  // --- Render Logic Helper ---
+  // --- Render Logic ---
   const renderMessageList = () => {
-      if (messagesLoading) {
-          return <LoadingIndicator />;
-      }
+    if (messagesLoading) return <LoadingIndicator />;
+    if (messagesError) return <ErrorView error={messagesError} />;
 
-      if (messagesError) {
-          return <ErrorView error={messagesError as Error} />;
-      }
-
-      return (
-          <FlatList
-              style={styles.messageListArea}
-              data={messages}
-              renderItem={({ item }) => {
-                  const isCurrentUser = item.sender?.id === currentUserId; 
-                  const messageProps = {
-                      id: item.id,
-                      text: item.text,
-                      senderId: item.sender?.id || 'unknown',
-                      senderName: item.sender?.name || 'Unknown',
-                      timestamp: item.timestamp,
-                      avatarUrl: item.sender?.avatarUrl || 'https://via.placeholder.com/150'
-                  };
-                  return (
-                      <MessageItem
-                          message={messageProps}
-                          isCurrentUser={isCurrentUser}
-                      />
-                  );
-              }}
-              keyExtractor={(item) => item.id}
-              inverted
-              contentContainerStyle={styles.flatListContent}
-          />
-      );
+    return (
+      <FlatList
+        data={messages}
+        renderItem={({ item }) => (
+          <MessageItem message={item} isCurrentUser={item.sender.id === currentUserId} />
+        )}
+        keyExtractor={(item) => item.id}
+        inverted // This is crucial for chat UI
+        contentContainerStyle={styles.listContentContainer} // Add padding
+        showsVerticalScrollIndicator={false}
+      />
+    );
   };
 
   return (
-    <SafeAreaViewRN style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaViewRN edges={['bottom']} style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
       <ChatCustomHeader
           info={headerInfo}
@@ -473,5 +408,13 @@ const styles = StyleSheet.create({
       fontSize: 13,
       color: '#ccc',
       marginTop: 2,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+  },
+  listContentContainer: {
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
 }); 
