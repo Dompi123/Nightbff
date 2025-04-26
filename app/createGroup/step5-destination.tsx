@@ -60,6 +60,7 @@ export default function Step5DestinationScreen() {
                   <Text style={styles.destinationCountry}>{dest.country}</Text>
                 </View>
                 <TouchableOpacity
+                  testID={`remove-destination-${dest.id}`}
                   style={styles.deleteButton}
                   onPress={() => removeDestination(dest.id)}
                 >
