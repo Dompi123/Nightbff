@@ -15,6 +15,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
+import { useRouter } from 'expo-router';
 
 // Use relative path for useColorScheme to avoid module resolution issues
 import { useColorScheme } from '../src/hooks/useColorScheme';
@@ -150,9 +151,25 @@ function RootNavigation() {
           <Stack.Screen 
             name="exploreGroups"
             options={{ 
-              title: '',
+              title: '', 
               headerShown: true, 
-              headerBackTitleVisible: false,
+              headerLeft: () => { 
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => router.back()} 
+                    style={{ marginLeft: 0 }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons 
+                      name="arrow-back" 
+                      size={28}
+                      color={palette.text}
+                    />
+                  </TouchableOpacity>
+                );
+              },
+              headerShadowVisible: false,
             }} 
           />
           <Stack.Screen 
