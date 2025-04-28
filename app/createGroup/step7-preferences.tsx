@@ -65,7 +65,9 @@ export default function Step7PreferencesScreen() {
       link,
       visibility,
     };
-    console.log("Submitting data via hook state:", groupSubmissionData);
+    // Log the data being submitted
+    // console.log("Submitting data via hook state:", groupSubmissionData);
+
     createGroupMutation(groupSubmissionData);
   };
 

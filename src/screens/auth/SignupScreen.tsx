@@ -35,6 +35,9 @@ export default function SignupScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
+  // Local error handling
+  const [localError, setLocalError] = useState('');
+
   // Basic validation
   const validateForm = () => {
     let isValid = true;
@@ -102,8 +105,10 @@ export default function SignupScreen() {
       });
       // Navigation is handled by the AuthContext/Navigator
     } catch (error) {
-      // Error is now handled in the AuthContext
-      console.log('Signup error handled in AuthContext');
+      // Handle signup errors shown via AuthContext state
+      // console.log('Signup error handled in AuthContext');
+      // You might want to add more specific UI feedback here if needed
+      setLocalError('Signup failed. Please try again.'); // Display local error message
     }
   };
 

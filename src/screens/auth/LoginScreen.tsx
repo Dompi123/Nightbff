@@ -27,6 +27,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isLoadingLocal, setIsLoading] = useState(false);
 
   // Clear auth context errors when component unmounts
   useEffect(() => {
@@ -69,13 +70,16 @@ export default function LoginScreen() {
     if (!validateForm()) return;
     
     try {
-      console.log("🔑 Login attempt with:", { email }); // Don't log passwords!
+      setIsLoading(true);
+      // console.log("🔑 Login attempt with:", { email }); // Don't log passwords!
       await login(email, password);
-      console.log("✅ Login function completed");
       // Navigation is handled by the AuthContext/Navigator
+      // console.log("✅ Login function completed");
     } catch (error) {
+      // Error state is set in AuthContext, but we can add specific local feedback
       console.error("❌ Login error caught in component:", error);
-      // Error is now handled in the AuthContext
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -160,9 +164,9 @@ export default function LoginScreen() {
           <TouchableOpacity
             style={styles.loginButton}
             onPress={handleLogin}
-            disabled={isLoading}
+            disabled={isLoadingLocal}
           >
-            {isLoading ? (
+            {isLoadingLocal ? (
               <ActivityIndicator color="#FFF" size="small" />
             ) : (
               <Text style={styles.loginButtonText}>Sign In</Text>
@@ -179,7 +183,7 @@ export default function LoginScreen() {
                 // Call handleLogin with a slight delay to ensure state is updated
                 setTimeout(() => handleLogin(), 100);
               }}
-              disabled={isLoading}
+              disabled={isLoadingLocal}
             >
               <Text style={styles.loginButtonText}>DEV: Test Login</Text>
             </TouchableOpacity>

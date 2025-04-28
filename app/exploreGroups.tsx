@@ -52,12 +52,10 @@ export default function ExploreGroupsScreen() {
     );
   }, [groups, searchQuery]);
 
-  const handleGroupPress = (groupId: string) => {
-    // Navigate to the detail screen (ensure this route exists)
-    // router.push(`/groupDetail/${groupId}`); // Example route
-    console.log("Navigate to group:", groupId);
-    // Example navigation: Needs route defined in _layout.tsx
-    router.push(`/group/${groupId}`); // Corrected route
+  const handlePressGroup = (groupId: string) => {
+    // Navigate to the group detail screen
+    // console.log("Navigate to group:", groupId);
+    router.push(`/group/${groupId}`);
   };
 
   const handleFilterPress = (filterKey: string) => {
@@ -119,7 +117,7 @@ export default function ExploreGroupsScreen() {
             renderItem={({ item }) => (
               <ExploreGroupCard 
                 item={item} 
-                onPress={handleGroupPress} 
+                onPress={handlePressGroup} 
               />
             )}
             keyExtractor={(item) => item.id}

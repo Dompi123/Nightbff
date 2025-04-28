@@ -19,9 +19,10 @@ export default function ChatOptionsScreen() {
 
     // --- Option Handlers ---
     const handleOptionPress = (label: string) => {
-        console.log(`Tapped ${label} for chat: ${chatId}`);
-        // Close the modal after action
-        router.back();
+        // Placeholder for action
+        // console.log(`Tapped ${label} for chat: ${chatId}`);
+        // Example: Navigate or show confirmation
+        router.back(); // Close the modal for now
     };
 
     const options: Option[] = [

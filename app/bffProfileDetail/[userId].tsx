@@ -43,7 +43,8 @@ export default function BffProfileDetailScreen() {
   const { data: profile, isLoading, error } = useUserProfileDetail(userId || '');
 
   const handleGoBack = () => navigation.goBack();
-  const handleOptionsPress = () => console.log('Options pressed for user:', userId);
+  // Placeholder for options menu action
+  // const handleOptionsPress = () => console.log('Options pressed for user:', userId);
 
   if (isLoading) {
     return (
@@ -169,7 +170,7 @@ export default function BffProfileDetailScreen() {
 
       <TouchableOpacity 
         style={[styles.overlayButton, styles.optionsButton, {top: insets.top + spacing.sm}]} 
-        onPress={handleOptionsPress}
+        onPress={handleGoBack}
       >
         <Ionicons name="ellipsis-horizontal" size={20} color="#FFFFFF" />
       </TouchableOpacity>

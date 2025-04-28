@@ -26,18 +26,22 @@ export default function PaywallScreen() {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState('weekly');
   const insets = useSafeAreaInsets();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = () => {
     router.back();
   };
 
-  const handlePurchase = () => {
-    // In a real app, this would initiate the purchase flow
-    console.log('Starting purchase for plan:', selectedPlan);
-    // Mock successful purchase and return
-    setTimeout(() => {
+  const handlePurchase = async () => {
+    try {
+      setIsLoading(true);
+      // console.log('Starting purchase for plan:', selectedPlan);
+      // In a real app: Initiate purchase with RevenueCat, Stripe, etc.
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate purchase delay
       router.back();
-    }, 1000);
+    } catch (error) {
+      console.error('Error purchasing plan:', error);
+    }
   };
 
   // Calculate bottom padding for safe area
@@ -134,7 +138,7 @@ export default function PaywallScreen() {
         </TouchableOpacity>
         
         {/* CTA Button */}
-        <TouchableOpacity style={styles.ctaButton} onPress={handlePurchase}>
+        <TouchableOpacity style={styles.ctaButton} onPress={handlePurchase} disabled={isLoading}>
           <ThemedText style={styles.ctaButtonText}>See All Nighterz Now 👋</ThemedText>
         </TouchableOpacity>
 

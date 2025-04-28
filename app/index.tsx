@@ -20,12 +20,12 @@ export default function RootIndex() {
 
   // If loading is finished and user is authenticated, redirect to tabs (Homescreen)
   if (isAuthenticated) {
-    console.log('[app/index.tsx] Redirecting to / (tabs)');
-    // Redirect to the base of the (tabs) group. Expo Router handles the default tab.
+    // TODO: Redirect to home screen or wherever is appropriate
+    // console.log('[app/index.tsx] Redirecting to / (tabs)');
     return <Redirect href="/(tabs)" />;
+  } else {
+    // User is not authenticated or token is missing
+    // console.log('[app/index.tsx] Redirecting to /login');
+    return <Redirect href="/login" />;
   }
-
-  // If loading is finished and user is NOT authenticated, redirect to login
-  console.log('[app/index.tsx] Redirecting to /login');
-  return <Redirect href="/login" />;
 } 

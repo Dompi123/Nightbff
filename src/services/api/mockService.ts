@@ -794,7 +794,7 @@ export const fetchNearbyGroup = async (): Promise<NearbyGroup> => {
 };
 
 export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularGroupDetail> => {
-  console.log(`[Mock API] Fetching popular group detail for ID: ${groupId}`);
+  // console.log(`[Mock API] Fetching popular group detail for ID: ${groupId}`);
   await simulateDelay();
   maybeThrowError(0.05); // Lower chance of error for detail view
 
@@ -802,7 +802,7 @@ export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularG
   const groupBase = mockNightlifeGroups.find(g => g.id === groupId) || mockExploreGroups.find(g => g.id === groupId);
 
   if (!groupBase) {
-    console.error(`[Mock API] Error: Group with ID ${groupId} not found in mockNightlifeGroups or mockExploreGroups.`);
+    // console.error(`[Mock API] Error: Group with ID ${groupId} not found in mockNightlifeGroups or mockExploreGroups.`);
     throw new Error(`Group with ID ${groupId} not found`);
   }
 
@@ -845,7 +845,7 @@ export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularG
     // Removed direct imageUrl property
   };
 
-  console.log(`[Mock API] Found details for group: ${groupId}`, details);
+  // console.log(`[Mock API] Found details for group: ${groupId}`, details);
   return details;
 };
 
@@ -865,17 +865,17 @@ export const fetchUpcomingPlans = async (): Promise<UpcomingPlan[]> => {
 };
 
 export const fetchUserProfileDetail = async (userId: string): Promise<UserProfileDetail> => {
-  console.log(`[Mock API] Attempting to fetch profile detail for userId: ${userId}`);
+  // console.log(`[Mock API] Attempting to fetch profile detail for userId: ${userId}`);
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
 
   const profile = mockUserProfiles[userId];
 
   if (profile) {
-    console.log(`[Mock API] Profile found for userId: ${userId}`);
+    // console.log(`[Mock API] Profile found for userId: ${userId}`);
     return Promise.resolve(profile);
   } else {
-    console.error(`[Mock API] Profile NOT FOUND for userId: ${userId}`);
+    // console.error(`[Mock API] Profile NOT FOUND for userId: ${userId}`);
     // It's often better to reject with an Error object
     return Promise.reject(new Error(`Mock profile not found for user ${userId}`));
   }
@@ -883,7 +883,7 @@ export const fetchUserProfileDetail = async (userId: string): Promise<UserProfil
 
 // Added fetch function for Explore Groups
 export const fetchExploreGroups = async (filter?: string): Promise<ExploreGroupCardData[]> => {
-  console.log(`[Mock API] Fetching explore groups with filter: ${filter || 'none'}`);
+  // console.log(`[Mock API] Fetching explore groups with filter: ${filter || 'none'}`);
   await simulateDelay();
   // maybeThrowError(0.05); // Simulate occasional errors
   // Basic filter simulation (can be expanded)
@@ -913,24 +913,24 @@ export const loginUser = async (email: string, password: string): Promise<{
   // Simulate network delay (500-1500ms)
   await simulateDelay(500 + Math.random() * 1000);
   
-  console.log(`[Mock API] Attempting login for user: ${email}`);
+  // console.log(`[Mock API] Attempting login for user: ${email}`);
   
   // Find user in our mock database
   const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
   
   // Simulate authentication logic
   if (!user) {
-    console.log(`[Mock API] User not found: ${email}`);
+    // console.log(`[Mock API] User not found: ${email}`);
     throw new Error('User not found. Please check your email or sign up.');
   }
   
   if (user.password !== password) {
-    console.log(`[Mock API] Invalid password for: ${email}`);
+    // console.log(`[Mock API] Invalid password for: ${email}`);
     throw new Error('Invalid password. Please try again.');
   }
   
   // Authentication successful
-  console.log(`[Mock API] Login successful for: ${email}`);
+  // console.log(`[Mock API] Login successful for: ${email}`);
   
   // Generate a mock JWT token (in a real app, this would be a proper JWT)
   const token = `mock-jwt-${user.id}-${Date.now()}`;
@@ -965,16 +965,16 @@ export const signupUser = async (details: {
   // Simulate network delay (800-2000ms)
   await simulateDelay(800 + Math.random() * 1200);
   
-  console.log(`[Mock API] Attempting signup for: ${details.email}`);
+  // console.log(`[Mock API] Attempting signup for: ${details.email}`);
   
   // Basic validation
   if (!details.name || !details.email || !details.password) {
-    console.log('[Mock API] Signup failed: Missing required fields');
+    // console.log('[Mock API] Signup failed: Missing required fields');
     throw new Error('All fields are required');
   }
   
   if (details.password.length < 6) {
-    console.log('[Mock API] Signup failed: Password too short');
+    // console.log('[Mock API] Signup failed: Password too short');
     throw new Error('Password must be at least 6 characters');
   }
   
@@ -984,7 +984,7 @@ export const signupUser = async (details: {
   );
   
   if (existingUser) {
-    console.log(`[Mock API] Signup failed: Email already in use - ${details.email}`);
+    // console.log(`[Mock API] Signup failed: Email already in use - ${details.email}`);
     throw new Error('Email already in use. Please log in or use a different email.');
   }
   
@@ -1001,7 +1001,7 @@ export const signupUser = async (details: {
   
   // In a real API, this would add the user to a database
   // Here we're just simulating success
-  console.log(`[Mock API] Signup successful for: ${details.email}`);
+  // console.log(`[Mock API] Signup successful for: ${details.email}`);
   
   // Generate a mock JWT token
   const token = `mock-jwt-${newUser.id}-${Date.now()}`;
@@ -1020,7 +1020,7 @@ export const signupUser = async (details: {
 
 // Placeholder for unimplemented feature - Conversation Details
 export const fetchConversationDetails = async (chatId: string): Promise<any> => {
-  console.warn(`Mock function fetchConversationDetails called with ${chatId}, not implemented.`);
+  // console.warn(`Mock function fetchConversationDetails called with ${chatId}, not implemented.`);
   await simulateDelay(100); // Simulate delay
   return null; 
 };
@@ -1034,7 +1034,7 @@ export const fetchConversationDetails = async (chatId: string): Promise<any> => 
 
 // Updated mock implementation for Conversation Messages
 export const fetchConversationMessages = async (chatId: string): Promise<ChatMessage[]> => {
-  console.log(`DEBUG: mockService: fetchConversationMessages called for chatId: ${chatId}`);
+  // console.log(`DEBUG: mockService: fetchConversationMessages called for chatId: ${chatId}`);
 
   // Simulate network delay
   await simulateDelay(600); // Use provided delay
@@ -1067,7 +1067,7 @@ export const fetchConversationMessages = async (chatId: string): Promise<ChatMes
     },
   ];
 
-  console.log(`DEBUG: mockService: Returning ${mockMessages.length} messages for chatId: ${chatId}`);
+  // console.log(`DEBUG: mockService: Returning ${mockMessages.length} messages for chatId: ${chatId}`);
   return mockMessages; // Return the defined mock messages
 };
 
@@ -1081,7 +1081,7 @@ export const fetchConversationMessages = async (chatId: string): Promise<ChatMes
 
 // Enhanced mock implementation for Send Message
 export const sendMessage = async (chatId: string, messageText: string): Promise<ChatMessage> => {
-  console.log(`DEBUG: mockService: sendMessage called for chat ${chatId} with text: "${messageText}"`);
+  // console.log(`DEBUG: mockService: sendMessage called for chat ${chatId} with text: "${messageText}"`);
 
   // Simulate network delay
   await simulateDelay(300);
@@ -1106,20 +1106,20 @@ export const sendMessage = async (chatId: string, messageText: string): Promise<
   // Simulate potential failure
   // maybeThrowError(0.1); // Uncomment to test error handling
 
-  console.log(`DEBUG: mockService: Returning new message: ${JSON.stringify(newMessage)}`);
+  // console.log(`DEBUG: mockService: Returning new message: ${JSON.stringify(newMessage)}`);
   return newMessage;
 };
 
 // Placeholder for unimplemented feature - Feed Posts
 export const fetchFeedPosts = async (): Promise<any[]> => {
-  console.warn(`Mock function fetchFeedPosts called, not implemented.`);
+  // console.warn(`Mock function fetchFeedPosts called, not implemented.`);
   await simulateDelay(200);
   return []; // Return empty array for posts
 };
 
 // Added mock function for fetching chat list
 export const fetchChatList = async (): Promise<ChatConversation[]> => {
-  console.log(`DEBUG: mockService: fetchChatList called`);
+  // console.log(`DEBUG: mockService: fetchChatList called`);
 
   // Simulate network delay
   await simulateDelay(400); // Simulate delay
@@ -1156,7 +1156,7 @@ export const fetchChatList = async (): Promise<ChatConversation[]> => {
   // Simulate potential error
   // maybeThrowError(0.1); // Uncomment to test error state
 
-  console.log(`DEBUG: mockService: Returning ${mockConversations.length} conversations`);
+  // console.log(`DEBUG: mockService: Returning ${mockConversations.length} conversations`);
   return mockConversations;
 };
 
@@ -1164,7 +1164,7 @@ export const fetchChatList = async (): Promise<ChatConversation[]> => {
 
 export const createGroup = async (groupData: any): Promise<{ success: boolean, groupId?: string }> => {
   await simulateDelay(800);
-  console.log('Mock Creating Group with data:', groupData);
+  // console.log('Mock Creating Group with data:', groupData);
   // maybeThrowError(0.3); // Simulate error sometimes
   if (!groupData.groupName) {
     console.error('Mock Error: Group name is required.');
@@ -1177,7 +1177,7 @@ export const createGroup = async (groupData: any): Promise<{ success: boolean, g
 
 // --- NEW: Fetch My Friends Mock --- 
 export const fetchMyFriends = async (): Promise<FriendProfile[]> => {
-  console.log('DEBUG: mockService: fetchMyFriends called, returning empty list');
+  // console.log('DEBUG: mockService: fetchMyFriends called, returning empty list');
   await simulateDelay(600);
   // maybeThrowError(0.1);
   return []; // Return empty array for now

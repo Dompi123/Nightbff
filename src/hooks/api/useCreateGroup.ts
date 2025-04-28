@@ -17,7 +17,7 @@ const useCreateGroup = () => {
   >({
     mutationFn: (groupData) => createGroup(groupData),
     onSuccess: (data, variables) => {
-      console.log('Create Group Success:', data, 'Variables:', variables);
+      // console.log('Create Group Success:', data, 'Variables:', variables);
       Alert.alert('Group Created!', `Mock Group Created Successfully!\nID: ${data.groupId}`); // Simple success feedback
       resetFormState(); // Reset the form state in Zustand store
 

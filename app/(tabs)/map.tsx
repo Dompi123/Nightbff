@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Platform, TextInput, ScrollView, Pressable } from 'react-native';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Platform, TextInput, ScrollView, Pressable, Alert } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { ThemedView } from '../../components/ThemedView';
@@ -12,6 +12,8 @@ import { unstable_batchedUpdates } from 'react-native';
 import { UserMarker } from '../../src/components/map/UserMarker';
 import { NearbyUserCard } from '../../src/components/map/NearbyUserCard';
 import { useNavigation } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 
 const darkMapStyle = [
   {
@@ -251,6 +253,7 @@ const FREE_TIER = {
 
 export default function MapScreen() {
   const navigation = useNavigation();
+  const router = useRouter();
   const [mapRegion, setMapRegion] = useState<MapRegion | null>(null);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -271,16 +274,16 @@ export default function MapScreen() {
   } = useNearbyUsers(isValidRegion(mapRegion) ? mapRegion : null);
   
   // Log when data fetching status changes
-  useEffect(() => {
-    console.log(`MapScreen: Data fetching status - isLoading: ${isLoading}, error: ${error ? 'yes' : 'no'}, users: ${nearbyUsers?.length || 0}`);
-  }, [isLoading, error, nearbyUsers]);
+  // useEffect(() => {
+  //   console.log(`MapScreen: Data fetching status - isLoading: ${isLoading}, error: ${error ? 'yes' : 'no'}, users: ${nearbyUsers?.length || 0}`);
+  // }, [isLoading, error, nearbyUsers]);
 
   // Request location permissions and set initial map region
   useEffect(() => {
     let isMounted = true;
     
     (async () => {
-      console.log('MapScreen: Initializing location services');
+      // console.log('MapScreen: Initializing location services');
       setIsFetchingLocation(true);
       
       try {
@@ -288,7 +291,7 @@ export default function MapScreen() {
         if (!isMounted) return;
         
         if (status !== 'granted') {
-          console.log('MapScreen: Location permission denied, using default location');
+          // console.log('MapScreen: Location permission denied, using default location');
           setErrorMsg('Permission to access location was denied');
           
           // Set default location
@@ -316,10 +319,10 @@ export default function MapScreen() {
         const location = await Promise.race([locationPromise, timeoutPromise]) as Location.LocationObject;
         if (!isMounted) return;
         
-        console.log('MapScreen: Location obtained successfully', {
-          lat: location.coords.latitude,
-          lng: location.coords.longitude
-        });
+        // console.log('MapScreen: Location obtained successfully', {
+        //   lat: location.coords.latitude,
+        //   lng: location.coords.longitude
+        // });
         
         const userCoords = {
           latitude: location.coords.latitude,
@@ -368,7 +371,7 @@ export default function MapScreen() {
   // Filter valid user markers
   const validUsers = useCallback(() => {
     if (!nearbyUsers || !Array.isArray(nearbyUsers)) {
-      console.log('MapScreen: No nearby users data available or invalid format');
+      // console.log('MapScreen: No nearby users data available or invalid format');
       return [];
     }
     
@@ -382,14 +385,13 @@ export default function MapScreen() {
 
   // Navigate to paywall screen
   const navigateToPaywall = useCallback(() => {
-    console.log('Navigating to paywall screen');
-    // @ts-ignore - Ignore type error for simplicity
-    navigation.navigate('paywall');
-  }, [navigation]);
+    // console.log('Navigating to paywall screen');
+    router.push('/paywall');
+  }, [router]);
 
   // Handle map ready event
   const handleMapReady = useCallback(() => {
-    console.log('MapScreen: Map is ready');
+    // console.log('MapScreen: Map is ready');
     setIsMapReady(true);
   }, []);
 

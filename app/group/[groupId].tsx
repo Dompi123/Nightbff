@@ -25,12 +25,15 @@ const PopularGroupDetailScreen = () => {
   
   // Handle share (placeholder)
   const handleShare = () => {
-    console.log('Share functionality placeholder');
+    // Implement sharing logic (e.g., using Share API)
+    // console.log('Share functionality placeholder');
   };
   
   // Handle join chat
   const handleJoinChat = () => {
-    console.log('Join chat functionality placeholder');
+    // Implement logic to join the chat or navigate to it
+    // console.log('Join chat functionality placeholder');
+    router.push(`/conversation/${groupId}`); // Assume chat ID is group ID for mock
   };
   
   // Loading state
