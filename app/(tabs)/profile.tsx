@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 import { useUserProfile } from '@/hooks/api/useUserProfile';
 import { useJoinedGroups } from '@/hooks/api/useJoinedGroups';
 import { useUpcomingPlans } from '@/hooks/api/useUpcomingPlans';
@@ -13,6 +13,7 @@ import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
+import { useMyFriends } from '@/hooks/api/useMyFriends';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
   const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile, error: profileError } = useUserProfile();
   const { data: joinedGroups } = useJoinedGroups();
   const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
+  const { data: friends, isLoading: isLoadingFriends, error: friendsError } = useMyFriends();
   const insets = useSafeAreaInsets();
 
   if (isLoadingProfile) {
@@ -218,6 +220,45 @@ export default function ProfileScreen() {
           </ScrollView>
         </View>
 
+        {/* My Friends Section */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <ThemedText style={styles.sectionTitle}>My Friends</ThemedText>
+            <TouchableOpacity
+              onPress={() => router.push('/myFriendsList' as Href)}
+              accessibilityLabel="View all friends"
+              accessibilityRole="button"
+            >
+              <ThemedText style={styles.seeAllText}>See all</ThemedText>
+            </TouchableOpacity>
+          </View>
+
+          {isLoadingFriends ? (
+            <View style={styles.loadingContainerCentered}>
+              <ActivityIndicator size="large" color={palette.text} />
+            </View>
+          ) : friendsError ? (
+            <View style={styles.errorContainerCentered}>
+              <ErrorView error={friendsError} />
+            </View>
+          ) : friends && friends.length === 0 ? (
+            <View style={styles.emptyStateContainer}>
+              <Ionicons name="people-circle-outline" size={60} color={palette.textSecondary} style={styles.emptyStateIcon} />
+              <ThemedText style={styles.emptyStateText}>No Friends Yet</ThemedText>
+              <ThemedText style={styles.emptyStateSubText}>You haven't made any friends</ThemedText>
+            </View>
+          ) : (
+            <FlatList
+              data={friends}
+              renderItem={({ item }) => <ThemedText style={{ color: 'white' }}>Friend: {item.name}</ThemedText>}
+              keyExtractor={item => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.friendsListContainer}
+            />
+          )}
+        </View>
+
         {/* Logout Button Section */}
         <TouchableOpacity
           style={styles.logoutButton}
@@ -244,6 +285,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: palette.background,
   },
+  loadingContainerCentered: {
+    paddingVertical: spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainerCentered: {
+    paddingVertical: spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -258,8 +309,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -270,11 +321,11 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginRight: spacing.md,
-    backgroundColor: palette.cardBackground,
   },
   name: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: palette.text,
   },
   headerRight: {
     flexDirection: 'row',
@@ -287,74 +338,67 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    paddingVertical: spacing.md,
     backgroundColor: palette.cardBackground,
-    borderRadius: 12,
-    paddingVertical: spacing.lg,
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginHorizontal: spacing.md,
+    borderRadius: 8,
+    marginTop: spacing.md,
   },
   statBox: {
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: palette.primary,
+    color: palette.text,
   },
   statLabel: {
     fontSize: 14,
     color: palette.textSecondary,
-    marginTop: spacing.xs,
   },
   actionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.xl,
+    justifyContent: 'space-around',
+    marginVertical: spacing.md,
+    marginHorizontal: spacing.md,
   },
   actionButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: palette.cardBackground,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: 12,
-    marginHorizontal: spacing.xs,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 20,
   },
   actionButtonText: {
-    marginLeft: spacing.sm,
-    fontWeight: '600',
-    fontSize: 14,
+    marginLeft: spacing.xs,
+    color: palette.text,
+    fontWeight: '500',
   },
   sectionContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: palette.text,
   },
   seeAllButton: {
     color: palette.primary,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  seeAllText: {
+    color: palette.primary,
+    fontSize: 14,
+    fontWeight: '500',
   },
   plansLoadingContainer: {
     height: 200,
@@ -363,28 +407,40 @@ const styles = StyleSheet.create({
   },
   plansErrorContainer: {
     height: 200,
-    paddingHorizontal: spacing.lg,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: spacing.lg,
+    backgroundColor: palette.cardBackground,
+    borderRadius: 8,
   },
   emptyStateContainer: {
     alignItems: 'center',
     paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
     backgroundColor: palette.cardBackground,
-    marginHorizontal: spacing.lg,
-    borderRadius: 12,
+    borderRadius: 8,
+    marginTop: spacing.md,
   },
   emptyStateImage: {
-    width: 100,
-    height: 100,
-    marginBottom: spacing.lg,
+    width: 80,
+    height: 80,
+    marginBottom: spacing.md,
     opacity: 0.7,
   },
+  emptyStateIcon: {
+    marginBottom: spacing.md,
+  },
   emptyStateText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: palette.text,
     textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  emptyStateSubText: {
+    fontSize: 14,
     color: palette.textSecondary,
-    marginBottom: spacing.lg,
+    textAlign: 'center',
   },
   addButton: {
     flexDirection: 'row',
@@ -392,31 +448,27 @@ const styles = StyleSheet.create({
     backgroundColor: palette.primary,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    borderRadius: 8,
+    borderRadius: 20,
+    marginTop: spacing.md,
   },
   addButtonText: {
+    marginLeft: spacing.xs,
     color: palette.background,
     fontWeight: 'bold',
-    marginLeft: spacing.xs,
   },
   plansScroll: {
-    paddingLeft: spacing.lg,
+    // No specific styles needed here if cards handle their own margin/padding
   },
   planCard: {
     width: 280,
+    marginRight: spacing.md,
     backgroundColor: palette.cardBackground,
     borderRadius: 12,
-    marginRight: spacing.md,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   planImage: {
     width: '100%',
-    height: 150,
+    height: 120,
   },
   planInfo: {
     padding: spacing.md,
@@ -424,6 +476,7 @@ const styles = StyleSheet.create({
   planTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: palette.text,
     marginBottom: spacing.xs,
   },
   planDetails: {
@@ -436,23 +489,18 @@ const styles = StyleSheet.create({
   },
   planDetailText: {
     marginLeft: spacing.xs,
-    fontSize: 12,
     color: palette.textSecondary,
+    fontSize: 14,
   },
   groupsScroll: {
-    paddingLeft: spacing.lg,
+    // No specific styles needed here if cards handle their own margin/padding
   },
   groupCard: {
     width: 200,
+    marginRight: spacing.md,
     backgroundColor: palette.cardBackground,
     borderRadius: 12,
-    marginRight: spacing.md,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   groupImage: {
     width: '100%',
@@ -464,43 +512,44 @@ const styles = StyleSheet.create({
   joinedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: palette.background,
+    borderRadius: 10,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
-    borderRadius: 6,
+    alignSelf: 'flex-start',
+    marginBottom: spacing.xs,
   },
   joinedText: {
-    marginLeft: spacing.xs,
-    fontSize: 10,
-    fontWeight: 'bold',
     color: palette.primary,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 4,
   },
   groupName: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginTop: spacing.lg,
+    color: palette.text,
+    marginBottom: 4,
   },
   groupDate: {
-    fontSize: 12,
     color: palette.textSecondary,
-    marginTop: spacing.xs,
+    fontSize: 12,
   },
   logoutButton: {
-    backgroundColor: palette.error || '#FF6347',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
     marginBottom: spacing.lg,
+    marginHorizontal: spacing.lg,
+    backgroundColor: palette.error,
+    paddingVertical: spacing.md,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   logoutButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  friendsListContainer: {
+    paddingLeft: 0,
   },
 });

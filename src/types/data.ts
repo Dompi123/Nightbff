@@ -240,3 +240,10 @@ export interface ExploreGroupCardData {
   attendeeAvatars: string[];
   attendeeCount: number;
 }
+
+// --- NEW: Friend Profile Type ---
+export interface FriendProfile {
+  id: string;
+  name: string;
+  avatarUrl: string;
+}

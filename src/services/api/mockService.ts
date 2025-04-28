@@ -1,4 +1,4 @@
-import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData, ChatMessage, ChatConversation } from '@/types/data'; // Import types from central file and new types
+import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffProfile, NearbyGroup, PopularGroupDetail, UserProfile, JoinedGroup, UpcomingPlan, UserProfileDetail, ExploreGroupCardData, ChatMessage, ChatConversation, FriendProfile } from '@/types/data'; // Import types from central file and new types
 
 // Simulate network delay
 const simulateDelay = (ms: number = 500) => new Promise(res => setTimeout(res, ms));
@@ -1163,17 +1163,22 @@ export const fetchChatList = async (): Promise<ChatConversation[]> => {
 // Add the new createGroup function here
 
 export const createGroup = async (groupData: any): Promise<{ success: boolean, groupId?: string }> => {
-  console.log('DEBUG: mockService: createGroup called with data:', groupData);
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  // Simulate success/failure randomly or based on input (e.g., fail if name is "fail")
-  const shouldSucceed = Math.random() > 0.1; // 90% success chance
-  if (shouldSucceed || groupData?.groupName?.toLowerCase() !== 'fail') { // Make 'fail' name trigger failure
-    const newGroupId = `mock_group_${Date.now()}`;
-    console.log(`DEBUG: mockService: Simulating successful group creation (ID: ${newGroupId})`);
-    return { success: true, groupId: newGroupId };
-  } else {
-    console.error('DEBUG: mockService: Simulating group creation failure');
-    throw new Error('Mock API Error: Failed to create group.');
+  await simulateDelay(800);
+  console.log('Mock Creating Group with data:', groupData);
+  // maybeThrowError(0.3); // Simulate error sometimes
+  if (!groupData.groupName) {
+    console.error('Mock Error: Group name is required.');
+    throw new Error('Group name is required.');
   }
+  // Simulate success
+  const newGroupId = `group-${Date.now()}`;
+  return { success: true, groupId: newGroupId };
+};
+
+// --- NEW: Fetch My Friends Mock --- 
+export const fetchMyFriends = async (): Promise<FriendProfile[]> => {
+  console.log('DEBUG: mockService: fetchMyFriends called, returning empty list');
+  await simulateDelay(600);
+  // maybeThrowError(0.1);
+  return []; // Return empty array for now
 }; 

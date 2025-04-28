@@ -193,6 +193,10 @@ function RootNavigation() {
             name="planNightOutPlaceholder" 
             options={{ title: 'Plan Night Out', headerShown: true }}
           />
+          <Stack.Screen 
+            name="myFriendsList"
+            options={{ title: 'My Friends', headerShown: true }}
+          />
           
           {/* Other top-level screens */}
           <Stack.Screen 
