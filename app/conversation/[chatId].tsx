@@ -20,10 +20,10 @@ import { useConversationMessages } from '@/hooks/api/useConversationMessages';
 import useSendMessage from '@/hooks/api/useSendMessage';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
-import MessageItem from '@/components/chat/MessageItem';
-// Assume mockService exists and has the getMessages function
-// We'll use local mock data for now.
-// import * as mockService from '../../services/mockService';
+import { Colors } from '@/constants/Colors';
+import { spacing } from '@/theme/spacing';
+import { palette } from '@/theme/colors';
+import { ChatMessage } from '@/types/data';
 
 // Define a simple Message type based on description
 interface Message {
@@ -92,7 +92,7 @@ const ChatCustomHeader: React.FC<ChatCustomHeaderProps> = ({ info, onBackPress, 
         <View style={styles.customHeaderBar}>
             {/* Back Button */}
             <Pressable onPress={onBackPress} style={styles.headerButton}>
-                <Feather name="arrow-left" size={24} color="#FFFFFF" />
+                <Feather name="arrow-left" size={26} color="#FFFFFF" />
             </Pressable>
 
             {/* Center Content: Avatar + Text */}
@@ -115,12 +115,65 @@ const ChatCustomHeader: React.FC<ChatCustomHeaderProps> = ({ info, onBackPress, 
 
             {/* Options Button */}
             <Pressable onPress={onOptionsPress} style={styles.headerButton}>
-                <Feather name="more-horizontal" size={24} color="#FFFFFF" />
+                <Feather name="more-horizontal" size={26} color="#FFFFFF" />
             </Pressable>
         </View>
     );
 };
 // --- End Custom Header Component ---
+
+// --- Format Timestamp Helper ---
+const formatTimestamp = (isoTimestamp: string | undefined): string => {
+  if (!isoTimestamp) return '';
+  try {
+    // Basic time formatting, adjust as needed (e.g., for date, AM/PM)
+    return new Date(isoTimestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  } catch (e) { 
+    console.error("Error formatting timestamp:", e);
+    return '--:--'; // Fallback for invalid date
+  } 
+};
+
+// --- Message Item Component ---
+interface MessageItemProps {
+  message: ChatMessage; // Use ChatMessage type
+  isCurrentUser: boolean;
+}
+
+const MessageItem: React.FC<MessageItemProps> = ({ message, isCurrentUser }) => {
+  if (isCurrentUser) {
+    // --- SENT MESSAGE --- 
+    return (
+      <View style={styles.sentContainer}>
+        <View style={styles.sentBubble}>
+          <Text style={styles.sentText}>{message.text}</Text>
+        </View>
+        <Text style={[styles.timestampBase, styles.timestampSent]}>
+          {formatTimestamp(message.timestamp)}
+        </Text>
+      </View>
+    );
+  } else {
+    // --- RECEIVED MESSAGE --- 
+    return (
+      <View style={styles.receivedContainer}>
+        <Image source={{ uri: message.sender.avatarUrl }} style={styles.avatar} />
+        <View style={styles.messageContent}>
+          <View style={styles.senderInfo}>
+            <Text style={styles.senderName}>{message.sender.name}</Text>
+          </View>
+          <View style={styles.receivedBubble}>
+            <Text style={styles.receivedText}>{message.text}</Text>
+          </View>
+          <Text style={[styles.timestampBase, styles.timestampReceived]}>
+            {formatTimestamp(message.timestamp)}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+};
+// --- End Message Item Component ---
 
 export default function BasicConversationScreen() {
   const { chatId: rawChatId } = useLocalSearchParams<{ chatId: string }>();
@@ -198,7 +251,7 @@ export default function BasicConversationScreen() {
   };
 
   return (
-    <SafeAreaViewRN edges={['bottom']} style={styles.safeArea}>
+    <SafeAreaViewRN edges={['top', 'bottom']} style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
       <ChatCustomHeader
           info={headerInfo}
@@ -208,7 +261,7 @@ export default function BasicConversationScreen() {
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        keyboardVerticalOffset={0}
       >
         {renderMessageList()}
 
@@ -241,7 +294,7 @@ export default function BasicConversationScreen() {
   );
 }
 
-const CUSTOM_HEADER_HEIGHT = 60; // Define header height constant
+const CUSTOM_HEADER_HEIGHT = 80; // Increased header height
 
 const styles = StyleSheet.create({
   container: {
@@ -293,14 +346,13 @@ const styles = StyleSheet.create({
   },
   receivedContainer: {
     flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: spacing.md,
     alignItems: 'flex-end',
     paddingRight: '20%',
   },
   sentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 15,
+    alignItems: 'flex-end',
+    marginBottom: spacing.md,
     paddingLeft: '20%',
   },
   avatar: {
@@ -308,9 +360,11 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     marginRight: 8,
+    alignSelf: 'flex-end',
   },
   messageContent: {
     flexShrink: 1,
+    alignItems: 'flex-start',
   },
   senderInfo: {
     flexDirection: 'row',
@@ -319,16 +373,14 @@ const styles = StyleSheet.create({
   },
   senderName: {
     fontSize: 13,
-    color: '#A970FF',
+    color: Colors.dark.primary,
     fontWeight: 'bold',
     marginRight: 8,
   },
   timestamp: {
-    fontSize: 11,
-    color: '#888',
   },
   receivedBubble: {
-    backgroundColor: '#3A3A3A',
+    backgroundColor: Colors.dark.card,
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 18,
@@ -337,7 +389,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   sentBubble: {
-    backgroundColor: '#A970FF',
+    backgroundColor: Colors.dark.primary,
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 18,
@@ -368,46 +420,45 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   customHeaderBar: {
+    height: CUSTOM_HEADER_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    height: CUSTOM_HEADER_HEIGHT,
-    backgroundColor: '#1E1E1E',
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
   headerButton: {
-      padding: 5,
+    padding: 10,
   },
   headerCenterContainer: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      marginLeft: 10,
+      marginLeft: 15,
       overflow: 'hidden',
   },
   headerImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 55,
+    height: 55,
+    borderRadius: 27.5,
     marginRight: 15,
     resizeMode: 'cover',
   },
   headerTextContainer: { 
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
   },
   headerName: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   memberCountText: { 
-      fontSize: 13,
+      fontSize: 15,
       color: '#ccc',
-      marginTop: 2,
+      marginTop: 4,
   },
   safeArea: {
     flex: 1,
@@ -416,5 +467,19 @@ const styles = StyleSheet.create({
   listContentContainer: {
     paddingHorizontal: 10,
     paddingBottom: 10,
+  },
+  timestampBase: { 
+    fontSize: 11,
+    color: palette.textSecondary,
+  },
+  timestampSent: { 
+    alignSelf: 'flex-end',
+    marginRight: 5,
+    marginTop: 4,
+  },
+  timestampReceived: { 
+    alignSelf: 'flex-start',
+    marginLeft: 38,
+    marginTop: 4,
   },
 }); 
