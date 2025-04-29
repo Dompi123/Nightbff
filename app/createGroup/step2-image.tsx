@@ -58,6 +58,8 @@ export default function Step2ImageScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.content}>
+          <Text style={styles.title}>Group Image</Text>
+
           <Text style={styles.infoText}>
             Upload an image of the destination
           </Text>
@@ -124,6 +126,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: Colors.dark.text,
+    marginBottom: Spacing.md,
   },
   infoText: {
     fontSize: 16,

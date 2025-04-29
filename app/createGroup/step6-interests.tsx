@@ -42,8 +42,9 @@ const MAX_INTERESTS_DISPLAY = 5;
 
 export default function Step6InterestsScreen() {
   const router = useRouter();
-  // Get state and actions from Zustand store
-  const { interests: selectedInterests, toggleInterest } = useCreateGroupStore();
+  // CHANGE TO individual selectors
+  const selectedInterests = useCreateGroupStore(state => state.interests);
+  const toggleInterest = useCreateGroupStore(state => state.toggleInterest);
 
   const handleContinue = () => {
     // TODO: Pass selectedInterests data if needed
@@ -92,10 +93,12 @@ export default function Step6InterestsScreen() {
         </ScrollView>
         <View style={styles.footer}>
           <TouchableOpacity
-            style={styles.button}
+            style={[
+              styles.button,
+              selectedInterests.length === 0 && styles.buttonDisabled, // Add disabled style
+            ]}
             onPress={handleContinue}
-            // Optional: Disable if needed, e.g., based on min selection
-            // disabled={selectedInterests.length === 0}
+            disabled={selectedInterests.length === 0} // Add disabled prop
           >
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>
@@ -177,5 +180,9 @@ const styles = StyleSheet.create({
     color: Colors.dark.text,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  buttonDisabled: { // Add disabled style
+    backgroundColor: Colors.dark.secondary,
+    opacity: 0.7,
   },
 }); 

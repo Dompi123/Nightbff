@@ -187,7 +187,28 @@ function RootNavigation() {
           />
           <Stack.Screen 
             name="createGroup" 
-            options={{ title: 'Create Group', headerShown: true }}
+            options={({ navigation }) => ({ // Need navigation for custom headerLeft
+              presentation: 'modal',      // Keep modal presentation
+              headerShown: true,          // Header bar IS visible
+              title: 'Create Plan',       // <<< SET HEADER BAR TITLE HERE
+              headerBackTitleVisible: false, // Keep trying to hide default text (might not work but harmless)
+              headerLeft: () => (          // <<< ADD CUSTOM HEADER LEFT
+                <TouchableOpacity 
+                  onPress={() => navigation.goBack()} // Use navigation prop from options
+                  style={{ marginLeft: spacing.sm }} // Adjust margin as needed
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Ionicons 
+                    name="arrow-back" 
+                    size={28} 
+                    color={palette.text} // Ensure palette/Colors accessible
+                  />
+                </TouchableOpacity>
+              ),
+              // Keep theme styles if needed, but headerLeft handles back button color
+              headerStyle: { backgroundColor: palette.background }, // Or Colors.dark.background
+              headerTintColor: palette.text, // For title if it were visible, and potentially other elements
+            })} 
           />
           <Stack.Screen 
             name="planNightOutPlaceholder" 

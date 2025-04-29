@@ -23,50 +23,22 @@ export default function Step7PreferencesScreen() {
   const router = useRouter();
   const { user } = useAuth();
   
-  // Use hook selector to get all needed state slices
-  const {
-    link, setLink,
-    visibility, setVisibility,
-    groupName,
-    groupImageUri,
-    aboutTrip,
-    arrivalDate,
-    departingDate,
-    destinations,
-    interests,
-  } = useCreateGroupStore(state => ({
-    link: state.link,
-    setLink: state.setLink,
-    visibility: state.visibility,
-    setVisibility: state.setVisibility,
-    groupName: state.groupName,
-    groupImageUri: state.groupImageUri,
-    aboutTrip: state.aboutTrip,
-    arrivalDate: state.arrivalDate,
-    departingDate: state.departingDate,
-    destinations: state.destinations,
-    interests: state.interests,
-  }));
+  // Select only the state needed for UI rendering and direct updates
+  const link = useCreateGroupStore(state => state.link);
+  const visibility = useCreateGroupStore(state => state.visibility);
+  const setLink = useCreateGroupStore(state => state.setLink);
+  const setVisibility = useCreateGroupStore(state => state.setVisibility);
 
   const { mutate: createGroupMutation, isPending: isCreatingGroup } = useCreateGroup();
 
   const isProUser = false;
 
-  // Refactored handler using selected state
+  // Get the full state inside the handler using getState()
   const handleCreatePlan = () => {
-    const groupSubmissionData = {
-      groupName,
-      groupImageUri,
-      aboutTrip,
-      arrivalDate,
-      departingDate,
-      destinations,
-      interests,
-      link,
-      visibility,
-    };
+    // Destructure to exclude resetState if it exists, otherwise grab all
+    const { resetState, ...groupSubmissionData } = useCreateGroupStore.getState(); 
     // Log the data being submitted
-    // console.log("Submitting data via hook state:", groupSubmissionData);
+    console.log("Submitting data via getState:", groupSubmissionData);
 
     createGroupMutation(groupSubmissionData);
   };
