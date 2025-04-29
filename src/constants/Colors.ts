@@ -18,5 +18,6 @@ export const Colors = {
     card: '#1E1E1E',
     border: '#333333',
     icon: '#CCCCCC',
+    receivedBubbleBackground: '#5E5E5E',
   },
 }; 

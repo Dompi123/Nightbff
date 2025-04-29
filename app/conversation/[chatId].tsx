@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   timestamp: {
   },
   receivedBubble: {
-    backgroundColor: Colors.dark.card,
+    backgroundColor: Colors.dark.receivedBubbleBackground,
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 18,
@@ -426,6 +426,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     paddingTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: palette.border,
   },
   headerButton: {
     padding: 10,
