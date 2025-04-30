@@ -5,6 +5,18 @@ import { createGroup } from '@/services/api/mockService'; // Adjust path if need
 import useCreateGroupStore from '@/stores/createGroupStore'; // Adjust import path
 import type { CreateGroupState } from '@/stores/createGroupStore'; // Import type explicitly
 
+/**
+ * Custom hook to handle the creation of a new group.
+ * Uses React Query's useMutation to manage the API call, state reset, navigation, 
+ * and user feedback (alerts).
+ *
+ * @returns The mutation object from useMutation, which includes:
+ *  - mutate: Function to trigger the group creation process (takes group data object, omitting resetState).
+ *  - isPending: Boolean indicating if the group creation is in progress.
+ *  - isError: Boolean indicating if an error occurred.
+ *  - error: The error object if an error occurred.
+ *  - and other useMutation return properties...
+ */
 const useCreateGroup = () => {
   const router = useRouter();
   const queryClient = useQueryClient();

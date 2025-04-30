@@ -19,6 +19,20 @@ interface MutateVariables {
     // Add other potential variables like quotedMessageId if needed
 }
 
+/**
+ * Custom hook to handle sending a message within a specific chat conversation.
+ * Uses React Query's useMutation for handling the API call, loading states, 
+ * error handling, and optimistic updates.
+ *
+ * @param options An object containing the chatId.
+ * @param options.chatId The ID of the conversation to send the message to.
+ * @returns The mutation object from useMutation, which includes:
+ *  - mutate: Function to trigger the message sending process (takes { text } object).
+ *  - isPending: Boolean indicating if the message is currently being sent.
+ *  - isError: Boolean indicating if an error occurred.
+ *  - error: The error object if an error occurred.
+ *  - and other useMutation return properties...
+ */
 const useSendMessage = ({ chatId }: UseSendMessageOptions) => {
     const queryClient = useQueryClient();
     const { user } = useAuth(); // Get current user from AuthContext

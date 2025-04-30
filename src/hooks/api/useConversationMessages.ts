@@ -8,6 +8,20 @@ interface SendMessageParams {
   quotedMessageId?: string;
 }
 
+/**
+ * Custom hook to manage messages within a specific conversation.
+ * Handles fetching messages and sending new messages via mutations.
+ *
+ * @param conversationId The ID of the conversation to manage messages for.
+ * @returns An object containing:
+ *  - messages: An array of ChatMessage objects for the conversation.
+ *  - isLoading: Boolean indicating if messages are currently being fetched.
+ *  - error: Any error object encountered during fetching.
+ *  - refetch: Function to manually trigger a refetch of messages.
+ *  - sendMessage: Function to send a new message (takes { text, quotedMessageId } object).
+ *  - isSending: Boolean indicating if a message is currently being sent.
+ *  - sendError: Any error object encountered during sending.
+ */
 export const useConversationMessages = (conversationId: string) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();

@@ -47,6 +47,11 @@ const initialState = {
   visibility: 'public' as 'public' | 'private',
 };
 
+/**
+ * Zustand store for managing the state of the multi-step "Create Group" form.
+ * Includes state slices for group details, dates, destinations, interests, preferences,
+ * and actions to update this state.
+ */
 const useCreateGroupStore = create<CreateGroupState>()((set) => ({
   ...initialState,
 
