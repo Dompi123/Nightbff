@@ -1,4 +1,3 @@
-import React from 'react';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext'; // Assuming standard context path
 import { ActivityIndicator, View } from 'react-native'; // For loading state

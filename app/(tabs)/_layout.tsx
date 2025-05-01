@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import React, { useRef, useCallback } from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import React, { useRef, useCallback, useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
@@ -39,25 +39,33 @@ function MapTabIcon({ color }: { color: string }) {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'dark';
-  
-  // Get the colors from the current theme
   const palette = Colors[colorScheme];
+  const router = useRouter();
   
-  // Get the primary color for the create button based on the current color scheme
-  const primaryColor = Colors[colorScheme].primary;
+  // <<< Add BottomSheetModal ref and handlers >>>
+  const createOptionsSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['40%', '50%'], []); // Adjust snap points
 
-  // Create ref for the bottom sheet modal
-  const createOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
-  
-  // useCallback for closing the sheet
-  const handleCloseSheet = useCallback(() => {
-    createOptionsBottomSheetRef.current?.dismiss();
+  const presentOptions = useCallback(() => {
+    createOptionsSheetRef.current?.present();
   }, []);
 
-  // useCallback for presenting the sheet
-  const presentCreateOptions = useCallback(() => {
-    createOptionsBottomSheetRef.current?.present();
+  const handleSheetClose = useCallback(() => {
+    createOptionsSheetRef.current?.dismiss();
   }, []);
+
+  // Render backdrop
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
 
   return (
     <>
@@ -96,7 +104,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <TabBarIcon name="add" color={color} />,
             tabBarButton: () => (
               <TouchableOpacity
-                onPress={presentCreateOptions}
+                onPress={presentOptions}
                 style={{
                   width: 56,
                   height: 56,
@@ -136,43 +144,18 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {/* Bottom sheet for create options - positioned here to render above tabs */}
+      {/* <<< Define the Bottom Sheet Here >>> */}
       <BottomSheetModal
-        ref={createOptionsBottomSheetRef}
-        index={0}
-        snapPoints={['30%']}
-        backdropComponent={(props) => (
-          <BottomSheetBackdrop
-            {...props}
-            appearsOnIndex={0}
-            disappearsOnIndex={-1}
-          />
-        )}
-        enablePanDownToClose={true}
-        handleIndicatorStyle={{ backgroundColor: palette.secondary }}
+        ref={createOptionsSheetRef}
+        index={0} // Start closed, present() opens it
+        snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        // Add styles for theme consistency
+        handleIndicatorStyle={{ backgroundColor: palette.border }}
         backgroundStyle={{ backgroundColor: palette.card }}
       >
-        <CreateOptionsSheetContent handleClose={handleCloseSheet} />
+        <CreateOptionsSheetContent handleClose={handleSheetClose} />
       </BottomSheetModal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  plusButtonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  plusButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-});

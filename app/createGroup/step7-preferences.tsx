@@ -11,18 +11,13 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Spacing } from '../../constants/Spacing';
 import useCreateGroupStore from '@/stores/createGroupStore';
-import { useAuth } from '@/contexts/AuthContext';
 import useCreateGroup from '@/hooks/api/useCreateGroup';
 
 export default function Step7PreferencesScreen() {
-  const router = useRouter();
-  const { user } = useAuth();
-  
   // Select only the state needed for UI rendering and direct updates
   const link = useCreateGroupStore(state => state.link);
   const visibility = useCreateGroupStore(state => state.visibility);
