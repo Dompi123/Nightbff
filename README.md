@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
+# NightBFF: Find Your Crew
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+NightBFF is a mobile application designed to help users find and connect with like-minded people to form groups for nightlife activities. This project is built using Expo and leverages modern React Native development practices.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+*   **Framework**: Expo SDK 53
+*   **UI Library**: React Native 0.79.x (via Expo SDK 53)
+*   **Language**: TypeScript
+*   **Navigation**: Expo Router v3
+*   **State Management**: Zustand
+*   **Data Fetching**: React Query (TanStack Query)
+*   **Core React**: React 19
 
-   ```bash
-   npm install
-   ```
+## Get Started
 
-2. Start the app
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Dompi123/nightbf.git
+    cd nightbf
+    ```
 
-   ```bash
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+    *(Note: If you encounter peer dependency issues, try running `npm install --legacy-peer-deps`. However, recent installations have succeeded without this flag.)*
+
+3.  **Start the development server:**
+    ```bash
     npx expo start
-   ```
+    ```
+    Follow the terminal prompts to open the app in an emulator/simulator or on a physical device using the Expo Go app (ensure it's compatible with SDK 53).
 
-In the output, you'll find options to open the app in a
+## Running Tests
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+To run the automated test suite:
 
 ```bash
-npm run reset-project
+npm run test
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**Known Test Issues:**
+*   Currently, several tests fail due to incompatibilities with the testing setup (Jest/React Testing Library) and React 19/Expo SDK 53, particularly around mocking Zustand stores (`TypeError`) and React hooks (`ReferenceError`).
+*   You might see TypeScript errors in test files (`TS2352`, `TS2307`) when running `npx tsc`; these are related to the test environment setup and do not affect the application runtime.
+*   The core application logic tested in passing tests is considered functional. Fixing the failing tests is tracked as technical debt.
 
-## Learn more
+## Key Features Implemented (Mocks/Prototypes)
 
-To learn more about developing your project with Expo, look at the following resources:
+*   **Authentication Flow:** Basic mock screens for login/signup.
+*   **Home Screen:** Placeholder home screen.
+*   **Chat:** Mock chat list and conversation view.
+*   **Create Group Flow:** Multi-step process to create a new group (mocked functionality).
+*   **Profile:** Basic user profile screen.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Known Issues & Technical Debt
 
-## Join the community
+The following items are known and deferred for future sprints:
 
-Join our community of developers creating universal apps.
+*   **Accessibility (A11y):** A full accessibility pass is needed across the application.
+*   **Performance:** Performance review and optimization have not yet been conducted.
+*   **Create Group - Step 5 Picker:** The location picker logic needs refinement.
+*   **Chat Glitch:** Minor visual glitch observed in the chat interface.
+*   **Create Group - Step 1 Header:** Minor visual glitch in the header of the first step.
+*   **Explore Groups Back Button:** Incorrect text displayed on the back button in the Explore Groups section.
+*   **Test Failures:** As noted above, several unit/integration tests are failing post-SDK upgrade.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Learn More (Expo Resources)
+
+*   [Expo documentation](https://docs.expo.dev/)
+*   [Expo Router documentation](https://docs.expo.dev/router/introduction/)
+*   [Expo Discord community](https://chat.expo.dev)
