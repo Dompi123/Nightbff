@@ -9,6 +9,14 @@ interface MessageItemProps {
     isCurrentUser: boolean;
 }
 
+/**
+ * Renders a single chat message bubble.
+ * Handles styling for sent (current user) and received messages.
+ * Displays sender avatar and name for received messages.
+ * 
+ * @param message {ChatMessage} The message data to display.
+ * @param isCurrentUser {boolean} True if the message was sent by the currently logged-in user.
+ */
 const MessageItem: React.FC<MessageItemProps> = React.memo(({ message, isCurrentUser }) => {
     const bubbleStyle = isCurrentUser ? styles.sentBubble : styles.receivedBubble;
     const textStyle = isCurrentUser ? styles.sentText : styles.receivedText;

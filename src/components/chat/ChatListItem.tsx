@@ -15,6 +15,13 @@ const formatTimestamp = (timestamp?: string): string => {
     return timestamp;
 };
 
+/**
+ * Renders a single item in the chat conversation list.
+ * Displays the conversation avatar, title, last message snippet, timestamp, and unread count.
+ * Navigates to the specific conversation screen on press.
+ * 
+ * @param conversation {ChatConversation} The conversation data to display.
+ */
 const ChatListItem: React.FC<ChatListItemProps> = ({ conversation }) => {
     const router = useRouter();
 
