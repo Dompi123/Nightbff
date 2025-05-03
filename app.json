@@ -3,6 +3,7 @@
     "name": "nightbf",
     "slug": "nightbf",
     "version": "1.0.0",
+    "sdkVersion": "53.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -13,7 +14,8 @@
       "bundleIdentifier": "com.nightbf.app",
       "config": {
         "googleMapsApiKey": "AIzaTestKeyDoNotUseInProduction123456789"
-      }
+      },
+      "jsEngine": "hermes"
     },
     "android": {
       "adaptiveIcon": {

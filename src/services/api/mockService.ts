@@ -3,12 +3,12 @@ import { CardData, Interest, Plan, UserLocation, MapRegion, NightlifeGroup, BffP
 // Simulate network delay
 const simulateDelay = (ms: number = 500) => new Promise(res => setTimeout(res, ms));
 
-// Simulate occasional errors
-const maybeThrowError = (probability: number = 0.1) => {
-  if (Math.random() < probability) {
-    throw new Error('Simulated network error!');
-  }
-};
+// Simulate occasional errors - REMOVED AS UNUSED
+// const maybeThrowError = (probability: number = 0.1) => {
+//   if (Math.random() < probability) {
+//     throw new Error('Simulated network error!');
+//   }
+// };
 
 // Common avatar URLs for reuse
 const AVATAR_URLS = [
@@ -695,31 +695,26 @@ const mockUserProfiles: { [key: string]: UserProfileDetail } = {
 
 export const fetchTrendingPlans = async (): Promise<CardData[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockTrendingPlansData;
 };
 
 export const fetchHotspots = async (): Promise<CardData[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockHotspotsData;
 };
 
 export const fetchInterests = async (): Promise<Interest[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockInterestsData;
 };
 
 export const fetchExplorePlans = async (): Promise<Plan[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockExplorePlansData;
 };
 
 export const fetchPlanDetails = async (planId: string): Promise<Plan | null> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   
   const plan = mockExplorePlansData.find(p => p.id === planId);
   return plan || null;
@@ -727,7 +722,6 @@ export const fetchPlanDetails = async (planId: string): Promise<Plan | null> => 
 
 export const fetchNearbyUsers = async (region: MapRegion): Promise<UserLocation[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   
   // Generate mock user locations around the given region
   const mockUsers: UserLocation[] = [
@@ -777,26 +771,22 @@ export const fetchNearbyUsers = async (region: MapRegion): Promise<UserLocation[
 
 export const fetchNightlifeGroups = async (): Promise<NightlifeGroup[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockNightlifeGroups;
 };
 
 export const fetchBffsYouMayLike = async (): Promise<BffProfile[]> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockBffs;
 };
 
 export const fetchNearbyGroup = async (): Promise<NearbyGroup> => {
   await simulateDelay();
-  maybeThrowError(0.05); // 5% chance of error
   return mockNearbyGroups[0];
 };
 
 export const fetchPopularGroupDetail = async (groupId: string): Promise<PopularGroupDetail> => {
   // console.log(`[Mock API] Fetching popular group detail for ID: ${groupId}`);
   await simulateDelay();
-  maybeThrowError(0.05); // Lower chance of error for detail view
 
   // Find the group in either mockNightlifeGroups or mockExploreGroups based on ID structure
   const groupBase = mockNightlifeGroups.find(g => g.id === groupId) || mockExploreGroups.find(g => g.id === groupId);
@@ -885,7 +875,6 @@ export const fetchUserProfileDetail = async (userId: string): Promise<UserProfil
 export const fetchExploreGroups = async (filter?: string): Promise<ExploreGroupCardData[]> => {
   // console.log(`[Mock API] Fetching explore groups with filter: ${filter || 'none'}`);
   await simulateDelay();
-  // maybeThrowError(0.05); // Simulate occasional errors
   // Basic filter simulation (can be expanded)
   if (filter && filter !== 'trending' && filter !== 'new' && filter !== 'nearby') {
     return mockExploreGroups.filter(group => group.locationFlag === filter || group.location.toLowerCase().includes(filter.toLowerCase()));
@@ -989,7 +978,7 @@ export const signupUser = async (details: {
   }
   
   // Simulate a 10% chance of random server error
-  maybeThrowError(0.1);
+  // maybeThrowError(0.1);
   
   // Create new user
   const newUser: MockUser = {

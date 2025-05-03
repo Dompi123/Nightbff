@@ -109,7 +109,7 @@ export const useNearbyGroup = () => {
   });
 };
 
-// Default region for Halifax downtown area
+// Default region for Halifax downtown area - RE-ADDED
 const DEFAULT_REGION: MapRegion = {
   latitude: 44.648764,
   longitude: -63.575239,

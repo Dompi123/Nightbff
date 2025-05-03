@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { palette } from '@/theme/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';

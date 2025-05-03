@@ -1,3 +1,4 @@
+// Screen component for Step 5 of the Create Group flow: Adding destinations.
 import React from 'react';
 import {
   View,

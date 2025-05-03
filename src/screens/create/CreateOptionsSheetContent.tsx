@@ -1,17 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
-import { RootStackParamList } from '@/types/navigation';
-import { NavigationProp } from '@react-navigation/native';
 
 export default function CreateOptionsSheetContent({ handleClose }: { handleClose: () => void }) {
   const router = useRouter();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
 
   return (
@@ -20,8 +17,8 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
       <TouchableOpacity 
         style={styles.option}
         onPress={() => {
-          navigation.navigate('createGroup');
           handleClose();
+          router.push('/createGroup');
         }}
         accessibilityLabel="Create Group - Organize or find groups for your night out"
         accessibilityRole="button"
@@ -44,8 +41,8 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
       <TouchableOpacity 
         style={styles.option}
         onPress={() => {
-          navigation.navigate('planNightOutPlaceholder');
           handleClose();
+          router.push('/planNightOutPlaceholder');
         }}
         accessibilityLabel="Plan Night Out - Create an event and invite your friends"
         accessibilityRole="button"

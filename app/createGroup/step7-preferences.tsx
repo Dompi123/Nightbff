@@ -1,3 +1,4 @@
+// Screen component for Step 7 of the Create Group flow: Setting group preferences (link, visibility).
 import React from 'react';
 import {
   View,
