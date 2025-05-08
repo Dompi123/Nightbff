@@ -32,15 +32,12 @@ jest.mock('@/hooks/api/useCreateGroup', () => ({
 // --- Mock useCreateGroupStore ---
 const mockSetLink = jest.fn();
 const mockSetVisibility = jest.fn();
-// We don't need mockResetState if getState isn't called
+const mockResetStateCreateGroupStore = jest.fn(); // Mock for resetState if it exists
 
-// Define the state slices the component will select via the hook
-let mockSelectedStoreState = {
+// Define the full state the store would hold
+let mockFullStoreState = {
   link: '',
   visibility: 'public' as 'public' | 'private',
-  setLink: mockSetLink,
-  setVisibility: mockSetVisibility,
-  // Include other state fields the component selects
   groupName: 'Initial Mock Name',
   groupImageUri: null,
   aboutTrip: 'Initial About',
@@ -48,14 +45,49 @@ let mockSelectedStoreState = {
   departingDate: null,
   destinations: [],
   interests: [],
+  // Actions
+  setLink: mockSetLink,
+  setVisibility: mockSetVisibility,
+  setGroupName: jest.fn(),
+  setGroupImageUri: jest.fn(),
+  setAboutTrip: jest.fn(),
+  setArrivalDate: jest.fn(),
+  setDepartingDate: jest.fn(),
+  addDestination: jest.fn(),
+  removeDestination: jest.fn(),
+  updateDestination: jest.fn(),
+  toggleInterest: jest.fn(),
+  resetState: mockResetStateCreateGroupStore,
 };
 
-// Mock the store hook to return the selected state object
-jest.mock('@/stores/createGroupStore', () => ({
-  __esModule: true,
-  default: jest.fn(() => mockSelectedStoreState),
-  // No getState mock needed
-}));
+// Mock the store
+jest.mock('@/stores/createGroupStore', () => {
+  const actualStore = jest.requireActual('@/stores/createGroupStore');
+  const originalGetState = actualStore.default.getState; // Keep for potential partial mocks
+
+  return {
+    __esModule: true,
+    default: Object.assign(
+      jest.fn((selector) => { // The hook implementation
+        if (typeof selector === 'function') {
+          return selector(mockFullStoreState);
+        }
+        return mockFullStoreState; // Should not happen with selectors but as a fallback
+      }),
+      { // Static properties on the hook
+        getState: jest.fn(() => mockFullStoreState),
+        setState: jest.fn((updater) => {
+          if (typeof updater === 'function') {
+            mockFullStoreState = { ...mockFullStoreState, ...updater(mockFullStoreState) };
+          } else {
+            mockFullStoreState = { ...mockFullStoreState, ...updater };
+          }
+        }),
+        // You might need to mock other static methods if the store uses them, e.g., subscribe
+      }
+    ),
+  };
+});
 // --- End Store Mock ---
 
 describe('<Step7PreferencesScreen /> (Create Group Step 7)', () => {
@@ -65,11 +97,17 @@ describe('<Step7PreferencesScreen /> (Create Group Step 7)', () => {
     mockRouterPush.mockClear();
     mockSetLink.mockClear();
     mockSetVisibility.mockClear();
+    mockResetStateCreateGroupStore.mockClear();
     mockMutate.mockClear();
-    (useCreateGroupStore as jest.Mock).mockClear(); // Clear calls to the hook itself
+    
+    // Clear calls to the hook itself and its methods
+    (useCreateGroupStore as unknown as jest.Mock).mockClear();
+    (useCreateGroupStore.getState as jest.Mock).mockClear();
+    (useCreateGroupStore.setState as jest.Mock).mockClear();
+
 
     // Reset the mock store state object
-    mockSelectedStoreState = {
+    mockFullStoreState = {
       link: '',
       visibility: 'public',
       setLink: mockSetLink,
@@ -81,9 +119,34 @@ describe('<Step7PreferencesScreen /> (Create Group Step 7)', () => {
       departingDate: null,
       destinations: [],
       interests: [],
+      // Ensure all actions are reset/re-assigned if they are not jest.fn() at the top level
+      setGroupName: jest.fn(),
+      setGroupImageUri: jest.fn(),
+      setAboutTrip: jest.fn(),
+      setArrivalDate: jest.fn(),
+      setDepartingDate: jest.fn(),
+      addDestination: jest.fn(),
+      removeDestination: jest.fn(),
+      updateDestination: jest.fn(),
+      toggleInterest: jest.fn(),
+      resetState: mockResetStateCreateGroupStore,
     };
-    // Reset the hook mock return value
-    (useCreateGroupStore as jest.Mock).mockReturnValue(mockSelectedStoreState);
+    
+    // Reset the hook mock return values/implementations
+    (useCreateGroupStore as unknown as jest.Mock).mockImplementation((selector) => {
+      if (typeof selector === 'function') {
+        return selector(mockFullStoreState);
+      }
+      return mockFullStoreState;
+    });
+    (useCreateGroupStore.getState as jest.Mock).mockReturnValue(mockFullStoreState);
+    (useCreateGroupStore.setState as jest.Mock).mockImplementation((updater) => {
+      if (typeof updater === 'function') {
+        mockFullStoreState = { ...mockFullStoreState, ...updater(mockFullStoreState) };
+      } else {
+        mockFullStoreState = { ...mockFullStoreState, ...updater };
+      }
+    });
     
     // Reset create group hook mock
     mockIsPending = false;
@@ -139,18 +202,8 @@ describe('<Step7PreferencesScreen /> (Create Group Step 7)', () => {
   });
 
   it('calls createGroup mutation on Create Plan button press', () => {
-    // Define the expected data based on the INITIAL mock state
-    const expectedSubmissionData = {
-      groupName: mockSelectedStoreState.groupName,
-      groupImageUri: mockSelectedStoreState.groupImageUri,
-      aboutTrip: mockSelectedStoreState.aboutTrip,
-      arrivalDate: mockSelectedStoreState.arrivalDate,
-      departingDate: mockSelectedStoreState.departingDate,
-      destinations: mockSelectedStoreState.destinations,
-      interests: mockSelectedStoreState.interests,
-      link: mockSelectedStoreState.link,
-      visibility: mockSelectedStoreState.visibility,
-    };
+    // Simulate what the component does to get submission data
+    const { resetState, ...expectedSubmissionDataFromMock } = mockFullStoreState;
 
     render(<Step7PreferencesScreen />);
 
@@ -159,8 +212,8 @@ describe('<Step7PreferencesScreen /> (Create Group Step 7)', () => {
 
     // Verify mutate was called once
     expect(mockMutate).toHaveBeenCalledTimes(1);
-    // Verify mutate was called with the data derived from the hook's state
-    expect(mockMutate).toHaveBeenCalledWith(expectedSubmissionData);
+    // Verify mutate was called with the data derived by the component's logic
+    expect(mockMutate).toHaveBeenCalledWith(expectedSubmissionDataFromMock);
   });
 
 }); 

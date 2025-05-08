@@ -11,28 +11,63 @@ jest.mock('expo-router', () => ({
   }),
 }));
 
-// Mock the Zustand store
-const mockToggleInterest = jest.fn();
-jest.mock('@/stores/createGroupStore', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({ // Default mock hook implementation
-    interests: [], 
-    toggleInterest: mockToggleInterest,
-  })),
-}));   
+// --- Mock useCreateGroupStore for Step 6 ---
+const mockToggleInterestAction = jest.fn();
+
+let mockStep6StoreState = {
+  interests: [] as string[], // Ensure this is typed as an array
+  toggleInterest: mockToggleInterestAction,
+  // Add other minimal state/actions if Step6InterestsScreen unexpectedly accesses them
+};
+
+jest.mock('@/stores/createGroupStore', () => {
+  return {
+    __esModule: true,
+    default: Object.assign(
+      jest.fn((selector) => { // The hook implementation
+        if (typeof selector === 'function') {
+          return selector(mockStep6StoreState);
+        }
+        // Fallback if no selector, though Zustand hooks usually use selectors
+        return mockStep6StoreState; 
+      }),
+      { // Static properties on the hook, if Step6 uses getState or setState directly (it doesn't seem to)
+        getState: jest.fn(() => mockStep6StoreState),
+        setState: jest.fn((updater) => {
+          if (typeof updater === 'function') {
+            mockStep6StoreState = { ...mockStep6StoreState, ...updater(mockStep6StoreState) };
+          } else {
+            mockStep6StoreState = { ...mockStep6StoreState, ...updater };
+          }
+        }),
+      }
+    ),
+  };
+});
+// --- End Store Mock ---
 
 describe('<Step6InterestsScreen /> (Create Group Step 6)', () => {
 
   beforeEach(() => {
     // Clear mocks
     mockPush.mockClear();
-    mockToggleInterest.mockClear();
-    // Reset the mock store's return value to default (empty interests)
-    // Directly modify the mock function provided by jest.mock
-    (useCreateGroupStore as jest.Mock).mockReturnValue({ 
-        interests: [], 
-        toggleInterest: mockToggleInterest 
-    }); 
+    mockToggleInterestAction.mockClear();
+
+    // Reset the mock store state
+    mockStep6StoreState = {
+      interests: [],
+      toggleInterest: mockToggleInterestAction,
+    };
+
+    // Reset the hook mock implementation and its static methods
+    (useCreateGroupStore as unknown as jest.Mock).mockImplementation((selector) => {
+      if (typeof selector === 'function') {
+        return selector(mockStep6StoreState);
+      }
+      return mockStep6StoreState;
+    });
+    (useCreateGroupStore.getState as jest.Mock).mockReturnValue(mockStep6StoreState);
+    // No need to clear/reset setState mock if not used by component directly
   });
 
   it('renders initial state correctly with interest chips', () => {
@@ -57,15 +92,15 @@ describe('<Step6InterestsScreen /> (Create Group Step 6)', () => {
     const adventureChip = screen.getByText('Adventure');
     fireEvent.press(adventureChip);
 
-    // Assert mockToggleInterest was called with the correct interest ID ('adv')
-    expect(mockToggleInterest).toHaveBeenCalledTimes(1);
-    expect(mockToggleInterest).toHaveBeenCalledWith('adv'); // ID from ALL_INTERESTS constant
+    // Assert mockToggleInterestAction was called with the correct interest ID ('adv')
+    expect(mockToggleInterestAction).toHaveBeenCalledTimes(1);
+    expect(mockToggleInterestAction).toHaveBeenCalledWith('adv'); // ID from ALL_INTERESTS constant
 
     // Test another chip
     const nightlifeChip = screen.getByText('Night Life');
     fireEvent.press(nightlifeChip);
-    expect(mockToggleInterest).toHaveBeenCalledTimes(2);
-    expect(mockToggleInterest).toHaveBeenCalledWith('nit'); // ID from ALL_INTERESTS constant
+    expect(mockToggleInterestAction).toHaveBeenCalledTimes(2);
+    expect(mockToggleInterestAction).toHaveBeenCalledWith('nit'); // ID from ALL_INTERESTS constant
   });
 
   // Optional: Add test for selected state rendering (would require updating mock return value)
