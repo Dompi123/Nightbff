@@ -107,7 +107,6 @@ const useSendMessage = ({ chatId }: UseSendMessageOptions) => {
         
         onSettled: (data, error, variables, context) => {
             // Always refetch after error or success to ensure consistency
-            // *** COMMENT OUT for mock service with manual update ***
             // queryClient.invalidateQueries({ queryKey: messagesQueryKey });
         },
     });

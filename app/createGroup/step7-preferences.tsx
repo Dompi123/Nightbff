@@ -33,8 +33,6 @@ export default function Step7PreferencesScreen() {
   const handleCreatePlan = () => {
     // Destructure to exclude resetState if it exists, otherwise grab all
     const { resetState, ...groupSubmissionData } = useCreateGroupStore.getState(); 
-    // Log the data being submitted
-    console.log("Submitting data via getState:", groupSubmissionData);
 
     createGroupMutation(groupSubmissionData);
   };

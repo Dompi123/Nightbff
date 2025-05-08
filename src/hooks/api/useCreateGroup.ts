@@ -29,7 +29,6 @@ const useCreateGroup = () => {
   >({
     mutationFn: (groupData) => createGroup(groupData),
     onSuccess: (data, variables) => {
-      // console.log('Create Group Success:', data, 'Variables:', variables);
       Alert.alert('Group Created!', `Mock Group Created Successfully!\nID: ${data.groupId}`); // Simple success feedback
       resetFormState(); // Reset the form state in Zustand store
 
@@ -51,7 +50,7 @@ const useCreateGroup = () => {
     },
     // Optional: onSettled can run after success or error
     // onSettled: () => {
-    //   console.log('Mutation settled (success or error)');
+    //   // Intentionally removed console.log for settled
     // }
   });
 };

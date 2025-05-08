@@ -1,16 +1,20 @@
 # NightBFF: Find Your Crew
 
-NightBFF is a mobile application designed to help users find and connect with like-minded people to form groups for nightlife activities. This project is built using Expo and leverages modern React Native development practices.
+NightBFF is a mobile application (iOS Frontend) designed to help users find and connect with like-minded people to form groups for nightlife activities. This project is built using Expo and leverages modern React Native development practices.
 
-## Tech Stack
+## Project Overview & Architecture
 
+This repository contains the iOS frontend for the NightBFF application.
+
+**Core Technologies:**
 *   **Framework**: Expo SDK 53
 *   **UI Library**: React Native 0.79.x (via Expo SDK 53)
 *   **Language**: TypeScript
-*   **Navigation**: Expo Router v3
-*   **State Management**: Zustand
-*   **Data Fetching**: React Query (TanStack Query)
 *   **Core React**: React 19
+*   **Navigation**: Expo Router v3
+*   **State Management**: Zustand (primarily for `createGroupStore`)
+*   **Data Fetching & Caching**: React Query (TanStack Query v5) for API interactions
+*   **Styling**: Primarily StyleSheet, with constants for colors and spacing.
 
 ## Get Started
 
@@ -24,46 +28,64 @@ NightBFF is a mobile application designed to help users find and connect with li
     ```bash
     npm install
     ```
-    *(Note: If you encounter peer dependency issues, try running `npm install --legacy-peer-deps`. However, recent installations have succeeded without this flag.)*
+    *(Note: If you encounter peer dependency issues, try `npm install --legacy-peer-deps`. However, recent installations have succeeded without this flag.)*
 
 3.  **Start the development server:**
     ```bash
     npx expo start
     ```
-    Follow the terminal prompts to open the app in an emulator/simulator or on a physical device using the Expo Go app (ensure it's compatible with SDK 53).
+    Follow the terminal prompts to open the app in an iOS simulator or on a physical device using the Expo Go app (ensure it's compatible with SDK 53).
 
 ## Running Tests
 
-To run the automated test suite:
+The test suite includes unit and component tests for Zustand stores, React components, and React Query hooks.
 
+All tests are currently **passing** after recent fixes for Expo SDK 53 / React 19 compatibility.
+
+To run the automated test suite:
 ```bash
 npm run test
 ```
+To run TypeScript checks:
+```bash
+npx tsc --noEmit --pretty
+```
+*(Note: You might see TypeScript errors related to test file setup (`TS2352`, `TS2307`) when running `npx tsc`; these do not affect application runtime or the Jest test results.)*
 
-**Known Test Issues:**
-*   Currently, several tests fail due to incompatibilities with the testing setup (Jest/React Testing Library) and React 19/Expo SDK 53, particularly around mocking Zustand stores (`TypeError`) and React hooks (`ReferenceError`).
-*   You might see TypeScript errors in test files (`TS2352`, `TS2307`) when running `npx tsc`; these are related to the test environment setup and do not affect the application runtime.
-*   The core application logic tested in passing tests is considered functional. Fixing the failing tests is tracked as technical debt.
 
-## Key Features Implemented (Mocks/Prototypes)
+## Code Structure Overview
 
-*   **Authentication Flow:** Basic mock screens for login/signup.
-*   **Home Screen:** Placeholder home screen.
-*   **Chat:** Mock chat list and conversation view.
-*   **Create Group Flow:** Multi-step process to create a new group (mocked functionality).
-*   **Profile:** Basic user profile screen.
+*   `app/`: Contains all routes and screens managed by Expo Router. Includes subdirectories for navigation groups (e.g., `(tabs)`, `createGroup`).
+*   `assets/`: Static assets like images and fonts.
+*   `components/`: Shared UI components (e.g., `ThemedText`, `ChatListItem`).
+*   `constants/`: Global constants (e.g., `Colors`, `Spacing`, `Interests`).
+*   `contexts/`: React context providers (e.g., `AuthContext`).
+*   `hooks/`: Custom React hooks, including API interaction hooks using React Query (in `hooks/api/`).
+*   `services/`: API service definitions and mock services.
+*   `stores/`: Zustand state management stores (e.g., `createGroupStore`).
+*   `types/`: Global TypeScript type definitions.
 
-## Known Issues & Technical Debt
+## Known Issues & Deferred Tasks
 
-The following items are known and deferred for future sprints:
+This section outlines known bugs, limitations, and tasks deferred for future development or during backend integration.
 
-*   **Accessibility (A11y):** A full accessibility pass is needed across the application.
-*   **Performance:** Performance review and optimization have not yet been conducted.
-*   **Create Group - Step 5 Picker:** The location picker logic needs refinement.
-*   **Chat Glitch:** Minor visual glitch observed in the chat interface.
-*   **Create Group - Step 1 Header:** Minor visual glitch in the header of the first step.
-*   **Explore Groups Back Button:** Incorrect text displayed on the back button in the Explore Groups section.
-*   **Test Failures:** As noted above, several unit/integration tests are failing post-SDK upgrade.
+**High Priority:**
+*   **Session Timeout Bug:** Users are unexpectedly logged out. The exact cause and reliable reproduction steps are yet to be determined. This is a high-priority issue requiring investigation and resolution, likely before or during backend integration.
+
+**Deferred Tasks & Technical Debt:**
+*   **Accessibility (A11y) Pass (Task 7.4):** A comprehensive accessibility review and implementation pass across the application has been deferred.
+*   **Performance Profiling (Task 7.5):** Performance profiling using React DevTools Profiler with Expo Go is currently blocked. Despite Hermes being enabled, the profiler fails to connect. This needs to be resolved to conduct thorough performance analysis and optimizations.
+*   **Minor Visual Glitches:**
+    *   **Chat Optimistic Updates:** Behavior of optimistic updates in the chat interface (e.g., message send status) needs further observation and refinement for a seamless user experience.
+    *   **Create Group - Step 1 Header:** A minor visual glitch was previously noted in the header of the first step of group creation; verify if still present.
+    *   **Explore Groups Back Button:** The back button in the "Explore Groups" section might display incorrect text; verify if still present.
+*   **Deferred Logic/Features (Mocked or Partially Implemented):**
+    *   **Authentication:** Full authentication flow with a backend is not implemented; current screens are placeholders.
+    *   **Native Pickers:** Date and time selection in the "Create Group" flow currently uses basic inputs. Implementation of native iOS date/time pickers is deferred.
+    *   **Destination Search (Create Group - Step 5):** The destination search/selection functionality is a basic prototype. Full search capabilities (e.g., API-backed geocoding, map integration for selection) are not implemented.
+    *   **User Profile:** User profile data is largely mocked/static.
+    *   **Chat Functionality:** Advanced chat features (read receipts, typing indicators, multimedia messages, etc.) are not implemented. Push notifications for chat are not implemented.
+    *   **"Pro" Features:** Any features marked as "Pro" (e.g., adding a link in group creation) are currently UI placeholders without actual subscription checks or backend logic.
 
 ## Learn More (Expo Resources)
 
