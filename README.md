@@ -14,7 +14,18 @@ This repository contains the iOS frontend for the NightBFF application.
 *   **Navigation**: Expo Router v3
 *   **State Management**: Zustand (primarily for `createGroupStore`)
 *   **Data Fetching & Caching**: React Query (TanStack Query v5) for API interactions
+*   **HTTP Client**: Axios for API requests with global interceptors
+*   **Authentication**: JWT token handling with automatic expiry detection
 *   **Styling**: Primarily StyleSheet, with constants for colors and spacing.
+
+## Features
+
+*   **Robust Session Timeout Handling (MVP)**: Comprehensive session management with global 401/403 API interception, automatic logout on token expiry, client-side token validation with clock skew tolerance, and user-friendly notifications.
+*   **Group Creation & Management**: Multi-step group creation flow with various activity types and customization options.
+*   **Chat Interface**: Real-time chat functionality with optimistic updates.
+*   **User Authentication**: Login/logout flow with secure token storage.
+*   **Profile Management**: User profile viewing and editing capabilities.
+*   **Explore Groups**: Browse and discover groups based on interests and location.
 
 ## Get Started
 
@@ -52,6 +63,19 @@ npx tsc --noEmit --pretty
 ```
 *(Note: You might see TypeScript errors related to test file setup (`TS2352`, `TS2307`) when running `npx tsc`; these do not affect application runtime or the Jest test results.)*
 
+## API Integration Points
+
+**For Backend Developers:**
+
+*   **API Management**: All API calls are managed via React Query hooks located in `src/hooks/api/`.
+*   **Global API Service**: A centralized API service with interceptors is configured in `src/utils/apiService.ts`. This service handles:
+    *   Automatic attachment of authentication tokens to requests
+    *   Global error handling for 401/403 responses (session expiry)
+    *   Consistent base URL configuration
+    *   Request/response logging and transformation
+*   **Backend Configuration**: Update the API baseURL in `src/utils/apiService.ts` to point to your backend endpoints.
+*   **Data Structures**: `src/services/api/mockService.ts` contains examples of current data structures expected by the frontend.
+*   **Authentication Integration**: The AuthContext (`src/contexts/AuthContext.tsx`) manages user authentication state and integrates with the global API service for automatic session handling.
 
 ## Code Structure Overview
 
@@ -64,15 +88,17 @@ npx tsc --noEmit --pretty
 *   `services/`: API service definitions and mock services.
 *   `stores/`: Zustand state management stores (e.g., `createGroupStore`).
 *   `types/`: Global TypeScript type definitions.
+*   `src/utils/`: Utility functions including API service configuration and event emitters.
 
 ## Known Issues & Deferred Tasks
 
 This section outlines known bugs, limitations, and tasks deferred for future development or during backend integration.
 
-**High Priority:**
-*   **Session Timeout Bug:** Users are unexpectedly logged out. The exact cause and reliable reproduction steps are yet to be determined. This is a high-priority issue requiring investigation and resolution, likely before or during backend integration.
+**Recently Resolved:**
+*   **Session Timeout Bug**: **MVP Fixed** (Commit: 1586680, Tag: v0.1.0-backend_integration_handoff). Implemented comprehensive session timeout handling with global API interceptors, automatic logout, and user notifications. Future enhancements (e.g., token refresh, advanced session management) are deferred.
 
 **Deferred Tasks & Technical Debt:**
+*   **TypeScript Errors in Test Files**: Several non-critical TypeScript errors remain in test files (`app/createGroup/__tests__/`, `src/hooks/api/__tests__/`) related to mock data/type definitions and Zustand store mocking. These do not affect runtime functionality and are deferred for future cleanup.
 *   **Accessibility (A11y) Pass (Task 7.4):** A comprehensive accessibility review and implementation pass across the application has been deferred.
 *   **Performance Profiling (Task 7.5):** Performance profiling using React DevTools Profiler with Expo Go is currently blocked. Despite Hermes being enabled, the profiler fails to connect. This needs to be resolved to conduct thorough performance analysis and optimizations.
 *   **Minor Visual Glitches:**
@@ -80,12 +106,24 @@ This section outlines known bugs, limitations, and tasks deferred for future dev
     *   **Create Group - Step 1 Header:** A minor visual glitch was previously noted in the header of the first step of group creation; verify if still present.
     *   **Explore Groups Back Button:** The back button in the "Explore Groups" section might display incorrect text; verify if still present.
 *   **Deferred Logic/Features (Mocked or Partially Implemented):**
-    *   **Authentication:** Full authentication flow with a backend is not implemented; current screens are placeholders.
+    *   **Full Backend Integration**: While session management infrastructure is in place, full backend API integration is pending backend development completion.
     *   **Native Pickers:** Date and time selection in the "Create Group" flow currently uses basic inputs. Implementation of native iOS date/time pickers is deferred.
     *   **Destination Search (Create Group - Step 5):** The destination search/selection functionality is a basic prototype. Full search capabilities (e.g., API-backed geocoding, map integration for selection) are not implemented.
     *   **User Profile:** User profile data is largely mocked/static.
     *   **Chat Functionality:** Advanced chat features (read receipts, typing indicators, multimedia messages, etc.) are not implemented. Push notifications for chat are not implemented.
     *   **"Pro" Features:** Any features marked as "Pro" (e.g., adding a link in group creation) are currently UI placeholders without actual subscription checks or backend logic.
+
+## Backend Integration Handoff
+
+**Current Status**: The frontend is ready for backend integration with the Session Timeout MVP implementation providing a solid foundation for API connectivity and session management.
+
+**Handoff Tag**: `v0.1.0-backend_integration_handoff`
+
+**Integration Points**:
+*   Global API service configured and ready for backend endpoint integration
+*   Session management infrastructure in place with automatic token handling
+*   Comprehensive error handling for authentication failures
+*   Mock data structures available as reference for API contracts
 
 ## Learn More (Expo Resources)
 
