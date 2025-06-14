@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 export default function CreateGroupLayout() {
   return (
     <Stack
-      screenOptions={{ 
+      screenOptions={{
           headerShown: false // <<< ADD THIS TO HIDE NESTED HEADER
       }}
     >

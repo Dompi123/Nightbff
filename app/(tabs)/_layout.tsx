@@ -41,7 +41,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'dark';
   const palette = Colors[colorScheme];
   const router = useRouter();
-  
+
   // <<< Add BottomSheetModal ref and handlers >>>
   const createOptionsSheetRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ['40%', '50%'], []); // Adjust snap points
