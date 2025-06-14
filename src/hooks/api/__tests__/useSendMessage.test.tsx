@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import useSendMessage from '../useSendMessage';
 import * as mockService from '@/services/api/mockService';
-import { ChatMessage, User } from '@/types'; // Assuming types are here
+import { ChatMessage } from '@/types/data';
 
 // Mock the service module
 jest.mock('@/services/api/mockService');

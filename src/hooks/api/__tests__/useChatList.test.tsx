@@ -1,9 +1,9 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import useChatList from '../useChatList'; // Assuming hook is in the parent directory
+import useChatList from '../useChatList'; // REVERTED HERE
 import * as mockService from '@/services/api/mockService';
-import { ChatConversation } from '@/types'; // Assuming ChatConversation type is here
+import { ChatConversation } from '@/types/data'; // Kept modification
 
 // Mock the service module
 jest.mock('@/services/api/mockService');

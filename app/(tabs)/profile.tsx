@@ -259,13 +259,14 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        {/* Logout Button Section */}
-        <TouchableOpacity
+        {/* Logout Button */}
+        <TouchableOpacity 
           style={styles.logoutButton}
-          onPress={logout}
-          accessibilityLabel="Log out of your account"
+          onPress={() => logout()}
+          accessibilityLabel="Logout"
           accessibilityRole="button"
         >
+          <Ionicons name="log-out-outline" size={22} color={palette.error} />
           <ThemedText style={styles.logoutButtonText}>Logout</ThemedText>
         </TouchableOpacity>
 
