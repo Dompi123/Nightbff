@@ -28,7 +28,7 @@ describe('<Step3AboutScreen /> (Create Group Step 3)', () => {
     mockSetAboutTrip.mockClear();
     mockPush.mockClear();
     // Reset the mock store return value if needed (although it's simple here)
-    (useCreateGroupStore as jest.Mock).mockReturnValue({
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue({
       aboutTrip: '',
       setAboutTrip: mockSetAboutTrip,
     });

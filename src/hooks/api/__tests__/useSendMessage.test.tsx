@@ -5,6 +5,7 @@ import { renderHook, waitFor, act } from '@testing-library/react-native';
 import useSendMessage from '../useSendMessage';
 import * as mockService from '@/services/api/mockService';
 import { ChatMessage } from '@/types/data';
+import { User } from '@/contexts/AuthContext';
 
 // Mock the service module
 jest.mock('@/services/api/mockService');
@@ -53,11 +54,13 @@ describe('useSendMessage Hook', () => {
     const mockSuccessResponse: ChatMessage = {
       id: 'real-msg-1',
       conversationId: testChatId,
-      senderId: mockUser.id,
-      senderName: mockUser.name,
       text: messageText,
       timestamp: new Date().toISOString(),
-      status: 'sent',
+      sender: {
+        id: mockUser.id,
+        name: mockUser.name,
+        avatarUrl: undefined
+      },
     };
 
     mockedSendMessage.mockResolvedValue(mockSuccessResponse);

@@ -66,7 +66,7 @@ const signupUser = async (details: {
 };
 
 // User type consistent with mockService response
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;

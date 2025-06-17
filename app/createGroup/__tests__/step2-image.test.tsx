@@ -43,7 +43,7 @@ describe('<Step2ImageScreen /> (Create Group Step 2)', () => {
     mockLaunchImageLibrary.mockClear();
     mockSetGroupImageUri.mockClear();
     // Reset the mock store's return value to default (null image)
-    (useCreateGroupStore as jest.Mock).mockReturnValue({
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue({
       groupImageUri: null,
       setGroupImageUri: mockSetGroupImageUri,
     });
@@ -82,7 +82,7 @@ describe('<Step2ImageScreen /> (Create Group Step 2)', () => {
   it('renders selected image when groupImageUri is set', () => {
     const testUri = 'https://example.com/test.jpg';
     // Set the mock return value for this specific test
-    (useCreateGroupStore as jest.Mock).mockReturnValue({
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue({
       groupImageUri: testUri,
       setGroupImageUri: mockSetGroupImageUri,
     });

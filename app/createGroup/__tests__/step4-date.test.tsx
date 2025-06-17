@@ -45,7 +45,7 @@ describe('<Step4DateScreen /> (Create Group Step 4)', () => {
     mockSetDepartingDate.mockClear();
     mockPush.mockClear();
     // Reset the mock store return value
-    (useCreateGroupStore as jest.Mock).mockReturnValue({
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue({
       arrivalDate: null,
       departingDate: null,
       setArrivalDate: mockSetArrivalDate,
@@ -84,7 +84,7 @@ describe('<Step4DateScreen /> (Create Group Step 4)', () => {
    it('attempts to show picker on Departing Date press (after arrival is set)', () => {
       // Set mock state to have an arrival date first
       const fakeArrivalDate = new Date();
-      (useCreateGroupStore as jest.Mock).mockReturnValue({
+      (useCreateGroupStore as unknown as jest.Mock).mockReturnValue({
           arrivalDate: fakeArrivalDate,
           departingDate: null,
           setArrivalDate: mockSetArrivalDate,
