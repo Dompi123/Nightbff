@@ -1,23 +1,21 @@
-# Dockerfile for React Native Frontend (Metro Server)
-
-# Use an official Node.js runtime as a parent image
+# ---- Base Image ----
 FROM node:18-alpine
 
-# Set the working directory in the container
+# Avoid prompts & split cache layers sensibly
+ENV EXPO_NO_INTERACTIVE=1 \
+    CI=true
+
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (or yarn.lock)
+# Install dependencies (strict lock)
 COPY package*.json ./
+RUN npm ci --legacy-peer-deps --no-audit --progress=false
 
-# Install project dependencies
-RUN npm install
-
-# Copy the rest of the application's source code
+# Copy source
 COPY . .
 
-# Expose the Metro bundler port
+# Expose Metro bundler port
 EXPOSE 8081
 
-# The command to start the Metro server
-# Using --host 0.0.0.0 is crucial to allow connections from outside the container
-CMD ["npm", "start", "--", "--host", "0.0.0.0"] 
+# Start Expo/Metro for LAN access; CI sets EXPO_NO_INTERACTIVE so this is non-interactive
+CMD ["npm", "start", "--", "--host", "lan", "--port", "8081"]
