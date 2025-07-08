@@ -1,5 +1,5 @@
 # ---- Base Image ----
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Avoid prompts & split cache layers sensibly
 ENV EXPO_NO_INTERACTIVE=1 \
