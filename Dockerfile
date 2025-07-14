@@ -7,9 +7,9 @@ ENV EXPO_NO_INTERACTIVE=1 \
 
 WORKDIR /usr/src/app
 
-# Install dependencies (strict lock)
-COPY package*.json ./
-RUN npm ci --legacy-peer-deps --no-audit --progress=false
+# Install dependencies
+COPY package.json ./
+RUN npm install --legacy-peer-deps --no-audit --progress=false
 
 # Copy source
 COPY . .
