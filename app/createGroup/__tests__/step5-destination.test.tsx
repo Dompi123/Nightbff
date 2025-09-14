@@ -40,7 +40,7 @@ describe('<Step5DestinationScreen /> (Create Group Step 5)', () => {
     mockAddDestination.mockClear();
     mockRemoveDestination.mockClear();
     // Reset the mock store return value to default (empty destinations)
-    (useCreateGroupStore as jest.Mock).mockReturnValue(mockStoreImplementation());
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue(mockStoreImplementation());
   });
 
   it('renders initial state correctly', () => {
@@ -76,7 +76,7 @@ describe('<Step5DestinationScreen /> (Create Group Step 5)', () => {
     ];
 
     // Provide state with sample destinations for this test
-    (useCreateGroupStore as jest.Mock).mockReturnValue(mockStoreImplementation(sampleDestinations));
+    (useCreateGroupStore as unknown as jest.Mock).mockReturnValue(mockStoreImplementation(sampleDestinations));
 
     render(<Step5DestinationScreen />);
 

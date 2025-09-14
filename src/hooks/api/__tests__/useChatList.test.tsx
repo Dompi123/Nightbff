@@ -52,20 +52,33 @@ describe('useChatList Hook', () => {
     const mockChatListData: ChatConversation[] = [
       {
         id: 'chat1',
-        name: 'Alice',
-        lastMessage: 'See you soon!',
-        timestamp: new Date().toISOString(),
+        title: 'Alice',
+        participants: [
+          { id: 'alice-id', name: 'Alice', avatarUrl: 'https://example.com/alice.png' }
+        ],
+        lastMessage: {
+          text: 'See you soon!',
+          timestamp: new Date().toISOString(),
+          senderId: 'alice-id'
+        },
         unreadCount: 1,
-        imageUrl: 'https://example.com/alice.png',
+        isGroupChat: false,
       },
       {
         id: 'chat2',
-        name: 'Bob & Charlie',
-        lastMessage: 'Project update attached.',
-        timestamp: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+        title: 'Bob & Charlie',
+        participants: [
+          { id: 'bob-id', name: 'Bob', avatarUrl: 'https://example.com/bob.png' },
+          { id: 'charlie-id', name: 'Charlie', avatarUrl: 'https://example.com/charlie.png' }
+        ],
+        lastMessage: {
+          text: 'Project update attached.',
+          timestamp: new Date(Date.now() - 86400000).toISOString(),
+          senderId: 'bob-id'
+        },
         unreadCount: 0,
-        imageUrl: 'https://example.com/group.png',
-        isGroup: true,
+        isGroupChat: true,
+        groupImageUrl: 'https://example.com/group.png',
       },
     ];
 
