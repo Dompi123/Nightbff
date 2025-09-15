@@ -17,11 +17,26 @@ import {
   ChatConversation,
   FriendProfile,
 } from "@/types/data"; // Import types from central file and new types
+import { LoginCredentials, SignUpCredentials } from "@/types/auth";
 import apiService from "../../utils/apiService";
 
 // Simulate network delay
 const simulateDelay = (ms: number = 500) =>
   new Promise((res) => setTimeout(res, ms));
+
+// Generate a valid 3-part JWT structure for mock purposes
+const generateMockJWT = (user: { id: string; name: string; email: string }): string => {
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = btoa(JSON.stringify({
+    sub: user.id,
+    name: user.name,
+    email: user.email,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour
+  }));
+  const signature = btoa("mock-signature-" + Math.random().toString(36).substring(2, 15));
+  return `${header}.${payload}.${signature}`;
+};
 
 // Simulate occasional errors - REMOVED AS UNUSED
 // const maybeThrowError = (probability: number = 0.1) => {
@@ -1063,8 +1078,7 @@ export const fetchExploreGroups = async (
  * @returns Promise containing token and user data
  */
 export const loginUser = async (
-  email: string,
-  password: string,
+  credentials: LoginCredentials,
 ): Promise<{
   token: string;
   user: {
@@ -1073,13 +1087,13 @@ export const loginUser = async (
     email: string;
   };
 }> => {
-  console.log(`[Mock API] Login attempt for: ${email}`);
+  console.log(`[Mock API] Login attempt for: ${credentials.email}`);
 
   try {
     // Placeholder call to engage interceptors.
     // This call doesn't need to succeed or return specific data for the mock's purpose.
     // Its main role is to ensure that our request/response interceptors are triggered.
-    await apiService.post("/auth/login-placeholder", { email, password });
+    await apiService.post("/auth/login-placeholder", credentials);
     console.log(
       "[mockService] Placeholder API call for loginUser successful (interceptors engaged).",
     );
@@ -1106,24 +1120,25 @@ export const loginUser = async (
   await simulateDelay(50); // Shorter delay as interceptor call adds some time
 
   if (
-    (email === "test@example.com" && password === "password") ||
-    email === "test@test.com"
+    (credentials.email === "test@example.com" && credentials.password === "password") ||
+    credentials.email === "test@test.com"
   ) {
-    const mockResponse = {
-      token: "mock-jwt-token-" + Math.random().toString(36).substring(2, 15),
-      user: {
-        id: email === "test@test.com" ? "test-user-id" : "1",
-        name:
-          email === "test@test.com" ? "Test User (Local Mock)" : "Example User",
-        email: email,
-      },
+    const user = {
+      id: credentials.email === "test@test.com" ? "test-user-id" : "1",
+      name: credentials.email === "test@test.com" ? "Test User (Local Mock)" : "Example User",
+      email: credentials.email,
     };
-    console.log(`[Mock API] Successfully generated mock token for: ${email}`);
+    
+    const mockResponse = {
+      token: generateMockJWT(user),
+      user: user,
+    };
+    console.log(`[Mock API] Successfully generated mock token for: ${credentials.email}`);
     return mockResponse;
   }
 
   console.error(
-    `[Mock API] Login failed for: ${email} - Invalid mock credentials`,
+    `[Mock API] Login failed for: ${credentials.email} - Invalid mock credentials`,
   );
   // For a mock service, throwing an error here mimics a failed login attempt
   // after the placeholder call (which might have its own error handling via interceptors).
@@ -1135,11 +1150,9 @@ export const loginUser = async (
  * @param details User registration details
  * @returns Promise containing token and user data
  */
-export const signupUser = async (details: {
-  name: string;
-  email: string;
-  password: string;
-}): Promise<{
+export const signupUser = async (
+  credentials: SignUpCredentials,
+): Promise<{
   token: string;
   user: {
     id: string;
@@ -1150,26 +1163,26 @@ export const signupUser = async (details: {
   // Simulate network delay (800-2000ms)
   await simulateDelay(800 + Math.random() * 1200);
 
-  // console.log(`[Mock API] Attempting signup for: ${details.email}`);
+  // console.log(`[Mock API] Attempting signup for: ${credentials.email}`);
 
   // Basic validation
-  if (!details.name || !details.email || !details.password) {
+  if (!credentials.name || !credentials.email || !credentials.password) {
     // console.log('[Mock API] Signup failed: Missing required fields');
     throw new Error("All fields are required");
   }
 
-  if (details.password.length < 6) {
+  if (credentials.password.length < 6) {
     // console.log('[Mock API] Signup failed: Password too short');
     throw new Error("Password must be at least 6 characters");
   }
 
   // Check if user already exists
   const existingUser = mockUsers.find(
-    (u) => u.email.toLowerCase() === details.email.toLowerCase(),
+    (u) => u.email.toLowerCase() === credentials.email.toLowerCase(),
   );
 
   if (existingUser) {
-    // console.log(`[Mock API] Signup failed: Email already in use - ${details.email}`);
+    // console.log(`[Mock API] Signup failed: Email already in use - ${credentials.email}`);
     throw new Error(
       "Email already in use. Please log in or use a different email.",
     );
@@ -1183,25 +1196,26 @@ export const signupUser = async (details: {
     id: `user_${Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, "0")}`,
-    name: details.name,
-    email: details.email,
-    password: details.password,
+    name: credentials.name,
+    email: credentials.email,
+    password: credentials.password,
   };
 
   // In a real API, this would add the user to a database
   // Here we're just simulating success
-  // console.log(`[Mock API] Signup successful for: ${details.email}`);
+  // console.log(`[Mock API] Signup successful for: ${credentials.email}`);
 
-  // Generate a mock JWT token
-  const token = `mock-jwt-${newUser.id}-${Date.now()}`;
+  // Generate a proper mock JWT token
+  const user = {
+    id: newUser.id,
+    name: newUser.name,
+    email: newUser.email,
+  };
+  const token = generateMockJWT(user);
 
   return {
     token,
-    user: {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-    },
+    user,
   };
 };
 
