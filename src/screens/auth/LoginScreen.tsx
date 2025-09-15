@@ -15,6 +15,7 @@ import { Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { LoginCredentials } from '@/types/auth';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
@@ -72,7 +73,7 @@ export default function LoginScreen() {
     try {
       setIsLoading(true);
       // console.log("🔑 Login attempt with:", { email }); // Don't log passwords!
-      await login(email, password);
+      await login({ email, password });
       // Navigation is handled by the AuthContext/Navigator
       // console.log("✅ Login function completed");
     } catch (error) {
@@ -177,11 +178,15 @@ export default function LoginScreen() {
           {__DEV__ && (
             <TouchableOpacity
               style={[styles.loginButton, { marginTop: 10, backgroundColor: '#555' }]}
-              onPress={() => {
-                setEmail('test@test.com');
-                setPassword('password123');
-                // Call handleLogin with a slight delay to ensure state is updated
-                setTimeout(() => handleLogin(), 100);
+              onPress={async () => {
+                try {
+                  setIsLoading(true);
+                  await login({ email: 'test@test.com', password: 'password' });
+                } catch (error) {
+                  console.error("❌ DEV Test Login error:", error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
               disabled={isLoadingLocal}
             >

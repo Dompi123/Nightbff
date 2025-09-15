@@ -49,7 +49,17 @@ api.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    // Log the error details
+    // Define known placeholder URLs that are expected to fail with Network Errors
+    const KNOWN_PLACEHOLDER_URLS = ['/chat/list-placeholder', '/auth/login-placeholder'];
+
+    // Check if this is an expected Network Error for a known placeholder URL
+    if (error.isAxiosError && !error.response && error.config?.url && KNOWN_PLACEHOLDER_URLS.includes(error.config.url)) {
+      // This is an expected Network Error for a known placeholder URL
+      console.warn(`[apiService] Expected Network Error for placeholder URL: ${error.config.url}. Error: ${error.message}`);
+      return Promise.reject(error); // Reject so mockService can catch it
+    }
+
+    // Log other error details
     console.error("[apiService] Response interceptor - Error:", {
       status: error.response?.status,
       message: error.message,
