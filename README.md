@@ -7,8 +7,8 @@ NightBFF is a mobile application (iOS Frontend) designed to help users find and 
 This repository contains the iOS frontend for the NightBFF application.
 
 **Core Technologies:**
-*   **Framework**: Expo SDK 53
-*   **UI Library**: React Native 0.79.x (via Expo SDK 53)
+*   **Framework**: Expo SDK 54
+*   **UI Library**: React Native 0.81.x (via Expo SDK 54)
 *   **Language**: TypeScript
 *   **Core React**: React 19
 *   **Navigation**: Expo Router v3
@@ -45,13 +45,13 @@ This repository contains the iOS frontend for the NightBFF application.
     ```bash
     npx expo start
     ```
-    Follow the terminal prompts to open the app in an iOS simulator or on a physical device using the Expo Go app (ensure it's compatible with SDK 53).
+    Follow the terminal prompts to open the app in an iOS simulator or on a physical device using the Expo Go app (ensure it's compatible with SDK 54).
 
 ## Running Tests
 
 The test suite includes unit and component tests for Zustand stores, React components, and React Query hooks.
 
-All tests are currently **passing** after recent fixes for Expo SDK 53 / React 19 compatibility.
+All tests are currently **passing** after recent fixes for Expo SDK 54 / React 19 compatibility.
 
 To run the automated test suite:
 ```bash
@@ -95,10 +95,10 @@ npx tsc --noEmit --pretty
 This section outlines known bugs, limitations, and tasks deferred for future development or during backend integration.
 
 **Recently Resolved:**
-*   **Session Timeout Bug**: **MVP Fixed** (Commit: 1586680, Tag: v0.1.0-backend_integration_handoff). Implemented comprehensive session timeout handling with global API interceptors, automatic logout, and user notifications. Future enhancements (e.g., token refresh, advanced session management) are deferred.
+*   **Session Timeout Bug**: **MVP Fixed**. The app now includes a global 401/403 interceptor, automatic logout sequence with cache clearing, and resilient token handling on startup. Future enhancements like token refresh are deferred.
 
 **Deferred Tasks & Technical Debt:**
-*   **TypeScript Errors in Test Files**: Several non-critical TypeScript errors remain in test files (`app/createGroup/__tests__/`, `src/hooks/api/__tests__/`) related to mock data/type definitions and Zustand store mocking. These do not affect runtime functionality and are deferred for future cleanup.
+*   **TypeScript Errors in Test Files**: **RESOLVED**. All TypeScript errors in app and test files have been fixed. `npx tsc --noEmit --pretty` now passes with 0 errors.
 *   **Accessibility (A11y) Pass (Task 7.4):** A comprehensive accessibility review and implementation pass across the application has been deferred.
 *   **Performance Profiling (Task 7.5):** Performance profiling using React DevTools Profiler with Expo Go is currently blocked. Despite Hermes being enabled, the profiler fails to connect. This needs to be resolved to conduct thorough performance analysis and optimizations.
 *   **Minor Visual Glitches:**

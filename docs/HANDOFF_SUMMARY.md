@@ -1,6 +1,7 @@
 # NightBFF iOS Frontend - Handoff Summary for Backend Integration
 
-**Version Handed Off:** `v0.1.0-backend_integration_handoff`
+**Initial Handoff Version (Tag):** `v0.1.0-backend_integration_handoff`
+**Current `master` Branch Status:** This document reflects the latest `master` branch, which includes the Expo SDK 54 upgrade and all TypeScript error fixes. A new, final handoff tag will be created upon completion of all Phase 7 refinements.
 **Date:** June 14, 2025
 
 ## 1. Introduction
@@ -59,8 +60,8 @@ Welcome to the NightBFF iOS frontend codebase! This document provides key inform
 *   **Session Timeout Handling:** MVP implemented as described above.
 
 ## 6. Known Issues & Deferred Items
-*   **Session Timeout - Future Enhancements (C.2):** The current solution is an MVP. Features like token refresh, "remember me," proactive expiry warnings, more nuanced user feedback for different auth errors, etc., are deferred.
-*   **TypeScript Errors in Test Files:** Several non-critical TypeScript errors remain in test files (specifically in `app/createGroup/__tests__/` related to Zustand store mocking, and in `src/hooks/api/__tests__/` related to mock data not perfectly matching type definitions in `src/types/data.ts`). These do not affect runtime test success or core application functionality and are documented as technical debt.
+*   **Session Timeout - Future Enhancements:** The MVP is fully implemented with global 401/403 interceptors, automatic logout sequence with cache clearing, and resilient token handling. Features like token refresh, "remember me," proactive expiry warnings, and more nuanced user feedback for different auth errors are deferred.
+*   **TypeScript Errors in Test Files:** **RESOLVED**. All previously known TypeScript errors in test files have been fixed. The codebase is now type-clean.
 *   **A11y (Accessibility):** A full accessibility pass has been deferred. Basic accessibility has been considered (e.g., some labels), but comprehensive testing and implementation of all A11y best practices are pending.
 *   **Minor Visual Glitches:** Examples include potential inconsistencies in chat optimistic updates under specific conditions and minor header alignment variations on some screens. These are considered non-critical for initial integration.
 *   **Performance Profiling:** Full performance profiling via React DevTools has been challenging due to Expo Go connection issues. The app generally performs well in development, but deep profiling is deferred.
@@ -77,7 +78,7 @@ Welcome to the NightBFF iOS frontend codebase! This document provides key inform
 ## 8. Technical Architecture Overview
 
 ### 8.1. Core Technologies
-*   **Framework:** Expo SDK 53 with React Native 0.79.x
+*   **Framework:** Expo SDK 54 with React Native 0.81.x
 *   **Language:** TypeScript
 *   **React Version:** React 19
 *   **Navigation:** Expo Router v3
