@@ -20,6 +20,7 @@ import { useConversationMessages } from '@/hooks/api/useConversationMessages';
 import useSendMessage from '@/hooks/api/useSendMessage';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ErrorView from '@/components/ErrorView';
+import { useAuth } from '@/contexts/AuthContext';
 import { Colors } from '@/constants/Colors';
 import { spacing } from '@/theme/spacing';
 import { palette } from '@/theme/colors';
@@ -178,6 +179,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isCurrentUser }) => 
 export default function BasicConversationScreen() {
   const { chatId: rawChatId } = useLocalSearchParams<{ chatId: string }>();
   const router = useRouter();
+  const { user } = useAuth(); // Get current user from AuthContext
 
   // Ensure chatId is a string before using it
   const chatId = typeof rawChatId === 'string' ? rawChatId : '';
@@ -196,8 +198,8 @@ export default function BasicConversationScreen() {
   // Use the send message mutation hook, passing the chatId
   const { mutate: sendMessageMutate, isPending: isSendingMessage } = useSendMessage({ chatId });
 
-  // Assuming user ID 'user_001' is the current user for demo purposes
-  const currentUserId = 'user_001';
+  // Use the actual current user ID from AuthContext
+  const currentUserId = user?.id || 'user_001';
 
   // --- Fetch Header Info (Still using local effect for now) ---
   useEffect(() => {

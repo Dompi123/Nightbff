@@ -127,6 +127,8 @@ export default function LoginScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               returnKeyType="next"
+              accessibilityLabel="Email Address"
+              accessibilityHint="Enter the email you used to register"
             />
           </View>
           {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -142,10 +144,14 @@ export default function LoginScreen() {
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
               returnKeyType="done"
+              accessibilityLabel="Password"
+              accessibilityHint="Enter your account password"
             />
             <TouchableOpacity
               style={styles.passwordVisibilityButton}
               onPress={() => setShowPassword(!showPassword)}
+              accessibilityLabel="Toggle password visibility"
+              accessibilityHint="Shows or hides the characters in the password field"
             >
               <Ionicons
                 name={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -157,7 +163,12 @@ export default function LoginScreen() {
           {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
           
           {/* Forgot Password Link */}
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <TouchableOpacity 
+            style={styles.forgotPasswordContainer}
+            accessibilityLabel="Forgot password?"
+            accessibilityHint="Navigates to the password recovery screen"
+            accessibilityRole="link"
+          >
             <Text style={styles.forgotPasswordText}>Forgot password?</Text>
           </TouchableOpacity>
           
@@ -166,6 +177,9 @@ export default function LoginScreen() {
             style={styles.loginButton}
             onPress={handleLogin}
             disabled={isLoadingLocal}
+            accessibilityLabel="Sign In"
+            accessibilityHint="Attempts to log you in with the provided credentials"
+            accessibilityRole="button"
           >
             {isLoadingLocal ? (
               <ActivityIndicator color="#FFF" size="small" />
@@ -189,6 +203,9 @@ export default function LoginScreen() {
                 }
               }}
               disabled={isLoadingLocal}
+              accessibilityLabel="Developer Test Login"
+              accessibilityHint="Logs you in with a pre-defined test account"
+              accessibilityRole="button"
             >
               <Text style={styles.loginButtonText}>DEV: Test Login</Text>
             </TouchableOpacity>
@@ -203,10 +220,18 @@ export default function LoginScreen() {
           
           {/* Social Login Buttons (Placeholder for now) */}
           <View style={styles.socialButtonsContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity 
+              style={styles.socialButton}
+              accessibilityLabel="Sign in with Google"
+              accessibilityRole="button"
+            >
               <Ionicons name="logo-google" size={22} color="#DB4437" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity 
+              style={styles.socialButton}
+              accessibilityLabel="Sign in with Apple"
+              accessibilityRole="button"
+            >
               <Ionicons name="logo-apple" size={22} color="#000" />
             </TouchableOpacity>
           </View>
