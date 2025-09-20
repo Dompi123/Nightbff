@@ -13,23 +13,23 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + spacing.lg }]}>
-      {/* Option 1: Create Group */}
+      {/* Option 1: Create a Party Plan */}
       <TouchableOpacity 
         style={styles.option}
         onPress={() => {
           handleClose();
           router.push('/createGroup');
         }}
-        accessibilityLabel="Create Group - Organize or find groups for your night out"
+        accessibilityLabel="Create a Party Plan - A group chat for your next night out"
         accessibilityRole="button"
       >
         <View style={styles.iconContainer}>
-          <Ionicons name="people-outline" size={24} color={palette.primary} />
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color={palette.primary} />
         </View>
         <View style={styles.textContainer}>
-          <ThemedText style={styles.title}>Create Group</ThemedText>
+          <ThemedText style={styles.title}>Create a Party Plan</ThemedText>
           <ThemedText style={styles.description}>
-            Organize or find groups for your night out
+            A group chat for your next night out!
           </ThemedText>
         </View>
       </TouchableOpacity>
@@ -37,23 +37,23 @@ export default function CreateOptionsSheetContent({ handleClose }: { handleClose
       {/* Divider */}
       <View style={styles.divider} />
 
-      {/* Option 2: Plan Night Out */}
+      {/* Option 2: Add a Future Party Plan */}
       <TouchableOpacity 
         style={styles.option}
         onPress={() => {
           handleClose();
-          router.push('/planNightOutPlaceholder');
+          console.log("Add a Future Party Plan pressed");
         }}
-        accessibilityLabel="Plan Night Out - Create an event and invite your friends"
+        accessibilityLabel="Add a Future Party Plan - Match with other travelers on your trip"
         accessibilityRole="button"
       >
         <View style={styles.iconContainer}>
-          <Ionicons name="calendar-outline" size={24} color={palette.primary} />
+          <Ionicons name="airplane-outline" size={24} color={palette.primary} />
         </View>
         <View style={styles.textContainer}>
-          <ThemedText style={styles.title}>Plan Night Out</ThemedText>
+          <ThemedText style={styles.title}>Add a Future Party Plan</ThemedText>
           <ThemedText style={styles.description}>
-            Create an event and invite your friends
+            Match with other travelers on your trip
           </ThemedText>
         </View>
       </TouchableOpacity>

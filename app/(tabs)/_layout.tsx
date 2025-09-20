@@ -1,12 +1,10 @@
 import { Tabs, useRouter } from 'expo-router';
-import React, { useRef, useCallback, useMemo } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import CreateOptionsSheetContent from '@/screens/create/CreateOptionsSheetContent';
-
 import { Colors } from '@/constants/Colors';
+import { palette } from '@/theme/colors';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -39,42 +37,16 @@ function MapTabIcon({ color }: { color: string }) {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'dark';
-  const palette = Colors[colorScheme];
   const router = useRouter();
-
-  // <<< Add BottomSheetModal ref and handlers >>>
-  const createOptionsSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['40%', '50%'], []); // Adjust snap points
-
-  const presentOptions = useCallback(() => {
-    createOptionsSheetRef.current?.present();
-  }, []);
-
-  const handleSheetClose = useCallback(() => {
-    createOptionsSheetRef.current?.dismiss();
-  }, []);
-
-  // Render backdrop
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        pressBehavior="close"
-      />
-    ),
-    []
-  );
 
   return (
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme].primary,
+          tabBarActiveTintColor: palette.primary,
           tabBarStyle: {
             backgroundColor: palette.background,
-            borderTopColor: Colors[colorScheme].border,
+            borderTopColor: palette.border,
             height: 82,
             paddingBottom: 20,
             paddingTop: 10,
@@ -104,7 +76,10 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <TabBarIcon name="add" color={color} />,
             tabBarButton: () => (
               <TouchableOpacity
-                onPress={presentOptions}
+                onPress={(e) => {
+                  e.preventDefault(); // Prevent default tab behavior
+                  router.push('/createGroup');
+                }}
                 style={{
                   width: 56,
                   height: 56,
@@ -143,19 +118,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-
-      {/* <<< Define the Bottom Sheet Here >>> */}
-      <BottomSheetModal
-        ref={createOptionsSheetRef}
-        index={0} // Start closed, present() opens it
-        snapPoints={snapPoints}
-        backdropComponent={renderBackdrop}
-        // Add styles for theme consistency
-        handleIndicatorStyle={{ backgroundColor: palette.border }}
-        backgroundStyle={{ backgroundColor: palette.card }}
-      >
-        <CreateOptionsSheetContent handleClose={handleSheetClose} />
-      </BottomSheetModal>
     </>
   );
 }
