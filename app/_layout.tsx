@@ -231,6 +231,32 @@ function RootNavigation() {
               headerShadowVisible: false,
             }}
           />
+          <Stack.Screen 
+            name="chatRequests"
+            options={{ 
+              title: 'Chat Requests',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: () => {
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => router.back()} 
+                    style={{ marginLeft: 0 }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons 
+                      name="arrow-back" 
+                      size={28}
+                      color={palette.text}
+                    />
+                  </TouchableOpacity>
+                );
+              },
+              headerStyle: { backgroundColor: palette.background },
+              headerTitleStyle: { color: palette.text },
+            }} 
+          />
           <Stack.Screen
             name="locationDetail/[locationName]"
             options={({
@@ -282,6 +308,60 @@ function RootNavigation() {
           <Stack.Screen
             name="myFriendsList"
             options={{ title: "My Friends", headerShown: true }}
+          />
+          <Stack.Screen
+            name="settings"
+            options={{
+              title: 'Settings',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: () => {
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => router.back()} 
+                    style={{ marginLeft: 0 }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons 
+                      name="arrow-back" 
+                      size={28}
+                      color={palette.text}
+                    />
+                  </TouchableOpacity>
+                );
+              },
+              headerStyle: { backgroundColor: palette.background },
+              headerTitleStyle: { color: palette.text },
+              headerTintColor: palette.text,
+            }}
+          />
+          <Stack.Screen
+            name="notifications"
+            options={{
+              title: 'Notifications',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: () => {
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => router.back()} 
+                    style={{ marginLeft: 0 }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons 
+                      name="arrow-back" 
+                      size={28}
+                      color={palette.text}
+                    />
+                  </TouchableOpacity>
+                );
+              },
+              headerStyle: { backgroundColor: palette.background },
+              headerTitleStyle: { color: palette.text },
+              headerTintColor: palette.text,
+            }}
           />
 
           {/* Other top-level screens */}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Href } from 'expo-router';
 import { useUserProfile } from '@/hooks/api/useUserProfile';
@@ -22,7 +22,6 @@ export default function ProfileScreen() {
   const { data: joinedGroups } = useJoinedGroups();
   const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
   const { data: friends, isLoading: isLoadingFriends, error: friendsError } = useMyFriends();
-  const insets = useSafeAreaInsets();
 
   if (isLoadingProfile) {
     return (
@@ -41,8 +40,11 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]} edges={['bottom', 'left', 'right']}>
-      <ScrollView style={styles.scrollView}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -56,7 +58,11 @@ export default function ProfileScreen() {
           <View style={styles.headerRight}>
             <TouchableOpacity 
               style={styles.iconButton}
-              accessibilityLabel="Notifications"
+              onPress={() => {
+                console.log('🔔 Notification icon pressed - navigating to /notifications');
+                router.push('/notifications');
+              }}
+              accessibilityLabel="View notifications"
               accessibilityRole="button"
             >
               <Ionicons name="notifications-outline" size={24} color={palette.text} />
@@ -259,16 +265,6 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        {/* Logout Button */}
-        <TouchableOpacity 
-          style={styles.logoutButton}
-          onPress={() => logout()}
-          accessibilityLabel="Logout"
-          accessibilityRole="button"
-        >
-          <Ionicons name="log-out-outline" size={22} color={palette.error} />
-          <ThemedText style={styles.logoutButtonText}>Logout</ThemedText>
-        </TouchableOpacity>
 
       </ScrollView>
     </SafeAreaView>
@@ -535,20 +531,6 @@ const styles = StyleSheet.create({
   groupDate: {
     color: palette.textSecondary,
     fontSize: 12,
-  },
-  logoutButton: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.lg,
-    marginHorizontal: spacing.lg,
-    backgroundColor: palette.error,
-    paddingVertical: spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   friendsListContainer: {
     paddingLeft: 0,

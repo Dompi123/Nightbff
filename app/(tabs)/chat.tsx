@@ -61,6 +61,7 @@ export default function ChatListScreen() {
           </View>
           <TouchableOpacity 
             style={styles.requestsButton}
+            onPress={() => router.push('/chatRequests')}
             accessibilityLabel="Chat requests, 0 pending"
             accessibilityRole="button"
           >
