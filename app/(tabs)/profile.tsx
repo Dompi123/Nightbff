@@ -98,7 +98,7 @@ export default function ProfileScreen() {
         <View style={styles.actionButtons}>
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={() => router.push('/profile/edit')}
+            onPress={() => router.push('/editProfile')}
             accessibilityLabel="Edit user profile"
             accessibilityRole="button"
           >

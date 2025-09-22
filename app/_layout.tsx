@@ -363,6 +363,54 @@ function RootNavigation() {
               headerTintColor: palette.text,
             }}
           />
+          <Stack.Screen
+            name="editProfile"
+            options={{
+              title: 'Edit Profile',
+              headerShown: true,
+              headerShadowVisible: false,
+              headerLeft: () => {
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => router.back()} 
+                    style={{ marginLeft: 0 }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons 
+                      name="arrow-back" 
+                      size={28}
+                      color={palette.text}
+                    />
+                  </TouchableOpacity>
+                );
+              },
+              headerRight: () => {
+                const router = useRouter();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => {
+                      console.log('Update pressed - saving profile changes');
+                      // TODO: Implement actual save functionality
+                    }}
+                    style={{ 
+                      backgroundColor: palette.primary,
+                      paddingHorizontal: spacing.md,
+                      paddingVertical: spacing.xs,
+                      borderRadius: 20,
+                      marginRight: 0
+                    }}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Text style={{ color: palette.text, fontWeight: '600' }}>Update</Text>
+                  </TouchableOpacity>
+                );
+              },
+              headerStyle: { backgroundColor: palette.background },
+              headerTitleStyle: { color: palette.text },
+              headerTintColor: palette.text,
+            }}
+          />
 
           {/* Other top-level screens */}
           <Stack.Screen
