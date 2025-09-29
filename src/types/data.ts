@@ -128,6 +128,13 @@ export interface UserProfile {
         plans: number;
         venuesVisited: number;
     };
+    // Additional properties for the UI
+    age: number;
+    nationality: string;
+    profilePictures: string[];
+    aboutMe: string;
+    upcomingTrips: { id: string; location: string; dateRange: string }[];
+    partyPlans: { id: string; title: string; dateRange: string; location: string; travelers: any[] }[];
 }
 
 export interface UpcomingPlan {

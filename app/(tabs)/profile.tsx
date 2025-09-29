@@ -17,11 +17,20 @@ import { useMyFriends } from '@/hooks/api/useMyFriends';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile, error: profileError } = useUserProfile();
   const { data: joinedGroups } = useJoinedGroups();
   const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
   const { data: friends, isLoading: isLoadingFriends, error: friendsError } = useMyFriends();
+
+  const handleViewProfile = () => {
+    if (user?.id) {
+      router.push(`/profile/${user.id}`);
+    } else {
+      console.error("No user ID found to view profile.");
+      // Optionally show an alert to the user
+    }
+  };
 
   if (isLoadingProfile) {
     return (
@@ -107,11 +116,12 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.actionButton}
+            onPress={handleViewProfile}
             accessibilityLabel="View user profile"
             accessibilityRole="button"
           >
             <Ionicons name="person" size={20} color={palette.text} />
-            <ThemedText style={styles.actionButtonText}>View Profile</ThemedText>
+            <ThemedText style={styles.actionButtonText}>View My Public Profile</ThemedText>
           </TouchableOpacity>
         </View>
 

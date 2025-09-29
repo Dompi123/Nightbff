@@ -699,6 +699,15 @@ const mockUserProfile: UserProfile = {
     plans: 0,
     venuesVisited: 1,
   },
+  // Additional properties for the UI
+  age: 28,
+  nationality: '🇺🇸 United States',
+  profilePictures: [
+    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80",
+  ],
+  aboutMe: 'Love exploring new places and meeting new people!',
+  upcomingTrips: [],
+  partyPlans: [],
 };
 
 const mockJoinedGroups: JoinedGroup[] = [
@@ -1008,9 +1017,77 @@ export const fetchPopularGroupDetail = async (
   return details;
 };
 
-export const fetchUserProfile = async (): Promise<UserProfile> => {
-  await simulateDelay();
-  return mockUserProfile;
+export const fetchUserProfile = async (userId: string): Promise<UserProfile> => {
+  console.log(`[Mock API] Attempting to fetch profile for userId: ${userId}`);
+  
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        if (!userId) {
+          console.error('[Mock API] fetchUserProfile failed: No userId provided.');
+          throw new Error('No user ID provided to fetchUserProfile.');
+        }
+        
+        // This is the mock profile data. Ensure it's correctly defined.
+        const mockProfile: UserProfile = {
+          id: userId,
+          name: 'Alice B.',
+          avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=2574&auto=format&fit=crop',
+          stats: {
+            groups: 5,
+            plans: 12,
+            venuesVisited: 8,
+          },
+          // Additional properties for the UI - ensuring all required properties are present
+          age: 27,
+          nationality: '🇨🇦 Canada',
+          profilePictures: [
+            'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=2574&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2564&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=2562&auto=format&fit=crop',
+          ],
+          aboutMe: 'Loves hiking, trying new coffee shops, and planning spontaneous weekend trips. Looking for a travel buddy for a trip to Italy next spring!',
+          upcomingTrips: [
+            { id: 'trip1', location: 'Rome, Italy', dateRange: 'Apr 10 - Apr 17, 2026' },
+            { id: 'trip2', location: 'Paris, France', dateRange: 'Jun 15 - Jun 22, 2026' },
+          ],
+          partyPlans: [
+            { 
+              id: 'plan1', 
+              title: 'Downtown Concert Night', 
+              dateRange: 'Jul 26 - Jul 26', 
+              location: 'Toronto, Canada', 
+              travelers: [{id: 'user1', avatar: ''}, {id: 'user2', avatar: ''}] 
+            },
+            { 
+              id: 'plan2', 
+              title: 'Beach Party Weekend', 
+              dateRange: 'Aug 15 - Aug 17', 
+              location: 'Miami, Florida', 
+              travelers: [{id: 'user3', avatar: ''}, {id: 'user4', avatar: ''}] 
+            },
+          ],
+        };
+        
+        console.log('[Mock API] Successfully created mock profile data. Resolving promise.');
+        console.log('[Mock API] Profile data structure:', {
+          hasName: !!mockProfile.name,
+          hasAge: !!mockProfile.age,
+          hasNationality: !!mockProfile.nationality,
+          hasProfilePictures: !!mockProfile.profilePictures && mockProfile.profilePictures.length > 0,
+          hasAboutMe: !!mockProfile.aboutMe,
+          hasUpcomingTrips: !!mockProfile.upcomingTrips && mockProfile.upcomingTrips.length > 0,
+          hasPartyPlans: !!mockProfile.partyPlans && mockProfile.partyPlans.length > 0,
+        });
+        console.log('[Mock API] Full profile object:', JSON.stringify(mockProfile, null, 2));
+        resolve(mockProfile);
+
+      } catch (error) {
+        console.error('[Mock API] An error occurred inside fetchUserProfile promise:', error);
+        reject(error);
+      }
+    }, 500);
+  });
 };
 
 export const fetchJoinedGroups = async (): Promise<JoinedGroup[]> => {
