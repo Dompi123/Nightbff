@@ -262,7 +262,7 @@ export default function HomeScreen() {
               <TouchableOpacity 
                 key={bff.id} 
                 style={styles.bffCard}
-                onPress={() => router.push(`/bffProfileDetail/${bff.id}`)}
+                onPress={() => router.push(`/profile/${bff.id}`)}
                 accessibilityLabel={`View ${bff.name}'s profile, ${bff.age} years old`}
                 accessibilityRole="button"
               >

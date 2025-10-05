@@ -269,12 +269,6 @@ function RootNavigation() {
             })}
           />
           <Stack.Screen
-            name="bffProfileDetail/[userId]"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
             name="profile/[userId]"
             options={{
               headerShown: false,
@@ -454,7 +448,6 @@ function RootNavigation() {
           {/* <Stack.Screen name="exploreGroups" /> */}
           {/* <Stack.Screen name="locationDetail/[locationName]" /> */}
           {/* <Stack.Screen name="popularGroupDetail/[groupId]" /> */}
-          {/* <Stack.Screen name="bffProfileDetail/[userId]" /> */}
           {/* <Stack.Screen name="conversation/[chatId]" /> */}
           {/* <Stack.Screen name="createGroup" /> */}
           {/* <Stack.Screen name="planNightOutPlaceholder" /> */}
