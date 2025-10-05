@@ -63,7 +63,6 @@ export type RootStackParamList = {
   // --- Phase 5a Navigation Targets ---
   locationDetail: { locationName: string; };
   exploreGroups: undefined;
-  bffProfileDetail: { userId: string; };
   // nearbyGroupsList: undefined; // Using exploreGroups route for now
   createGroup: undefined; // Target for Create Group button
   planNightOutPlaceholder: undefined;

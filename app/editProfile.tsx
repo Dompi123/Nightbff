@@ -11,12 +11,18 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { ThemedText } from '@/components/ThemedText';
 import { palette } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 
 export default function EditProfileScreen() {
   const router = useRouter();
+
+  // State for profile images
+  const [mainImage, setMainImage] = useState<string | null>('https://i.pravatar.cc/300?img=8');
+  const [secondImage, setSecondImage] = useState<string | null>(null);
+  const [thirdImage, setThirdImage] = useState<string | null>(null);
 
   // State for form fields
   const [firstName, setFirstName] = useState('Ask');
@@ -33,9 +39,62 @@ export default function EditProfileScreen() {
     Alert.alert('Profile Updated', 'Your profile has been updated successfully!');
   };
 
-  const handleImagePicker = (imageType: string) => {
+  // Image picker function
+  const pickImage = async (): Promise<string | null> => {
+    try {
+      // Request media library permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'Sorry, we need camera roll permissions to select a profile picture!'
+        );
+        return null;
+      }
+
+      // Launch the image library
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      // If user didn't cancel, return the image URI
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        return result.assets[0].uri;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      return null;
+    }
+  };
+
+  const handleImagePicker = async (imageType: 'main' | 'second' | 'third') => {
     console.log(`${imageType} image picker pressed`);
-    Alert.alert('Image Picker', `Select ${imageType} image functionality coming soon!`);
+    
+    const uri = await pickImage();
+    
+    if (uri) {
+      // Update the appropriate state based on image type
+      switch (imageType) {
+        case 'main':
+          setMainImage(uri);
+          break;
+        case 'second':
+          setSecondImage(uri);
+          break;
+        case 'third':
+          setThirdImage(uri);
+          break;
+      }
+      
+      console.log(`${imageType} image updated:`, uri);
+    }
   };
 
   const handleDatePicker = () => {
@@ -60,14 +119,20 @@ export default function EditProfileScreen() {
       {/* Main Picture */}
       <TouchableOpacity 
         style={styles.mainPictureContainer}
-        onPress={() => handleImagePicker('Main Picture')}
+        onPress={() => handleImagePicker('main')}
         accessibilityLabel="Select main profile picture"
         accessibilityRole="button"
       >
-        <Image
-          source={{ uri: 'https://i.pravatar.cc/300?img=8' }}
-          style={styles.mainPicture}
-        />
+        {mainImage ? (
+          <Image
+            source={{ uri: mainImage }}
+            style={styles.mainPicture}
+          />
+        ) : (
+          <View style={styles.addPictureButton}>
+            <Ionicons name="add" size={60} color={palette.textSecondary} />
+          </View>
+        )}
         <View style={styles.mainPictureOverlay}>
           <ThemedText style={styles.mainPictureLabel}>Main Picture</ThemedText>
           <View style={styles.cameraIconContainer}>
@@ -80,13 +145,20 @@ export default function EditProfileScreen() {
       <View style={styles.additionalPicturesRow}>
         <TouchableOpacity 
           style={styles.additionalPictureContainer}
-          onPress={() => handleImagePicker('2nd Pic')}
+          onPress={() => handleImagePicker('second')}
           accessibilityLabel="Select second profile picture"
           accessibilityRole="button"
         >
-          <View style={styles.addPictureButton}>
-            <Ionicons name="add" size={40} color={palette.textSecondary} />
-          </View>
+          {secondImage ? (
+            <Image
+              source={{ uri: secondImage }}
+              style={styles.additionalPicture}
+            />
+          ) : (
+            <View style={styles.addPictureButton}>
+              <Ionicons name="add" size={40} color={palette.textSecondary} />
+            </View>
+          )}
           <View style={styles.additionalPictureOverlay}>
             <ThemedText style={styles.additionalPictureLabel}>2nd Pic</ThemedText>
             <View style={styles.smallCameraIconContainer}>
@@ -97,13 +169,20 @@ export default function EditProfileScreen() {
 
         <TouchableOpacity 
           style={styles.additionalPictureContainer}
-          onPress={() => handleImagePicker('3rd Pic')}
+          onPress={() => handleImagePicker('third')}
           accessibilityLabel="Select third profile picture"
           accessibilityRole="button"
         >
-          <View style={styles.addPictureButton}>
-            <Ionicons name="add" size={40} color={palette.textSecondary} />
-          </View>
+          {thirdImage ? (
+            <Image
+              source={{ uri: thirdImage }}
+              style={styles.additionalPicture}
+            />
+          ) : (
+            <View style={styles.addPictureButton}>
+              <Ionicons name="add" size={40} color={palette.textSecondary} />
+            </View>
+          )}
           <View style={styles.additionalPictureOverlay}>
             <ThemedText style={styles.additionalPictureLabel}>3rd Pic</ThemedText>
             <View style={styles.smallCameraIconContainer}>
@@ -279,6 +358,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   mainPicture: {
+    width: '100%',
+    height: '100%',
+  },
+  additionalPicture: {
     width: '100%',
     height: '100%',
   },
