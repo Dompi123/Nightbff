@@ -725,6 +725,27 @@ const mockUpcomingPlans: UpcomingPlan[] = [];
 // MOCK USER DETAIL DATA
 // Ensure this structure matches your UserProfileDetail interface EXACTLY
 const mockUserProfiles: { [key: string]: UserProfileDetail } = {
+  "test-user-id": {
+    // Logged-in test user profile
+    id: "test-user-id",
+    name: "Test User",
+    age: 28,
+    location: "Los Angeles, CA",
+    countryFlag: "🇺🇸",
+    isVerified: true,
+    profileImageUrls: [
+      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1180&q=80",
+    ],
+    aboutMe:
+      "This is the profile of the currently logged-in test user. I love nightlife and exploring new places with great people!",
+    badges: ["Pro", "Verified"],
+    socials: [
+      { type: "instagram", isSet: true },
+      { type: "tiktok", isSet: true },
+    ],
+    interests: ["Nightlife", "Dancing", "Music", "Travel", "Food & Drinks"],
+    languages: ["English", "Spanish"],
+  },
   bff_1: {
     // Example ID, ensure this matches IDs used on Homescreen
     id: "bff_1",
@@ -1026,7 +1047,7 @@ export const fetchUpcomingPlans = async (): Promise<UpcomingPlan[]> => {
 export const fetchUserProfileDetail = async (
   userId: string,
 ): Promise<UserProfileDetail> => {
-  // console.log(`[Mock API] Attempting to fetch profile detail for userId: ${userId}`);
+  console.log(`[Mock API] Attempting to fetch profile detail for userId: ${userId}`);
   // Simulate network delay
   await new Promise((resolve) =>
     setTimeout(resolve, 300 + Math.random() * 300),
@@ -1035,10 +1056,11 @@ export const fetchUserProfileDetail = async (
   const profile = mockUserProfiles[userId];
 
   if (profile) {
-    // console.log(`[Mock API] Profile found for userId: ${userId}`);
+    console.log(`[Mock API] Profile found for userId: ${userId} - Name: ${profile.name}`);
     return Promise.resolve(profile);
   } else {
-    // console.error(`[Mock API] Profile NOT FOUND for userId: ${userId}`);
+    console.error(`[Mock API] Profile NOT FOUND for userId: ${userId}`);
+    console.error(`[Mock API] Available user IDs: ${Object.keys(mockUserProfiles).join(', ')}`);
     // It's often better to reject with an Error object
     return Promise.reject(
       new Error(`Mock profile not found for user ${userId}`),

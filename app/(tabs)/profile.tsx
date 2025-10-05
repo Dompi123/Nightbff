@@ -17,11 +17,17 @@ import { useMyFriends } from '@/hooks/api/useMyFriends';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { data: profile, isLoading: isLoadingProfile, isError: isErrorProfile, error: profileError } = useUserProfile();
   const { data: joinedGroups } = useJoinedGroups();
   const { data: upcomingPlans, isLoading: isLoadingPlans, isError: isErrorPlans, error: plansError } = useUpcomingPlans();
   const { data: friends, isLoading: isLoadingFriends, error: friendsError } = useMyFriends();
+
+  const handleViewProfile = () => {
+    if (user?.id) {
+      router.push(`/profile/${user.id}`);
+    }
+  };
 
   if (isLoadingProfile) {
     return (
@@ -107,7 +113,8 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.actionButton}
-            accessibilityLabel="View user profile"
+            onPress={handleViewProfile}
+            accessibilityLabel="View my public profile"
             accessibilityRole="button"
           >
             <Ionicons name="person" size={20} color={palette.text} />

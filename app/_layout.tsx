@@ -275,6 +275,12 @@ function RootNavigation() {
             }}
           />
           <Stack.Screen
+            name="profile/[userId]"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="createGroup"
             options={({ navigation }) => ({
               // Need navigation for custom headerLeft
