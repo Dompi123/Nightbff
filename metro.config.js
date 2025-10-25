@@ -17,7 +17,13 @@ config.resolver.extraNodeModules = {
 };
 
 // 4. Platform-specific extensions (ensures web uses .web.tsx, native uses .native.tsx)
-config.resolver.sourceExts = ['jsx', 'js', 'ts', 'tsx', 'json', 'wasm', 'mjs', 'cjs'];
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'css'];
 config.resolver.platforms = ['web', 'ios', 'android'];
+
+// 5. CSS transformer for web (handles .css and .module.css files)
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve('react-native-css-transformer'),
+};
 
 module.exports = config;
