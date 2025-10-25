@@ -1,8 +1,8 @@
 FROM node:20-bookworm AS build
 WORKDIR /app
 COPY package*.json ./
-# Use npm install instead of npm ci (more forgiving of lockfile sync)
-RUN npm install --legacy-peer-deps
+# Install deps and rebuild native modules for current platform
+RUN npm install --legacy-peer-deps && npm rebuild
 COPY . .
 
 # Expo web export with Metro cache clear
