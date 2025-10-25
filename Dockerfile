@@ -3,6 +3,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+
+# Remove native-only files before web export (preserves them in repo for future native builds)
+RUN find . -name "*.native.tsx" -o -name "*.native.ts" -o -name "*.native.jsx" -o -name "*.native.js" | xargs rm -f
+
 # Expo web export
 RUN npx expo export --platform web
 

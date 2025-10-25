@@ -16,4 +16,8 @@ config.resolver.extraNodeModules = {
   '@': path.resolve(__dirname, 'src'),
 };
 
-module.exports = config; 
+// 4. Platform-specific extensions (ensures web uses .web.tsx, native uses .native.tsx)
+config.resolver.sourceExts = ['jsx', 'js', 'ts', 'tsx', 'json', 'wasm', 'mjs', 'cjs'];
+config.resolver.platforms = ['web', 'ios', 'android'];
+
+module.exports = config;
