@@ -1,11 +1,9 @@
 FROM node:20-bookworm AS build
 WORKDIR /app
 COPY package.json ./
-# Generate lockfile fresh in Linux environment (no macOS-specific binaries)
-RUN npm install --package-lock-only --legacy-peer-deps
+# Full install to fetch Linux binaries (not just lockfile)
+RUN npm install --legacy-peer-deps
 COPY . .
-# Install all deps (lightningcss will fetch correct Linux binary)
-RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
 # Expo web export with Metro cache clear
 RUN npx expo export --clear --platform web
