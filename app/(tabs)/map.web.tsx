@@ -1,5 +1,5 @@
-import React from react;
-import { View, Text, StyleSheet } from react-native;
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function MapWeb() {
   return (
@@ -11,7 +11,7 @@ export default function MapWeb() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: center, justifyContent: center, padding: 24 },
-  title: { fontSize: 24, fontWeight: bold, marginBottom: 12 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
   subtitle: { fontSize: 14, opacity: 0.7 },
 });
