@@ -5,10 +5,10 @@ RUN npm ci
 COPY . .
 
 # Remove native-only files before web export (preserves them in repo for future native builds)
-RUN find . -name "*.native.tsx" -o -name "*.native.ts" -o -name "*.native.jsx" -o -name "*.native.js" | xargs rm -f
+RUN find . -type f \( -name "*.native.tsx" -o -name "*.native.ts" -o -name "*.native.jsx" -o -name "*.native.js" \) -delete && echo "Removed native files"
 
-# Expo web export
-RUN npx expo export --platform web
+# Clear Metro cache and run web export
+RUN npx expo export --clear --platform web
 
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
