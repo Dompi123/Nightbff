@@ -20,10 +20,7 @@ config.resolver.extraNodeModules = {
 config.resolver.sourceExts = [...config.resolver.sourceExts, 'css'];
 config.resolver.platforms = ['web', 'ios', 'android'];
 
-// 5. CSS transformer for web (handles .css and .module.css files)
-config.transformer = {
-  ...config.transformer,
-  babelTransformerPath: require.resolve('react-native-css-transformer'),
-};
+// 5. Remove CSS transformer (Expo web handles CSS natively via webpack)
+// No need for custom transformer; Expo's built-in web support handles CSS
 
 module.exports = config;
